@@ -38,7 +38,7 @@ Multiplier:
   IF2:
   bne $6, $0, IF3  #if B!=0
   ori $5, $0, 0x0000    #return 0
-  j EXIT
+  j EXITjal
 
   IF3:
   ori $7, $0, 0x0001  #temp storage for number 1
