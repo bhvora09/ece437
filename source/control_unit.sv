@@ -67,7 +67,7 @@ module control_unit (
         cuif.MemtoReg='b0;
         //cuif.jump='b0; 
         case (cuif.funct) 
-            SLLV: cuif.ALUctr = ALU_SLL;
+            SLLV:cuif.ALUctr = ALU_SLL;
             SRLV: cuif.ALUctr = ALU_SRL;
             JR: begin 
                 cuif.ALUctr = ALU_ADD; 

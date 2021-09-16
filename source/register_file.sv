@@ -25,7 +25,7 @@ assign rfif.rdat2=regfile[rfif.rsel2];
 //halt_next = cuif.halt | halt;
 
 //comb block
-always_ff @ (posedge CLK)
+always_ff @ (posedge CLK or negedge nRST)
 begin
     //if reset ON make registerfile values  0
     if (!nRST)

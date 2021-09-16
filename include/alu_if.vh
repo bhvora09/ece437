@@ -17,8 +17,8 @@ interface alu_if;
   //logic     WEN;
     logic flagNeg,flagZero,flagOvf;
   //regbits_t wsel, rsel1, rsel2;
-    //logic[3:0] op;
-    aluop_t op;
+    logic[3:0] op;
+    //aluop_t op;
   //word_t    wdat, rdat1, rdat2;
     word_t portA,portB,portOut;
     

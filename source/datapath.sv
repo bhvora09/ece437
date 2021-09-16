@@ -13,26 +13,18 @@
 `include "memory_request_unit_if.vh"
 `include "program_counter_if.vh"
 `include "register_file_if.vh"
-// alu op, mips op, and instruction type
 `include "cpu_types_pkg.vh"
-//`include "system_if.vh"
-//initialise module
+
+
 module datapath (
   input logic CLK, nRST,
   datapath_cache_if.dp dpif
   );
   // import types
   import cpu_types_pkg::*;
+
   parameter PC_INIT=0;
-  // opcode_t [5:0] opcode;
-  // regbits_t [4:0] reg_rs;
-  // regbits_t [4:0] reg_rt;
-  // regbits_t [4:0] reg_rd;
-  // funct_t [5:0] funct;
-  //parameter IMM_W     = 16;
-  // logic [15:0] imm_addr;
-  // logic [25:0] j_addr;
-  // logic [4:0] shift_amt;
+
   logic [31:0] SignExt_addr;
   logic [31:0] ZeroExt_addr;
   logic [31:0] Ext_addr;
@@ -41,16 +33,13 @@ module datapath (
   logic [31:0] extended_address;
   logic [31:0] rd;
 
-  // pc initialisation
-  //parameter PC = 0;
-
   //interfaces initialised as functions
   alu_if aluif();
   control_unit_if cuif();
   memory_request_unit_if mruif();
   program_counter_if pcif();
   register_file_if rfif();
-  //system_if sysif();
+
 
   //adding all units in the datapath
   alu ALU(aluif);
@@ -58,36 +47,25 @@ module datapath (
   memory_request_unit MRU(CLK,nRST,mruif);
   program_counter PC(CLK,nRST,pcif);
   register_file RF(CLK,nRST,rfif);
-  //system SYS(CLK,nRST,sysif);
-  
-  // assign opcode=cuif.instr[31:26];
-  // assign reg_rs=cuif.instr[25:21];
-  // assign reg_rt =cuif.instr[20:16];
-  // assign reg_rd =cuif.instr[15:11];
-  // assign imm_addr=cuif.instr[15:0];
-  // assign j_addr  = cuif.instr[25:0];
-  // assign shift_amt= cuif.instr[10:6];
-  // assign funct =  cuif.instr [5:0];
   
   always_comb begin
     //DP
     dpif.imemaddr=pcif.pc;
-    dpif.dmemWEN=mruif.dwen;
-    dpif.halt=cuif.halt;
-    dpif.imemREN=mruif.iren;
-    dpif.dmemREN=mruif.dren;
+    dpif.dmemWEN=mruif.dmemWEN;
+    dpif.imemREN=mruif.imemREN;
+    dpif.dmemREN=mruif.dmemREN;
     dpif.dmemstore=rfif.rdat2;
     dpif.dmemaddr=aluif.portOut;
     //ALU
     //portA
     aluif.portA = rfif.rdat1;
     //signed ext
-    if(cuif.instr[15])
-      SignExt_addr = {16'hffff,imm_addr};
+    if(cuif.instr[15])    //checked
+      SignExt_addr = {16'hffff,cuif.imm_addr};
     else
-      SignExt_addr = {16'h0000,imm_addr};
+      SignExt_addr = {16'h0000,cuif.imm_addr};
     //zero ext
-      ZeroExt_addr = {16'h0000, imm_addr};
+      ZeroExt_addr = {16'h0000, cuif.imm_addr};
     if (cuif.ExtOp)
       Ext_addr = SignExt_addr;
     else
@@ -97,9 +75,7 @@ module datapath (
       aluif.portB = Ext_addr;
     else
       aluif.portB = rfif.rdat2;
-
-    
-
+      //if alu=0
     //op
     aluif.op =  cuif.ALUctr;
     
@@ -119,7 +95,8 @@ module datapath (
     //PC
       //pc_next
     //if(cuif.PCen) begin
-    pcif.PCen=cuif.PCen;
+    //pcif.PCen=cuif.PCen;
+    pcif.PCen = dpif.ihit;
     case(cuif.PCsrc)
       2'b00: pcif.pc_next= pcif.pc + 4;
       2'b01: begin
@@ -128,7 +105,8 @@ module datapath (
         pcif.pc_next = npc +shift_left_1;
       end
       2'b10:begin
-        extended_address =  {6'b000000,j_addr};
+        npc = pcif.pc + 4;
+        extended_address =  {npc [31:28],dpif.imemload[25:0],2'b00};
         pcif.pc_next =  extended_address;
       end
       2'b11:pcif.pc_next = rfif.rdat1;
@@ -141,7 +119,11 @@ module datapath (
       //rsel2
       rfif.rsel2 = cuif.reg_rt;
       //wen
-      rfif.WEN = cuif.RegWr;
+      if(cuif.RegWr && (dpif.ihit | dpif.dhit))
+        rfif.WEN = 'b1;
+      else
+        rfif.WEN='b0;
+
       //wsel
       if(cuif.jal_s)
         rd = 'hFFFFF;
@@ -155,15 +137,21 @@ module datapath (
       //wdat
       if(cuif.MemtoReg)
         rfif.wdat=aluif.portOut;
-      else if (cuif.jal_s)
+      else if (cuif.jal_s) //for jal
         rfif.wdat=pcif.pc + 4;
       else
-        rfif.wdat=dpif.dmemstore;
+        rfif.wdat=dpif.dmemload;
       //instr
     
 
     //
     
+  end
+  always_ff @(posedge CLK or negedge nRST) begin
+    if(!nRST)
+      dpif.halt<='b0;
+    else
+      dpif.halt<=cuif.halt;
   end
 
 

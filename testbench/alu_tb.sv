@@ -8,8 +8,10 @@
 // mapped needs this
 //`include "register_file_if.vh"
 `include "alu_if.vh"
+`include "cpu_types_pkg.vh"
 // mapped timing needs this. 1ns is too fast
 `timescale 1 ns / 1 ns
+import cpu_types_pkg::*;
 
 module alu_tb;
 
