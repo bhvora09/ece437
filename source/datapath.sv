@@ -24,15 +24,15 @@ module datapath (
   // import types
   import cpu_types_pkg::*;
   parameter PC_INIT=0;
-  opcode_t [5:0] opcode;
-  regbits_t [4:0] reg_rs;
-  regbits_t [4:0] reg_rt;
-  regbits_t [4:0] reg_rd;
-  funct_t [5:0] funct;
+  // opcode_t [5:0] opcode;
+  // regbits_t [4:0] reg_rs;
+  // regbits_t [4:0] reg_rt;
+  // regbits_t [4:0] reg_rd;
+  // funct_t [5:0] funct;
   //parameter IMM_W     = 16;
-  logic [15:0] imm_addr;
-  logic [25:0] j_addr;
-  logic [4:0] shift_amt;
+  // logic [15:0] imm_addr;
+  // logic [25:0] j_addr;
+  // logic [4:0] shift_amt;
   logic [31:0] SignExt_addr;
   logic [31:0] ZeroExt_addr;
   logic [31:0] Ext_addr;
@@ -60,14 +60,14 @@ module datapath (
   register_file RF(CLK,nRST,rfif);
   //system SYS(CLK,nRST,sysif);
   
-  assign opcode=cuif.instr[31:26];
-  assign reg_rs=cuif.instr[25:21];
-  assign reg_rt =cuif.instr[20:16];
-  assign reg_rd =cuif.instr[15:11];
-  assign imm_addr=cuif.instr[15:0];
-  assign j_addr  = cuif.instr[25:0];
-  assign shift_amt= cuif.instr[10:6];
-  assign funct =  cuif.instr [5:0];
+  // assign opcode=cuif.instr[31:26];
+  // assign reg_rs=cuif.instr[25:21];
+  // assign reg_rt =cuif.instr[20:16];
+  // assign reg_rd =cuif.instr[15:11];
+  // assign imm_addr=cuif.instr[15:0];
+  // assign j_addr  = cuif.instr[25:0];
+  // assign shift_amt= cuif.instr[10:6];
+  // assign funct =  cuif.instr [5:0];
   
   always_comb begin
     //DP
@@ -137,20 +137,20 @@ module datapath (
 
     //RF
       //rsel1
-      rfif.rsel1= reg_rs;
+      rfif.rsel1= cuif.reg_rs;
       //rsel2
-      rfif.rsel2 = reg_rt;
+      rfif.rsel2 = cuif.reg_rt;
       //wen
       rfif.WEN = cuif.RegWr;
       //wsel
       if(cuif.jal_s)
         rd = 'hFFFFF;
       else
-        rd = reg_rd;
+        rd = cuif.reg_rd;
       if(cuif.RegDst)
         rfif.wsel= rd;
       else
-        rfif.wsel=reg_rt;
+        rfif.wsel=cuif.reg_rt;
       
       //wdat
       if(cuif.MemtoReg)

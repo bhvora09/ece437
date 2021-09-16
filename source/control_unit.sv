@@ -9,33 +9,35 @@ module control_unit (
 );
   // type import
   import cpu_types_pkg::*;
-  r_t rtypeinstr;
-  i_t itypeintru;
-  j_t jtypeinstr;
-  opcode_t opcode;
-  regbits_t reg_rs;
-  regbits_t  reg_rt;
-  regbits_t reg_rd;
-  funct_t funct;
+  //r_t rtypeinstr;
+  //i_t itypeintru;
+  //j_t jtypeinstr;
+  //word_t instrO;
+  //opcode_t opcode;
+  //regbits_t reg_rs;
+//   regbits_t  reg_rt;
+//   regbits_t reg_rd;
+//   funct_t funct;
   //aluop_t ALUctr;
-  parameter imm_w = 16;
-  parameter addr_w = 26;
-  parameter alu_op_w = 4;
-  parameter sham_w = 5;
+//   parameter imm_w = 16;
+//   parameter addr_w = 26;
+//   parameter alu_op_w = 4;
+//   parameter sham_w = 5;
   
-  logic [imm_w-1:0] imm_addr;
-  logic [addr_w-1:0] j_addr;
-  logic [sham_w-1:0] shift_amt;
+//   logic [imm_w-1:0] imm_addr;
+//   logic [addr_w-1:0] j_addr;
+//   logic [sham_w-1:0] shift_amt;
   //ramstate_t ramstate;
   //parameter CPUS = 1;
-    assign opcode=opcode_t'(cuif.instr[31:26]);
-    assign reg_rs=regbits_t'(cuif.instr[25:21]);
-    assign reg_rt =regbits_t'(cuif.instr[20:16]);
-    assign reg_rd =regbits_t'(cuif.instr[15:11]);
-    assign imm_addr=cuif.instr[15:0];
-    assign j_addr  = cuif.instr[25:0];
-    assign shift_amt= cuif.instr[10:6];
-    assign funct = funct_t'(cuif.instr[5:0]);
+    //assign instrO = word_t'(cuif.instr[31:0]);
+    assign cuif.opcode=opcode_t'(cuif.instr[31:26]);
+    assign cuif.reg_rs=regbits_t'(cuif.instr[25:21]);
+    assign cuif.reg_rt =regbits_t'(cuif.instr[20:16]);
+    assign cuif.reg_rd =regbits_t'(cuif.instr[15:11]);
+    assign cuif.imm_addr=cuif.instr[15:0];
+    assign cuif.j_addr  = cuif.instr[25:0];
+    assign cuif.shift_amt= cuif.instr[10:6];
+    assign cuif.funct = funct_t'(cuif.instr[5:0]);
 
  
   always_comb begin
@@ -54,7 +56,7 @@ module control_unit (
     cuif.dWEN='b0;
     cuif.iREN='b1;
     cuif.halt='b0;
-    case(opcode)
+    case(cuif.opcode)
     RTYPE:begin
         cuif.RegWr='b1;
         cuif.RegDst='b1;
@@ -64,7 +66,7 @@ module control_unit (
         cuif.MemWr='b0;
         cuif.MemtoReg='b0;
         //cuif.jump='b0; 
-        case (funct) 
+        case (cuif.funct) 
             SLLV: cuif.ALUctr = ALU_SLL;
             SRLV: cuif.ALUctr = ALU_SRL;
             JR: begin 
