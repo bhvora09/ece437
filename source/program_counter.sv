@@ -9,7 +9,7 @@ module program_counter(
 
 import cpu_types_pkg::*;
 
-always_ff @(posedge CLK)
+always_ff @(posedge CLK or negedge nRST)
 begin
 if (nRST==1) begin
     if(pcif.PCen)
