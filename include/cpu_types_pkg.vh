@@ -53,25 +53,25 @@ package cpu_types_pkg;
     JAL     = 6'b000011,
 
     // itype
-    BEQ     = 6'b000100,
-    BNE     = 6'b000101,
-    ADDI    = 6'b001000,
-    ADDIU   = 6'b001001,
-    SLTI    = 6'b001010,
-    SLTIU   = 6'b001011,
-    ANDI    = 6'b001100,
-    ORI     = 6'b001101,
-    XORI    = 6'b001110,
+    BEQ     = 6'b000100,//
+    BNE     = 6'b000101,//
+    ADDI    = 6'b001000,//
+    ADDIU   = 6'b001001,//
+    SLTI    = 6'b001010,//
+    SLTIU   = 6'b001011,//
+    ANDI    = 6'b001100,//
+    ORI     = 6'b001101,//
+    XORI    = 6'b001110,//
     LUI     = 6'b001111,
-    LW      = 6'b100011,
+    LW      = 6'b100011,//
     LBU     = 6'b100100,
     LHU     = 6'b100101,
     SB      = 6'b101000,
     SH      = 6'b101001,
-    SW      = 6'b101011,
+    SW      = 6'b101011,//
     LL      = 6'b110000,
     SC      = 6'b111000,
-    HALT    = 6'b111111
+    HALT    = 6'b111111 //
   } opcode_t;
 
   // rtype funct op type

@@ -24,12 +24,9 @@ module memory_control (
   //ramstate_t ramstate;
   parameter CPUS = 1;
 
- 
-
    assign ccif.iwait = (ccif.iREN) && (ccif.dREN || ccif.dWEN || (ccif.ramstate!=ACCESS)) ;
    assign ccif.dwait = (ccif.dREN || ccif.dWEN) && (ccif.ramstate!=ACCESS);
-
- 
+   
   always_comb begin
     ccif.iload='b0;
     ccif.dload='b0;
@@ -67,35 +64,4 @@ module memory_control (
       end
       end
   
-
-  // always_comb begin
-  //     ccif.iwait=1'b1;
-  //     ccif.dwait=1'b1;
-  //     case(ramstate)
-  //     FREE:begin
-  //       ccif.iwait=1'b0;
-  //       ccif.dwait=1'b0;
-  //     end
-
-  //     ACCESS:begin
-  //       if (ccif.dREN==1)
-  //         ccif.dwait=1'b0;
-  //     else if (ccif.dWEN==1)
-  //         ccif.dwait= (ccif.dREN | ccif);
-  //     else if(ccif.iREN==1)
-  //         ccif.iwait=1'b0;
-  //     end
-
-  //     default:
-  //     begin
-  //       ccif.iwait=1'b1;
-  //       ccif.dwait=1'b1;
-  //     end
-  //     endcase
-  // end
-   
-    
-  
-   
-
 endmodule

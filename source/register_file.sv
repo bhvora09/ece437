@@ -2,20 +2,29 @@
 `include "cpu_types_pkg.vh"
 `include "register_file_if.vh"
 
+//initialise module
 module register_file(
     input CLK,
     input nRST,
     register_file_if.rf rfif
  );
+
+//variables
 import cpu_types_pkg::*;
 word_t [31:0] regfile;
 word_t [31:0] regfile_next;
+//word_t [31:0] halt_reg;
+//word_t [31:0] halt_reg_next;
 
+//assign wires
 assign rfif.rdat1=regfile[rfif.rsel1];
 assign rfif.rdat2=regfile[rfif.rsel2];
 
+//halt <= halt_next
 
+//halt_next = cuif.halt | halt;
 
+//comb block
 always_ff @ (posedge CLK)
 begin
     //if reset ON make registerfile values  0
