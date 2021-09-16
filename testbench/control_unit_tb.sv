@@ -17,7 +17,7 @@ module control_unit_tb;
     control_unit_if cuif ();
     system_if sysif();
   //test program
-    test PROG (CLK,cuif,sysif);
+    test PROG (CLK,cuif);
 
   // DUT
   control_unit CUDUT(cuif);
@@ -27,8 +27,7 @@ endmodule
 
 program test(
     input logic CLK,
-    control_unit_if.tb cuif,
-    system_if.tb sysif
+    control_unit_if.tb cuif
 );
 parameter PERIOD =10;
 initial begin
