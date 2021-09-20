@@ -14,9 +14,9 @@ import cpu_types_pkg::*;
 
         case(aluif.op)
         //shift left logic
-        4'b0000: aluif.portOut =aluif.portA << aluif.portB;
+        4'b0000: aluif.portOut =aluif.portB << aluif.portA[4:0];
         //shift right logic
-        4'b0001: aluif.portOut = aluif.portA >> aluif.portB;
+        4'b0001: aluif.portOut = aluif.portB >> aluif.portA[4:0];
         //add
         4'b0010:
         begin
@@ -43,7 +43,7 @@ import cpu_types_pkg::*;
         //slt- less than
         4'b1010: aluif.portOut = ($signed(aluif.portA) < $signed(aluif.portB) ? 1:0);
         //sltu
-        4'b1011: aluif.portOut = aluif.portA < aluif.portB ? 1:0;
+        4'b1011: aluif.portOut = (aluif.portA < aluif.portB) ? 1:0;
         endcase
 
         //for neg flag

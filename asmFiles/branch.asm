@@ -8,11 +8,15 @@ org 0x0000
 
 beq $1, $2 , beq_task
 
+
 beq_task:
 sw $3, 100($0)
 bne $3, $4, bne_task
 
+j HALT1
+
 bne_task:
 sw $4, 104($0)
 
-halt
+
+HALT1:halt

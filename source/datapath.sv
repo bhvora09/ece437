@@ -31,7 +31,7 @@ module datapath (
   logic [31:0] npc;
   logic [31:0] shift_left_1;
   logic [31:0] extended_address;
-  logic [31:0] rd;
+  logic [4:0] rd;
 
   //interfaces initialised as functions
   alu_if aluif();
@@ -49,6 +49,16 @@ module datapath (
   register_file RF(CLK,nRST,rfif);
   
   always_comb begin
+    SignExt_addr=32'b0;
+    Ext_addr=32'h0;
+    ZeroExt_addr=32'h0;
+    rd=5'b0;
+    npc=32'b0;
+    shift_left_1=32'b0;
+    extended_address=32'b0;
+    //aluif.portA='b0;
+    //aluif.portB='b0;
+
     //DP
     dpif.imemaddr=pcif.pc;
     dpif.dmemWEN=mruif.dmemWEN;
@@ -65,7 +75,8 @@ module datapath (
     else
       SignExt_addr = {16'h0000,cuif.imm_addr};
     //zero ext
-      ZeroExt_addr = {16'h0000, cuif.imm_addr};
+    ZeroExt_addr = {16'h0000, cuif.imm_addr};
+    
     if (cuif.ExtOp)
       Ext_addr = SignExt_addr;
     else
@@ -83,6 +94,7 @@ module datapath (
       //instr
     cuif.instr = dpif.imemload;
     //MRU
+    mruif.iren=cuif.iREN;
       //dren
     mruif.dren = cuif.dREN; 
       //dwen
@@ -90,27 +102,48 @@ module datapath (
       //dhit
     mruif.dhit = dpif.dhit;
       //ihit
-    mruif.dhit = dpif.ihit;
+    mruif.ihit = dpif.ihit;
     
     //PC
-      //pc_next
-    //if(cuif.PCen) begin
-    //pcif.PCen=cuif.PCen;
-    pcif.PCen = dpif.ihit;
-    case(cuif.PCsrc)
-      2'b00: pcif.pc_next= pcif.pc + 4;
-      2'b01: begin
-        npc = pcif.pc +4; 
-        shift_left_1=Ext_addr << 2;
-        pcif.pc_next = npc +shift_left_1;
+    //pcen
+    pcif.PCen = dpif.ihit && (~dpif.dhit);
+    //pc_next
+    if(cuif.jal_s || cuif.jump_s) begin
+      npc = pcif.pc_next + 4;
+      extended_address =  {npc [31:28],dpif.imemload[25:0],2'b00};
+      pcif.pc_next =  extended_address;end
+    else if (cuif.bne_s)begin
+      if(!aluif.flagZero)begin
+        npc = pcif.pc + 4; 
+        shift_left_1={Ext_addr[29:0],2'b00};
+        pcif.pc_next = npc +shift_left_1;end
+      else pcif.pc_next=pcif.pc+ 4; 
       end
-      2'b10:begin
-        npc = pcif.pc + 4;
-        extended_address =  {npc [31:28],dpif.imemload[25:0],2'b00};
-        pcif.pc_next =  extended_address;
-      end
-      2'b11:pcif.pc_next = rfif.rdat1;
-      endcase
+    else if (cuif.beq_s)begin
+      if(aluif.flagZero)begin
+        npc = pcif.pc + 4; 
+        shift_left_1={Ext_addr[29:0],2'b00};
+        pcif.pc_next = npc +shift_left_1;end
+      else pcif.pc_next=pcif.pc + 4;
+        end
+    else if (cuif.jr_s)
+      pcif.pc_next = rfif.rdat1;
+    else 
+      pcif.pc_next= pcif.pc + 4;
+    // case(cuif.PCsrc)
+    //   2'b00: pcif.pc_next= pcif.pc + 4;
+    //   2'b01: begin
+    //     npc = pcif.pc +4; 
+    //     shift_left_1=Ext_addr << 2;
+    //     pcif.pc_next = npc +shift_left_1;
+    //   end
+    //   2'b10:begin
+    //     npc = pcif.pc + 4;
+    //     extended_address =  {npc [31:28],dpif.imemload[25:0],2'b00};
+    //     pcif.pc_next =  extended_address;
+    //   end
+    //   2'b11:pcif.pc_next = rfif.rdat1;
+      // endcase
     //end
 
     //RF
@@ -119,10 +152,9 @@ module datapath (
       //rsel2
       rfif.rsel2 = cuif.reg_rt;
       //wen
-      if(cuif.RegWr && (dpif.ihit | dpif.dhit))
-        rfif.WEN = 'b1;
-      else
-        rfif.WEN='b0;
+      
+      rfif.WEN = cuif.RegWr && (dpif.ihit || dpif.dhit);
+      
 
       //wsel
       if(cuif.jal_s)
@@ -135,12 +167,14 @@ module datapath (
         rfif.wsel=cuif.reg_rt;
       
       //wdat
-      if(cuif.MemtoReg)
-        rfif.wdat=aluif.portOut;
+      if(cuif.lui)
+        rfif.wdat = {cuif.imm_addr,16'h0000};
       else if (cuif.jal_s) //for jal
         rfif.wdat=pcif.pc + 4;
-      else
+      else if(cuif.MemtoReg)
         rfif.wdat=dpif.dmemload;
+      else
+        rfif.wdat=aluif.portOut;
       //instr
     
 
@@ -148,10 +182,13 @@ module datapath (
     
   end
   always_ff @(posedge CLK or negedge nRST) begin
-    if(!nRST)
-      dpif.halt<='b0;
-    else
-      dpif.halt<=cuif.halt;
+     if(!nRST)
+       dpif.halt<='b0;
+      //dpif.halt<=cuif.halt || (nRST);
+     else
+      dpif.halt<=dpif.halt||cuif.halt;
+      //dpif.halt<=(~cuif.halt) || (nRST && cuif.halt);
+      
   end
 
 

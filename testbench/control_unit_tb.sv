@@ -1,6 +1,8 @@
 `include "control_unit_if.vh"
 `include "cpu_types_pkg.vh"
-`include "system_if.vh"
+
+
+
 import cpu_types_pkg::*;
 // mapped timing needs this. 1ns is too fast
 `timescale 1 ns / 1 ns
@@ -15,13 +17,13 @@ module control_unit_tb;
 
   // interface
     control_unit_if cuif ();
-    system_if sysif();
+  
   //test program
     test PROG (CLK,cuif);
 
   // DUT
   control_unit CUDUT(cuif);
-  //system sys(sysif);
+  
 
 endmodule
 

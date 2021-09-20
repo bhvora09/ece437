@@ -17,8 +17,8 @@ interface control_unit_if;
   funct_t funct;
   opcode_t opcode;
   regbits_t reg_rs,reg_rt, reg_rd;
-  logic [1:0] PCsrc;
-  logic     PCen,RegDst,RegWr,MemWr,MemtoReg,ExtOp,ALUSrc,jal_s,dREN,dWEN,iREN,halt; //dren using pcsrc
+  //logic [1:0] PCsrc;
+  logic     PCen,RegDst,RegWr,MemWr,MemtoReg,ExtOp,ALUSrc,jal_s,dREN,dWEN,iREN,halt,beq_s,bne_s,jump_s,jr_s,lui; //dren using pcsrc
   logic [15:0] imm_addr;
   logic [25:0] j_addr;
   logic [4:0]  shift_amt;
@@ -29,13 +29,13 @@ interface control_unit_if;
   // pc ports
   modport cu (
     input   instr,
-    output  PCen,PCsrc,RegDst,RegWr,ALUctr,MemWr,MemtoReg,ExtOp,ALUSrc,jal_s,dREN,
+    output  PCen,RegDst,RegWr,ALUctr,MemWr,MemtoReg,ExtOp,ALUSrc,jal_s,dREN,beq_s,bne_s,jump_s,jr_s,lui,
     output  dWEN,iREN,halt,opcode,reg_rs,reg_rt,reg_rd, imm_addr,j_addr,shift_amt,funct
   );
   // pc tb
   modport tb (
     input   dWEN,iREN,halt,opcode,reg_rs,reg_rt,reg_rd, imm_addr,j_addr,shift_amt,funct,
-    input   PCen,PCsrc,RegDst,RegWr,ALUctr,MemWr,MemtoReg,ExtOp,ALUSrc,jal_s,dREN, 
+    input   PCen,RegDst,RegWr,ALUctr,MemWr,MemtoReg,ExtOp,ALUSrc,jal_s,dREN, beq_s,bne_s,jump_s,jr_s,lui,
     output  instr
   );
 endinterface

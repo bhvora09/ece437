@@ -30,11 +30,11 @@ module system_tb;
   system_if syif();
 
   // test program
-  test                                PROG (CLK,nRST,syif);
+  test PROG (CLK,nRST,syif);
 
   // dut
 `ifndef MAPPED
-  system                              DUT (CLK,nRST,syif);
+  system DUT (CLK,nRST,syif);
 
   // CPU Tracker. Uncomment and change signal names to enable.
   /*
@@ -80,7 +80,7 @@ module system_tb;
   */
 
 `else
-  system                              DUT (,,,,//for altera debug ports
+  system  DUT (,,,,//for altera debug ports
     CLK,
     nRST,
     syif.halt,
@@ -103,7 +103,7 @@ program test(input logic CLK, output logic nRST, system_if.tb syif);
 
   initial
   begin
-    nRST = 0;
+    nRST = 'b0;
     syif.tbCTRL = 0;
     syif.addr = 0;
     syif.store = 0;
@@ -111,7 +111,7 @@ program test(input logic CLK, output logic nRST, system_if.tb syif);
     syif.REN = 0;
     @(posedge CLK);
     $display("Starting Processor.");
-    nRST = 1;
+    nRST = 'b1;
     // wait for halt
     while (!syif.halt)
     begin

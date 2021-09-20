@@ -21,7 +21,6 @@ module register_file_tb;
   int v1 = 1;
   int v2 = 4721;
   int v3 = 25119;
-  int testcases=0;
   
   // clock
   always #(PERIOD/2) CLK++;
@@ -107,10 +106,15 @@ initial begin
 
   @(posedge CLK)
   rfif.wsel='b11;
+  rfif.wdat =56721;
   rfif.rsel1='b11100;
   rfif.rsel2='b11;
 
-
+   @(posedge CLK)
+  rfif.wsel='b11;
+   rfif.wdat =78937;
+  rfif.rsel1='b11111;
+  rfif.rsel2='b11;
 
 
 end

@@ -39,7 +39,6 @@
   addi $28, $3, 0x0000  #temp register gets value of num2
   WHILE: 
   beq $5, $4, EXIT      #if b== num1 then exit i.e. $ b==1 and returns num1
-  LOOP: 
   add $28, $28,$3     #val = val +num1
   addi  $5, $5, 0x0001     #update counter
   j WHILE
