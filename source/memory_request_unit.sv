@@ -11,8 +11,9 @@ module memory_request_unit(
  //logic CLK, nRST;
  
 
-  always_ff@(posedge CLK or negedge nRST) begin
-    
+
+  //changed to combinational and not flipflop 
+  always_comb begin
     // mruif.imemREN<=1'b1;
     if (!nRST) begin
       //$display("nRST=0");

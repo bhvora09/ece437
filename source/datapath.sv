@@ -131,21 +131,7 @@ module datapath (
       pcif.pc_next = rfif.rdat1;
     else 
       pcif.pc_next= pcif.pc + 4;
-    // case(cuif.PCsrc)
-    //   2'b00: pcif.pc_next= pcif.pc + 4;
-    //   2'b01: begin
-    //     npc = pcif.pc +4; 
-    //     shift_left_1=Ext_addr << 2;
-    //     pcif.pc_next = npc +shift_left_1;
-    //   end
-    //   2'b10:begin
-    //     npc = pcif.pc + 4;
-    //     extended_address =  {npc [31:28],dpif.imemload[25:0],2'b00};
-    //     pcif.pc_next =  extended_address;
-    //   end
-    //   2'b11:pcif.pc_next = rfif.rdat1;
-      // endcase
-    //end
+    
 
     //RF
       //rsel1
