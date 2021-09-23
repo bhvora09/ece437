@@ -43,7 +43,7 @@ import cpu_types_pkg::*;
         //slt- less than
         4'b1010: aluif.portOut = ($signed(aluif.portA) < $signed(aluif.portB) ? 1:0);
         //sltu
-        4'b1011: aluif.portOut = (aluif.portA < aluif.portB) ? 1:0;
+        4'b1011: aluif.portOut = (aluif.portA) < (aluif.portB) ? 1:0;
         endcase
 
         //for neg flag

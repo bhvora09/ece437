@@ -64,6 +64,8 @@ always_comb begin
             OR:cuif.ALUctr = ALU_OR;
             XOR:cuif.ALUctr = ALU_XOR;
             NOR:cuif.ALUctr = ALU_NOR;
+            SLT:cuif.ALUctr=ALU_SLT;
+            SLTU:cuif.ALUctr=ALU_SLTU; 
         endcase
         end
     J:  begin

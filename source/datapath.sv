@@ -26,6 +26,7 @@ module datapath (
   parameter PC_INIT=0;
 
   logic [31:0] SignExt_addr;
+  logic [31:0] luiwdat;
   logic [31:0] ZeroExt_addr;
   logic [31:0] Ext_addr;
   logic [31:0] npc;
@@ -109,7 +110,7 @@ module datapath (
     pcif.PCen = dpif.ihit && (~dpif.dhit);
     //pc_next
     if(cuif.jal_s || cuif.jump_s) begin
-      npc = pcif.pc_next + 4;
+      npc = pcif.pc + 4;
       extended_address =  {npc [31:28],dpif.imemload[25:0],2'b00};
       pcif.pc_next =  extended_address;end
     else if (cuif.bne_s)begin
@@ -167,8 +168,9 @@ module datapath (
         rfif.wsel=cuif.reg_rt;
       
       //wdat
-      if(cuif.lui)
-        rfif.wdat = {cuif.imm_addr,16'h0000};
+      if(cuif.lui)begin
+        luiwdat = {cuif.imm_addr,16'h0000};
+        rfif.wdat = {cuif.imm_addr,16'h0000};end
       else if (cuif.jal_s) //for jal
         rfif.wdat=pcif.pc + 4;
       else if(cuif.MemtoReg)
