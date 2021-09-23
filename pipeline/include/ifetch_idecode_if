@@ -1,0 +1,35 @@
+`ifndef IFETCH_IDECODE_IF_VH
+`define IFETCH_IDECODE_IF_VH
+
+// all types
+`include "cpu_types_pkg.vh"
+
+interface ifetch_idecode_if;
+    // import types
+    import cpu_types_pkg::*;
+
+    //in
+    word_t instrIn;
+    word_t pc, pc_four_in;
+    logic flush;
+
+    //out
+    word_t instOut;
+    word_t pc_four_out;
+    logic [25:0] jump_instr;
+    logic [4:0] rs, rt, rd;
+    logic [15:0] imm;
+
+    
+    modport ifid (
+        input instIn, pc, pc_four_in, flush,
+        output instOut, pc_four_out, jump_instr, rs, rt, rd, imm
+    );
+
+    modport tb (
+        input instOut, pc_four_out, jump_instr, rs, rt, rd, imm,
+        output instIn, pc, pc_four_in, flush
+    );
+endinterface
+
+`endif //IFETCH_IDECODE_IF_VH
