@@ -26,7 +26,11 @@ parameter PC0 = 0;
   // map datapath
   datapath #(.PC_INIT(PC0)) DP (CLK, nRST, dcif);
   // map caches
+<<<<<<< HEAD
   caches                    CM (CLK, nRST, dcif, cif0);
+=======
+  caches #(.CPUID(0))       CM (CLK, nRST, dcif, cif0);
+>>>>>>> singlecycle
   // map coherence
   memory_control            CC (CLK, nRST, ccif);
 
