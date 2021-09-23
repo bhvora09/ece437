@@ -27,6 +27,9 @@ always_ff@(posedge CLK or negedge nRST) begin
     emif.rdat2_from_reg_out <= 'b0;
     emif.lUIout<= 'b0;
     emif.imm_addr_for_lui_out<='b0;
+    emif.dest_reg_out<='b0;
+    emif.memtoReg_out <='b0;
+    emif.regwr_out<= 'b0;
     end
     else begin
     emif.dRENout <= emif.dRENin;
@@ -41,5 +44,10 @@ always_ff@(posedge CLK or negedge nRST) begin
     emif.rdat2_from_reg_out <= emif.rdat2_from_reg_in;
     emif.lUIout<= emif.lUIin;
     emif.imm_addr_for_lui_out<=emif.imm_addr_for_lui_in;
+
+    emif.dest_reg_out<=emif.dest_reg_in;
+    emif.memtoReg_out <=emif.memtoReg_in;
+    emif.regwr_out<= emif.regwr_in;
+
     end
 end
