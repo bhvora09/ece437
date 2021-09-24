@@ -11,7 +11,10 @@ interface ifetch_idecode_if;
     //in
     word_t instrIn;
     word_t pc, nxt_pc_in;
-    logic lui_s_in;
+    logic lui_s_in, jal_s_in, jr_s_in, j_s_in;
+    logic stall;
+    logic ihit_in, dhit_in;
+    word_t jal_addr_in, jr_addr_in, j_addr_in;
 
     //out
     word_t instOut;
@@ -19,17 +22,19 @@ interface ifetch_idecode_if;
     logic [25:0] jump_instr;
     logic [4:0] rs, rt, rd;
     logic [15:0] imm_addr;
-    logic lui_s_out;
+    logic lui_s_out, jal_s_out, jr_s_out, j_s_out;
+    logic ihit_out, dhit_out;
+    word_t jal_addr_out, jr_addr_out, j_addr_out, branch_addr_in;
 
     
     modport idie (
-        input instIn, pc, nxt_pc_in, lui_s_in,
-        output instOut, nxt_pc_out, jump_instr, rs, rt, rd, imm_addr, lui_s_out
+        input instIn, pc, nxt_pc_in, lui_s_in, stall, ihit_in, dhit_in, jal_addr_in, jr_addr_in, j_addr_in, branch_addr_in, jal_s_in, j_s_in, jr_s_in,
+        output instOut, nxt_pc_out, jump_instr, rs, rt, rd, imm_addr, lui_s_out, ihit_out, dhit_out, jal_addr_out, jr_addr_out, j_addr_out, branch_addr_out, jal_s_out, jr_s_out, j_s_out
     );
 
     modport tb (
-        input instOut, nxt_pc_out, jump_instr, rs, rt, rd, imm_addr, lui_s_out,
-        output instIn, pc, nxt_pc_in, lui_s_in
+        input instOut, nxt_pc_out, jump_instr, rs, rt, rd, imm_addr, lui_s_out, ihit_out, dhit_out, jal_addr_out, jr_addr_out, j_addr_out, branch_addr_out, jal_s_out, jr_s_out, j_s_out,
+        output instIn, pc, nxt_pc_in, lui_s_in, stall, ihit_in, dhit_in, jal_addr_in, jr_addr_in, j_addr_in, branch_addr_in, jal_s_in, j_s_in, jr_s_in
     );
 endinterface
 
