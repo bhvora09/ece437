@@ -16,10 +16,8 @@
 `include "ifetch_idecode_if.vh"
 `include "idecode_iexec_if.vh"
 `include "exec_mem_if.vh"
-'include "mem_wrb_if.vh"
-`include "forwarding_unit_if.vh"
+`include "mem_wrb_if.vh"
 `include "cpu_types_pkg.vh"
-
 
 
 module datapath_for_pipeline (
@@ -39,6 +37,8 @@ module datapath_for_pipeline (
   logic [31:0] shift_left_1;
   logic [31:0] extended_address;
   logic [4:0] rd;
+  logic [31:0] instr;
+  logic  stall;
 
   //interfaces initialised as functions
   alu_if aluif();
@@ -50,7 +50,6 @@ module datapath_for_pipeline (
   idecode_iexec_if deif();
   exec_mem_if emif();
   mem_wrb_if mwif();
-  forwarding_unit_if fuif();
 
   //adding all units in the datapath
   alu ALU(aluif);
@@ -58,12 +57,13 @@ module datapath_for_pipeline (
   memory_request_unit MRU(CLK,nRST,mruif);
   program_counter PC(CLK,nRST,pcif);
   register_file RF(CLK,nRST,rfif);
-  ifetch_idecode FETCHDECODE();
-  idecode_iexec DECODEXEC();
-  exec_mem EXECMEM();
-  mem_wrb MEMWRB();
-  forwarding_unit_if FU();
+  ifetch_idecode FETCHDECODE(CLK, nRST, fdif);
+  idecode_iexec DECODEXEC(CLK, nRST, deif);
+  exec_mem EXECMEM(CLK, nRST, emif);
+  mem_wrb MEMWRB(CLK, nRST, mwif);
 
+
+  //opcodes
   opcode_t opinfetch;
   opcode_t opindecode;
   opcode_t opinexec;
@@ -99,6 +99,11 @@ module datapath_for_pipeline (
     npc=32'b0;
     shift_left_1=32'b0;
     extended_address=32'b0;
+    instr = dpif.imemload;
+
+    //ADD LOGIC FOR STALL
+    stall = ;
+
     //aluif.portA='b0;
     //aluif.portB='b0;
 
@@ -143,7 +148,23 @@ module datapath_for_pipeline (
       pcif.pc_next= pcif.pc + 4;
 
     //memory request unit
+
     //ifetch idecode if
+    fdif.instr_in = instr;
+    fdif.pc = pc;
+    fdif.nxt_pc_in = pc_next;
+    fdif.stall = stall;
+    fdif.lui_s_in = cuif.lui_s;
+    fdif.jal_s_in = cuif.jal_s;
+    fdif.jr_s_in = cuif.jr_s;
+    fdif.j_s_in = cuif.j_s;
+    fdif.ihit_in = dpif.ihit;
+    fdif.dhit_in = dpif.dhit;
+    fdif.jal_addr_in = instr[25:0];
+    fdif.jr_addr_in = instr[25:0];
+    fdif.j_addr_in = instr[25:0];
+    fdif.branch_addr_in = [15:0];
+
 
     //decode stage
     //control unit

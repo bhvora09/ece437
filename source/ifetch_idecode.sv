@@ -50,7 +50,7 @@ module ifetch_idecode_if
         end
         else
         begin
-            ifidif.instOut <= ifidif.instIn;
+            ifidif.instOut <= ifidif.instr_in;
             ifidif.nxt_pc_out <= ifidif.nxt_pc_in;
             ifidif.jump_inst <= ifidif.inst_in[25:0];
             ifidif.rs <= ifidif.inst_in[25:21];
