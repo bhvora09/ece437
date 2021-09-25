@@ -46,22 +46,17 @@ module system (input logic CLK, nRST, system_if.sys syif);
   cpu_ram_if                            prif ();
 
   // processor
-<<<<<<< HEAD
-<<<<<<< HEAD:source/system.sv
-  //singlecycle #(.PC0('h0))              CPU (CPUCLK, nRST, halt, prif);
-  pipeline    #(.PC0('h0))              CPU (CPUCLK, nRST, halt, prif);
-=======
+//<<<<<<< HEAD
+//singlecycle #(.PC0('h0))              CPU (CPUCLK, nRST, halt, prif);
+  //pipeline    #(.PC0('h0))              CPU (CLK, nRST, halt, prif);
+//=======
   singlecycle #(.PC0('h0))              CPU (CPUCLK, nRST, halt, prif);
   //pipeline    #(.PC0('h0))              CPU (CLK, nRST, halt, prif);
->>>>>>> singlecycle
-=======
-  singlecycle #(.PC0('h0))              CPU (CPUCLK, nRST, halt, prif);
-  //pipeline    #(.PC0('h0))              CPU (CLK, nRST, halt, prif);
-=======
+//=======
   //singlecycle #(.PC0('h0))              CPU (CPUCLK, nRST, halt, prif);
   pipeline    #(.PC0('h0))              CPU (CPUCLK, nRST, halt, prif);
->>>>>>> 06d6d2ca6704ebf35a725d6ad479e4aa9723e632
->>>>>>> 1ac40db70f9e0525d126bc9ae8633e0e1aa71449:pipeline/source/system.sv
+//>>>>>>> 06d6d2ca6704ebf35a725d6ad479e4aa9723e632
+//>>>>>>> 1ac40db70f9e0525d126bc9ae8633e0e1aa71449:pipeline/source/system.sv
   //multicore   #(.PC0('h0), .PC1('h200)) CPU (CLK, nRST, halt, prif);
 
   // memory

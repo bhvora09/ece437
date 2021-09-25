@@ -34,9 +34,9 @@ module system_tb;
 
   // dut
 `ifndef MAPPED
-<<<<<<< HEAD
-<<<<<<< HEAD:testbench/system_tb.sv
-  system                              DUT (CLK,nRST,syif);
+// <<<<<<< HEAD
+// <<<<<<< HEAD:testbench/system_tb.sv
+   system                              DUT (CLK,nRST,syif);
   /*
   // NOTE: All of these signals MUST be passed all the way through
   // to the write back stage and sampled in the WRITEBACK stage.
@@ -81,9 +81,9 @@ module system_tb;
   */
 `else
   system                              DUT (,,,,//for altera debug ports
-=======
-=======
->>>>>>> 1ac40db70f9e0525d126bc9ae8633e0e1aa71449:pipeline/testbench/system_tb.sv
+// =======
+// =======
+// >>>>>>> 1ac40db70f9e0525d126bc9ae8633e0e1aa71449:pipeline/testbench/system_tb.sv
   system DUT (CLK,nRST,syif);
 
   // CPU Tracker. Uncomment and change signal names to enable.
@@ -129,13 +129,13 @@ module system_tb;
   );
   
 
-`else
-  system  DUT (,,,,//for altera debug ports
-<<<<<<< HEAD:testbench/system_tb.sv
->>>>>>> singlecycle
-=======
-=======
-  system                              DUT (CLK,nRST,syif);
+//`else
+  //system  DUT (,,,,//for altera debug ports
+//<<<<<<< HEAD:testbench/system_tb.sv
+//>>>>>>> singlecycle
+//=======
+//=======
+  //system                              DUT (CLK,nRST,syif);
   /*
   // NOTE: All of these signals MUST be passed all the way through
   // to the write back stage and sampled in the WRITEBACK stage.
@@ -180,8 +180,8 @@ module system_tb;
   */
 `else
   system                              DUT (,,,,//for altera debug ports
->>>>>>> 06d6d2ca6704ebf35a725d6ad479e4aa9723e632
->>>>>>> 1ac40db70f9e0525d126bc9ae8633e0e1aa71449:pipeline/testbench/system_tb.sv
+//>>>>>>> 06d6d2ca6704ebf35a725d6ad479e4aa9723e632
+//>>>>>>> 1ac40db70f9e0525d126bc9ae8633e0e1aa71449:pipeline/testbench/system_tb.sv
     CLK,
     nRST,
     syif.halt,
