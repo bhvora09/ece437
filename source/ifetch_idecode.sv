@@ -11,8 +11,8 @@ module ifetch_idecode_if
 
     always_ff @(posedge CLK, negedge nRST) begin : PROCEED
         if(!nRST) begin
-            ifidif.instOut <=0;
-            ifidif.nxt_pc_out <=0;
+            ifidif.instr_out <=0;
+            ifidif.pcplusfour_out <=0;
             ifidif.jump_inst <=0;
             ifidif.rs <= 0;
             ifidif.rt <= 0;
@@ -30,8 +30,8 @@ module ifetch_idecode_if
             idieif.j_s_out <= 0;
         end
         else if(ifidif.stall)begin
-            ifidif.instOut <= ifidif.instOut;
-            ifidif.nxt_pc_out <= ifidif.nxt_pc_out;
+            ifidif.instr_out <= ifidif.instr_out;
+            ifidif.npcplusfour_out <= ifidif.pcplusfour_out;
             ifidif.jump_inst <= ifidif.jump_inst;
             ifidif.rs <= ifidif.rs;
             ifidif.rt <= ifidif.rt;
@@ -50,8 +50,8 @@ module ifetch_idecode_if
         end
         else
         begin
-            ifidif.instOut <= ifidif.instr_in;
-            ifidif.nxt_pc_out <= ifidif.nxt_pc_in;
+            ifidif.instr_out <= ifidif.instr_in;
+            ifidif.pcplusfour_out <= ifidif.pcplusfour_in;
             ifidif.jump_inst <= ifidif.inst_in[25:0];
             ifidif.rs <= ifidif.inst_in[25:21];
             ifidif.rt <= ifidif.inst_in[20:16];

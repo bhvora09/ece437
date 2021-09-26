@@ -34,7 +34,16 @@ module idecode_iexec_if
             idieif.jr_addr_out <= 0;
             idieif.j_addr_out <= 0;
             idieif.branch_addr_out <=0;
-            
+            idieif.Ext_addr_out<=0;
+            idieif.bne_s_out<=0;
+            idieif.beq_s_out<=0;
+            idieif.aluopindecode_out<=0;
+            idieif.RegWr_out<=0;
+            idieif.MemWr_out<=0;
+            idieif.MemtoReg_out<=0;
+            idieif.halt_out<=0;
+            idieif.shift_amt_out <= 0;
+            idieif.functindecode_out <=0;
         end
 
         else if(idieif.stall) begin
@@ -61,6 +70,16 @@ module idecode_iexec_if
             idieif.jr_addr_out <= idieif.jr_addr_out;
             idieif.j_addr_out <= idieif.j_addr_out;
             idieif.branch_addr_out <= idieif.branch_addr_out;
+            idieif.Ext_addr_out<=idieif.Ext_addr_out;
+            idieif.bne_s_out<=idieif.bne_s_out;
+            idieif.beq_s_out<=idieif.beq_s_out;
+            idieif.aluopindecode_out<=idieif.aluopindecode_out;
+            idieif.RegWr_out<=idieif.RegWr_out;
+            idieif.MemWr_out<=idieif.MemWr_out;
+            idieif.MemtoReg_out<=idieif.MemtoReg_out;
+            idieif.halt_out<=idieif.halt_out;
+            idieif.shift_amt_out <= idieif.shift_amt_out;
+            idieif.functindecode_out <=idieif.functindecode_out;
         end
 
         else begin
@@ -87,6 +106,16 @@ module idecode_iexec_if
             idieif.jr_addr_out <= idieif.jr_addr_in;
             idieif.j_addr_out <= idieif.j_addr_in;
             idieif.branch_addr_out<=branch_addr_in;
+            idieif.Ext_addr_out<=idieif.Ext_addr_in;
+            idieif.bne_s_out<=idieif.bne_s_in;
+            idieif.beq_s_out<=idieif.beq_s_in;
+            idieif.aluopindecode_out<=idieif.aluopindecode_in;
+            idieif.RegWr_out<=idieif.RegWr_in;
+            idieif.MemWr_out<=idieif.MemWr_in;
+            idieif.MemtoReg_out<=idieif.MemtoReg_in;
+            idieif.halt_out<=idieif.halt_in;
+            idieif.shift_amt_out <= idieif.shift_amt_in;
+            idieif.functindecode_out <=idieif.funct_in;
         end
             
 
