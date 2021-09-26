@@ -124,7 +124,7 @@ module datapath_for_pipeline (
     pcif.PCen = dpif.ihit && (~dpif.dhit);
     
     
-    //sign extender  in decode stage
+    //sign extender in decode stage
     //--------------------------------------------
     if(cuif.instr[15])    //checked
       SignExt_addr = {16'hffff,cuif.imm_addr};
@@ -147,10 +147,10 @@ module datapath_for_pipeline (
 
     //pc_next-> branch, jal, jr, jump in mem and normal cases in fetch
     //------------------------------------------------------------
-    if(mwif.jal_s || mwif.jump_s) begin
-      extended_address =  {pcplusfour_in [31:28],dpif.imemload[25:0],2'b00};
+    if(emif.jal_s || emif.jump_s) begin //add both
+      extended_address =  {emif.pcplusfour_out[31:28],emif.instr_out[25:0],2'b00}; //add
       pcif.pc_next =  extended_address;end
-    //for branch --done-- mem stage
+    //for branch  mem stage
     else if (emif.bne_s_out)begin //add
       if(!emif.flagZero_out)begin //add
         npc = emif.pcplusfour_out; //add
@@ -158,6 +158,7 @@ module datapath_for_pipeline (
         pcif.pc_next = npc +shift_left_1;end
       else pcif.pc_next=pcif.pc+ 4; 
       end
+    //for branch equal in mem stage
     else if (emif.beq_s_out)begin //add
       if(emif.flagZero_out)begin //add
         npc = emif.pcplusfour_out; //add 
@@ -165,7 +166,7 @@ module datapath_for_pipeline (
         pcif.pc_next = npc +shift_left_1;end
       else pcif.pc_next=pcif.pc + 4;
         end
-    else if (emif.jr_s_out)
+    else if (emif.jr_s_out) //add
       //pcif.pc_next = rfif.rdat1;
       pcif.pc_next = deif.rdat1_out;   //add
     else 
