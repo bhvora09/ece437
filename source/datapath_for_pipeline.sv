@@ -101,30 +101,33 @@ module datapath_for_pipeline (
     extended_address=32'b0;
     instr = dpif.imemload;
 
-    //ADD LOGIC FOR STALL
-    stall = ;
+    //ADD LOGIC FOR STALL in each stage 
+    //stall = ; not sure
 
     //aluif.portA='b0;
     //aluif.portB='b0;
 
-    //fetch stage-> dp pc(clk) mru
-    //dp
-    //DP
+    //FETCH stage-> 1.dp 2.pc(clk) 3.mru  4. fetch_decode_if
+    //====================================================================
+    //1.DP
+    //-----------------------------------------------------------
     dpif.imemaddr=pcif.pc;
     dpif.dmemWEN=mruif.dmemWEN;
     dpif.imemREN=mruif.imemREN;
     //read happens in mem stage
     dpif.dmemREN=mruif.dmemREN;
     //dpif.dmemstore=rfif.rdat2;
-    dpif.dmemstore=mem_wrb_if.rdat2_from_reg;
+    dpif.dmemstore=emif.rdat2_out;  //add
     //dpif.dmemaddr=aluif.portOut;
-    dpif.dmemaddr=mem_wrb_if.alu_portOut_out;
-    //pc
-    //pcen
+    dpif.dmemaddr=emif.alu_portOut_out; //add
+    //--------------------------------------------
+    //2.PC
+    //2.1 pcen
+    //-------------------------------------------
     pcif.PCen = dpif.ihit && (~dpif.dhit);
+    //------------------------------------------
     
-    
-    //sign extender in decode stage
+    //2.2 sign extender in decode stage
     //--------------------------------------------
     if(cuif.instr[15])    //checked
       SignExt_addr = {16'hffff,cuif.imm_addr};
@@ -145,9 +148,9 @@ module datapath_for_pipeline (
     //---------------------------------------------------
 
 
-    //pc_next-> branch, jal, jr, jump in mem and normal cases in fetch
+    //2.2 pc_next-> branch, jal, jr, jump in mem and normal cases in fetch
     //------------------------------------------------------------
-    if(emif.jal_s || emif.jump_s) begin //add both
+    if(emif.jal_s_out || emif.jump_s_out) begin //add both
       extended_address =  {emif.pcplusfour_out[31:28],emif.instr_out[25:0],2'b00}; //add
       pcif.pc_next =  extended_address;end
     //for branch  mem stage
@@ -172,30 +175,92 @@ module datapath_for_pipeline (
     else 
       pcif.pc_next= pcif.pc + 4;
     //------------------------------------------------------
-    //memory request unit
 
-    //ifetch idecode if
-    fdif.instr_in = instr;
-    fdif.pc = pc;
-    fdif.nxt_pc_in = pc_next;
-    fdif.stall = stall;
-    fdif.lui_s_in = cuif.lui_s;
-    fdif.jal_s_in = cuif.jal_s;
-    fdif.jr_s_in = cuif.jr_s;
-    fdif.j_s_in = cuif.j_s;
-    fdif.ihit_in = dpif.ihit;
-    fdif.dhit_in = dpif.dhit;
-    fdif.jal_addr_in = instr[25:0];
-    fdif.jr_addr_in = instr[25:0];
-    fdif.j_addr_in = instr[25:0];
-    fdif.branch_addr_in = [15:0];
+    // 3. Memory Request Unit
+    //---------------------------------------------------------
+    mruif.iren=cuif.iREN;
+      //dren- data read happens in mem stage
+    mruif.dren = emif.dREN_out; //add 
+      //dwen- data write also happens in mem stage
+    mruif.dwen = emif.dWEN_out; //add
+      //dhit - affected by data read or write in mem stage
+    mruif.dhit = emif.dhit_out; //add
+      //ihit
+    mruif.ihit = dpif.ihit; //not sure about ihit
+    //--------------------------------------------------------------------------
 
+    //4.ifetch idecode if
+    //--------------------------------------------------------------------------
+    fdif.instr_in = dpif.imemload; //add
+    fdif.pcplusfour_in = pcif.pc + 4; //add
+    fdif.pc_in = pcif.pc; //add
+    //------------------------------------------------------------------------
+     //ifetch idecode if----- added by akshaj
+    // fdif.instr_in = instr;
+    // fdif.pc = pc;
+    // fdif.nxt_pc_in = pc_next;
+    // fdif.stall = stall;
+    // fdif.lui_s_in = cuif.lui_s;
+    // fdif.jal_s_in = cuif.jal_s;
+    // fdif.jr_s_in = cuif.jr_s;
+    // fdif.j_s_in = cuif.j_s;
+    // fdif.ihit_in = dpif.ihit;
+    // fdif.dhit_in = dpif.dhit;
+    // fdif.jal_addr_in = instr[25:0];
+    // fdif.jr_addr_in = instr[25:0];
+    // fdif.j_addr_in = instr[25:0];
+    // fdif.branch_addr_in = [15:0];
+    //==========================================================================
+    
+    //DECODE stage 1.cu 2.regfile  3.decode_execute_if
+    //===========================================================================
+    //1. control unit-decode
+    //--------------------------------------------------------------------------
+    //instr- from fetch stage
+    cuif.instr = fdif.instr_out;  //add
+    //--------------------------------------------------------------------------
+    
+    //2. register file -decode
+    //--------------------------------------------------------------------------
+    //rsel1
+    rfif.rsel1= cuif.reg_rs;
+    //rsel2
+    rfif.rsel2 = cuif.reg_rt;
+    //wen - happens in writeback stage
+    rfif.WEN = mwif.RegWr_out; //&& (dpif.ihit || dpif.dhit);  //add
+    
+    //wsel - should get value in writeback stage
+    if(deif.jal_s_out)  //add
+      rd = 'b11111;
+    else
+      rd = deif.reg_rd_out; //add
+    //wsel
+    rfif.wsel = mwif.wsel_out;  //add
 
-    //decode stage
-    //control unit
-    //register file
-    //ifecth idecode if
-    //idecode exec if
+    if(deif.RegDst_out) //happens in execute stage
+      emif.wsel_in= rd;  //going to execute mem pipeline
+    else
+      emif.wsel_in=deif.reg_rt_out; //going to execute mem pipeline
+      
+    //wdat
+    if(mwif.lui_out)begin //add
+      //luiwdat = {cuif.imm_addr,16'h0000};
+      rfif.wdat = {mwif.imm_addr_out,16'h0000};end  //add
+    else if (mwif.jal_s_out) //for jal  //add
+      rfif.wdat=mwif.pcplusfour_out;  //add
+    else if(mwif.MemtoReg_out)  //add
+      rfif.wdat=mwif.wdat_out;  //add
+    else
+      rfif.wdat=mwif.alu_portOut_out; //add
+    //--------------------------------------------------------------------------
+
+    
+   //3. idecode exec if
+    //-----------------------------------------------------------------------------------
+
+    
+    //-----------------------------------------------------------------------------------
+
 
     //execute stage
     //alu
@@ -236,21 +301,10 @@ module datapath_for_pipeline (
     // //op
     // aluif.op =  cuif.ALUctr;
     
-    // //CU
-    //   //instr
-    // cuif.instr = dpif.imemload;
-    // //MRU
-    // mruif.iren=cuif.iREN;
-    //   //dren
-    // mruif.dren = cuif.dREN; 
-    //   //dwen
-    // mruif.dwen = cuif.dWEN;
-    //   //dhit
-    // mruif.dhit = dpif.dhit;
-    //   //ihit
-    // mruif.ihit = dpif.ihit;
     
-    /    
+    
+    
+ 
 
     // //RF
     //   //rsel1
