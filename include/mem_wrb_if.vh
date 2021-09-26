@@ -21,7 +21,7 @@ interface  mem_wrb_if;
     word_t data_from_mem_in,data_from_mem_out;
   
     
-  // alu  ports
+  
   modport mw_if (
     input jALin,lUIin,memtoReg_in,regwr_in,
           pcplusfour_in, alu_portOut_in,dest_reg_in,data_from_mem_in,
@@ -30,7 +30,7 @@ interface  mem_wrb_if;
             pcplusfour_out, alu_portOut_out,dest_reg_out,data_from_mem_out,
             imm_addr_for_lui_out
   );
-  // register file tb
+  
   modport tb (
     input jALout,lUIout,memtoReg_out,regwr_in,
             pcplusfour_out, alu_portOut_out,dest_reg_out,data_from_mem_out,

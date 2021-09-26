@@ -123,30 +123,54 @@ module datapath_for_pipeline (
     //pcen
     pcif.PCen = dpif.ihit && (~dpif.dhit);
     
-    //pc_next
+    
+    //sign extender  in decode stage
+    //--------------------------------------------
+    if(cuif.instr[15])    //checked
+      SignExt_addr = {16'hffff,cuif.imm_addr};
+    else
+      SignExt_addr = {16'h0000,cuif.imm_addr};
+    //zero ext
+    ZeroExt_addr = {16'h0000, cuif.imm_addr};
+    
+    if (cuif.ExtOp)
+      deif.Ext_addr_in = SignExt_addr;  //add both
+    else
+      deif.Ext_addr_in = ZeroExt_addr; 
+    //portB
+    if (deif.ALUSrc)
+      aluif.portB = deif.Ext_addr_out;  //add
+    else
+      aluif.portB = deif.rdat2_out;     //add
+    //---------------------------------------------------
+
+
+    //pc_next-> branch, jal, jr, jump in mem and normal cases in fetch
+    //------------------------------------------------------------
     if(mwif.jal_s || mwif.jump_s) begin
       extended_address =  {pcplusfour_in [31:28],dpif.imemload[25:0],2'b00};
       pcif.pc_next =  extended_address;end
-    else if (cuif.bne_s)begin
-      if(!aluif.flagZero)begin
-        npc = pcif.pc + 4; 
-        shift_left_1={Ext_addr[29:0],2'b00};
+    //for branch --done-- mem stage
+    else if (emif.bne_s_out)begin //add
+      if(!emif.flagZero_out)begin //add
+        npc = emif.pcplusfour_out; //add
+        shift_left_1={emif.Ext_addr_out[29:0],2'b00}; //add
         pcif.pc_next = npc +shift_left_1;end
       else pcif.pc_next=pcif.pc+ 4; 
       end
-    else if (cuif.beq_s)begin
-      if(aluif.flagZero)begin
-        npc = pcif.pc + 4; 
-        shift_left_1={Ext_addr[29:0],2'b00};
+    else if (emif.beq_s_out)begin //add
+      if(emif.flagZero_out)begin //add
+        npc = emif.pcplusfour_out; //add 
+        shift_left_1={emif.Ext_addr_out[29:0],2'b00}; //add
         pcif.pc_next = npc +shift_left_1;end
       else pcif.pc_next=pcif.pc + 4;
         end
-    else if (cuif.jr_s)
+    else if (emif.jr_s_out)
       //pcif.pc_next = rfif.rdat1;
-      pcif.pc_next = deif.rdat1;   
+      pcif.pc_next = deif.rdat1_out;   //add
     else 
       pcif.pc_next= pcif.pc + 4;
-
+    //------------------------------------------------------
     //memory request unit
 
     //ifetch idecode if
