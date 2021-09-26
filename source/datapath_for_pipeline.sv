@@ -140,11 +140,7 @@ module datapath_for_pipeline (
       deif.Ext_addr_in = SignExt_addr;  //add both
     else
       deif.Ext_addr_in = ZeroExt_addr; 
-    //portB
-    if (deif.ALUSrc)
-      aluif.portB = deif.Ext_addr_out;  //add
-    else
-      aluif.portB = deif.rdat2_out;     //add
+    
     //---------------------------------------------------
 
 
@@ -229,18 +225,9 @@ module datapath_for_pipeline (
     //wen - happens in writeback stage
     rfif.WEN = mwif.RegWr_out; //&& (dpif.ihit || dpif.dhit);  //add
     
-    //wsel - should get value in writeback stage
-    if(deif.jal_s_out)  //add
-      rd = 'b11111;
-    else
-      rd = deif.reg_rd_out; //add
-    //wsel
     rfif.wsel = mwif.wsel_out;  //add
 
-    if(deif.RegDst_out) //happens in execute stage
-      emif.wsel_in= rd;  //going to execute mem pipeline
-    else
-      emif.wsel_in=deif.reg_rt_out; //going to execute mem pipeline
+    
       
     //wdat
     if(mwif.lui_out)begin //add
@@ -267,13 +254,13 @@ module datapath_for_pipeline (
     deif.lui_in = cuif.lui;
     deif.RegDst_in = cuif.RegDest;
     deif.ALUctr_in = cuif.ALUctr;
-    deif.ALUopindecode = cuif.opcode;
+    deif.aluopindecode_in = cuif.opcode;
     deif.ALUSrc_in = cuif.ALUSrc;
     deif.pcplusfour_in=fdif.pcplusfour_out;
     deif.instr_in = fdif.instr_out;
-    deif.RegWr_out = cuif.RegWr;
-    deif.MemWr_out = cuif.MemWr;
-    deif.MemtoReg_out = cuif.MemtoReg;
+    deif.RegWr_in = cuif.RegWr;
+    deif.MemWr_in = cuif.MemWr;
+    deif.MemtoReg_in = cuif.MemtoReg;
     deif.halt_in = cuif.halt;
     deif.reg_rd_in=cuif.reg_rd;
     deif.imm_addr_in=cuif.imm_addr;
@@ -282,14 +269,64 @@ module datapath_for_pipeline (
     deif.funct_in = cuif.funct;
     deif.rdat1_in = rfif.rdat1;
     deif.rdat2_in = rfif.rdat2;
+
+    
     //-----------------------------------------------------------------------------------
 
 
     //execute stage
     //----------------------------------------------------------------------------------
     //alu
-    //idecode exec if
-    //exec mem if
+    //portA
+    aluif.portA = deif.rdat1_out;   //add
+    //signed ext
+
+    //portB
+    if (deif.ALUSrc)
+      aluif.portB = deif.Ext_addr_out;  //add
+    else
+      aluif.portB = deif.rdat2_out;     //add
+      //if alu=0
+    //op
+    aluif.op =  deif.ALUctr_out;  //add
+    
+    ////exec mem if ----add all
+    emif.dREN_in = deif.dREN_out;
+    emif.dWEN_in = deif.dWEN_out;
+    emif.bne_s_in =  deif.bne_s_out;
+    emif.beq_s_in = deif.beq_s_out;
+    emif.jal_s_in =deif.jal_s_out;
+    emif.jr_s_in = deif.jr_s_out;
+    emif.jump_s_in= deif.jump_s_out;
+    emif.lui_in = deif.lui_out;
+    emif.aluopinexec_in = deif.aluopindecode_out;
+    emif.pcplusfour_in=deif.pcplusfour_out;
+    emif.instr_in = deif.instr_out;
+    emif.RegWr_in = deif.RegWr_out;
+    emif.MemWr_in = deif.MemWr_out;
+    emif.MemtoReg_in = deif.MemtoReg_out;
+    emif.halt_in = deif.halt_out;
+    //emif.reg_rd_in=deif.reg_rd_out;
+    emif.imm_addr_in=deif.imm_addr_out;
+    emif.j_addr_in = deif.j_addr_out;
+    emif.shift_amt_in = deif.shift_amt_out;
+    emif.functinexec_in = deif.functindecode_out; //funct in execute
+
+    
+    //wsel - should get value in writeback stage
+    if(deif.jal_s_out)  //add
+      rd = 'b11111;
+    else
+      rd = deif.reg_rd_out; //add
+    //wsel
+    
+    if(deif.RegDst_out) //happens in execute stage
+      emif.wsel_in= rd;  //going to execute mem pipeline
+    else
+      emif.wsel_in=deif.reg_rt_out; //going to execute mem pipeline
+
+    //--------------------------------------------------------------------
+    
 
     //memory stage
     //memeory request unit
