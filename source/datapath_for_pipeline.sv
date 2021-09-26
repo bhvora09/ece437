@@ -274,9 +274,10 @@ module datapath_for_pipeline (
     //-----------------------------------------------------------------------------------
 
 
-    //execute stage
+    //execute stage 1.alu 2.exec_mem pipeline
+    //===================================================================================
+    //1.alu
     //----------------------------------------------------------------------------------
-    //alu
     //portA
     aluif.portA = deif.rdat1_out;   //add
     //signed ext
@@ -289,8 +290,9 @@ module datapath_for_pipeline (
       //if alu=0
     //op
     aluif.op =  deif.ALUctr_out;  //add
-    
+    //----------------------------------------------------------------------------------
     ////exec mem if ----add all
+    //----------------------------------------------------------------------------------
     emif.dREN_in = deif.dREN_out;
     emif.dWEN_in = deif.dWEN_out;
     emif.bne_s_in =  deif.bne_s_out;
@@ -311,6 +313,10 @@ module datapath_for_pipeline (
     emif.j_addr_in = deif.j_addr_out;
     emif.shift_amt_in = deif.shift_amt_out;
     emif.functinexec_in = deif.functindecode_out; //funct in execute
+    
+    emif.flagZero_in = aluif.flagZero;
+    emif.rdat2_in = deif.rdat2_out;
+    emif.alu_portOut_out = aluif.portOut;
 
     
     //wsel - should get value in writeback stage
@@ -326,81 +332,67 @@ module datapath_for_pipeline (
       emif.wsel_in=deif.reg_rt_out; //going to execute mem pipeline
 
     //--------------------------------------------------------------------
-    
+    //===================================================================================
 
     //memory stage
-    //memeory request unit
-    //exec mem if
-    //mem writeback if
+    //===================================================================================
+    //1. memory request unit
+    //--------------------------------------------------------------------
+    // mruif.dren = emif.dREN_out; //add 
+    //   //dwen- data write also happens in mem stage
+    // mruif.dwen = emif.dWEN_out; //add
+    //   //dhit - affected by data read or write in mem stage
+    // mruif.dhit = emif.dhit_out; //add
+    //--------------------------------------------------------------------
+    //2.mem writeback if
+    //--------------------------------------------------------------------
+    //emif.dREN_in = deif.dREN_out;
+    //emif.dWEN_in = deif.dWEN_out;
+    //emif.bne_s_in =  deif.bne_s_out;
+    //emif.beq_s_in = deif.beq_s_out;
+    mwif.jal_s_in =deif.jal_s_out;
+    //emif.jr_s_in = deif.jr_s_out;
+    //emif.jump_s_in= deif.jump_s_out;
+    mwif.lui_in = deif.lui_out;
+    mwif.aluopinmem_in = deif.aluopinexec_out;
+    mwif.pcplusfour_in=deif.pcplusfour_out;
+    mwif.instr_in = deif.instr_out;
+    mwif.RegWr_in = deif.RegWr_out;
+    //emif.MemWr_in = deif.MemWr_out;
+    mwif.MemtoReg_in = deif.MemtoReg_out;
+    mwif.halt_in = deif.halt_out;
+    //emif.reg_rd_in=deif.reg_rd_out;
+    mwif.imm_addr_in=deif.imm_addr_out;
+    //mwif.j_addr_in = deif.j_addr_out;
+    mwif.shift_amt_in = deif.shift_amt_out;
+    mwif.functinmem_in = deif.functinexec_out;
+
+    mwif.wdat_for_reg_in = dpif.dmemload;
+
+    // dpif.dmemstore=emif.rdat2_out;  
+    // //dpif.dmemaddr=aluif.portOut;
+    // dpif.dmemaddr=emif.alu_portOut_out; 
+
+    //--------------------------------------------------------------------
+    //===========================================================================
 
     //writeback stage
+    //===================================================================================
     //register file
-    //mem writeback if
+    // rfif.wsel = mwif.wsel_out;  //add
 
     
-    // //ALU
-    // //portA
-    // aluif.portA = rfif.rdat1;
-    // //signed ext
-    // if(cuif.instr[15])    //checked
-    //   SignExt_addr = {16'hffff,cuif.imm_addr};
-    // else
-    //   SignExt_addr = {16'h0000,cuif.imm_addr};
-    // //zero ext
-    // ZeroExt_addr = {16'h0000, cuif.imm_addr};
-    
-    // if (cuif.ExtOp)
-    //   Ext_addr = SignExt_addr;
-    // else
-    //   Ext_addr = ZeroExt_addr;
-    // //portB
-    // if (cuif.ALUSrc)
-    //   aluif.portB = Ext_addr;
-    // else
-    //   aluif.portB = rfif.rdat2;
-    //   //if alu=0
-    // //op
-    // aluif.op =  cuif.ALUctr;
-    
-    
-    
-    
- 
-
-    // //RF
-    //   //rsel1
-    //   rfif.rsel1= cuif.reg_rs;
-    //   //rsel2
-    //   rfif.rsel2 = cuif.reg_rt;
-    //   //wen
       
-    //   rfif.WEN = cuif.RegWr && (dpif.ihit || dpif.dhit);
-      
-
-    //   //wsel
-    //   if(cuif.jal_s)
-    //     rd = 'hFFFFF;
-    //   else
-    //     rd = cuif.reg_rd;
-    //   if(cuif.RegDst)
-    //     rfif.wsel= rd;
-    //   else
-    //     rfif.wsel=cuif.reg_rt;
-      
-    //   //wdat
-    //   if(cuif.lui)begin
-    //     luiwdat = {cuif.imm_addr,16'h0000};
-    //     rfif.wdat = {cuif.imm_addr,16'h0000};end
-    //   else if (cuif.jal_s) //for jal
-    //     rfif.wdat=pcif.pc + 4;
-    //   else if(cuif.MemtoReg)
-    //     rfif.wdat=dpif.dmemload;
-    //   else
-    //     rfif.wdat=aluif.portOut;
-    //   //instr
-    
-
-    //
+    // //wdat
+    // if(mwif.lui_out)begin //add
+    //   //luiwdat = {cuif.imm_addr,16'h0000};
+    //   rfif.wdat = {mwif.imm_addr_out,16'h0000};end  //add
+    // else if (mwif.jal_s_out) //for jal  //add
+    //   rfif.wdat=mwif.pcplusfour_out;  //add
+    // else if(mwif.MemtoReg_out)  //add
+    //   rfif.wdat=mwif.wdat_out;  //add
+    // else
+    //   rfif.wdat=mwif.alu_portOut_out; //add
     
   end
   always_ff @(posedge CLK or negedge nRST) begin
