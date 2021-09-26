@@ -178,7 +178,7 @@ module datapath_for_pipeline (
 
     // 3. Memory Request Unit
     //---------------------------------------------------------
-    mruif.iren=cuif.iREN;
+    mruif.iren=cuif.iREN; //always 1???
       //dren- data read happens in mem stage
     mruif.dren = emif.dREN_out; //add 
       //dwen- data write also happens in mem stage
@@ -255,14 +255,38 @@ module datapath_for_pipeline (
     //--------------------------------------------------------------------------
 
     
-   //3. idecode exec if
+   //3. idecode exec if ----add all signals in interfaces
     //-----------------------------------------------------------------------------------
-
-    
+    deif.dREN_in = cuif.dREN;
+    deif.dWEN_in = cuif.dWEN;
+    deif.bne_s_in =  cuif.bne_s;
+    deif.beq_s_in = cuif.beq_s;
+    deif.jal_s_in =cuif.jal_s;
+    deif.jr_s_in = cuif.jr_s;
+    deif.jump_s_in= cuif.jump_s;
+    deif.lui_in = cuif.lui;
+    deif.RegDst_in = cuif.RegDest;
+    deif.ALUctr_in = cuif.ALUctr;
+    deif.ALUopindecode = cuif.opcode;
+    deif.ALUSrc_in = cuif.ALUSrc;
+    deif.pcplusfour_in=fdif.pcplusfour_out;
+    deif.instr_in = fdif.instr_out;
+    deif.RegWr_out = cuif.RegWr;
+    deif.MemWr_out = cuif.MemWr;
+    deif.MemtoReg_out = cuif.MemtoReg;
+    deif.halt_in = cuif.halt;
+    deif.reg_rd_in=cuif.reg_rd;
+    deif.imm_addr_in=cuif.imm_addr;
+    deif.j_addr_in = cuif.j_addr;
+    deif.shift_amt_in = cuif.shift_amt;
+    deif.funct_in = cuif.funct;
+    deif.rdat1_in = rfif.rdat1;
+    deif.rdat2_in = rfif.rdat2;
     //-----------------------------------------------------------------------------------
 
 
     //execute stage
+    //----------------------------------------------------------------------------------
     //alu
     //idecode exec if
     //exec mem if
