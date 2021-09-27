@@ -30,15 +30,15 @@ module datapath_for_pipeline (
   parameter PC_INIT=0;
 
   logic [31:0] SignExt_addr;
-  logic [31:0] luiwdat;
+  //logic [31:0] luiwdat;
   logic [31:0] ZeroExt_addr;
   logic [31:0] Ext_addr;
   logic [31:0] npc;
   logic [31:0] shift_left_1;
   logic [31:0] extended_address;
   logic [4:0] rd;
-  logic [31:0] instr;
-  logic  stall;
+  //logic [31:0] instr;
+  //logic  stall;
 
   //interfaces initialised as functions
   alu_if aluif();
@@ -99,7 +99,7 @@ module datapath_for_pipeline (
     npc=32'b0;
     shift_left_1=32'b0;
     extended_address=32'b0;
-    instr = dpif.imemload;
+    //instr = dpif.imemload;
 
     //ADD LOGIC FOR STALL in each stage 
     //stall = ; not sure
@@ -308,7 +308,7 @@ module datapath_for_pipeline (
     emif.MemWr_in = deif.MemWr_out;
     emif.MemtoReg_in = deif.MemtoReg_out;
     emif.halt_in = deif.halt_out;
-    //emif.reg_rd_in=deif.reg_rd_out;
+    
     emif.imm_addr_in=deif.imm_addr_out;
     emif.j_addr_in = deif.j_addr_out;
     emif.shift_amt_in = deif.shift_amt_out;
@@ -317,7 +317,7 @@ module datapath_for_pipeline (
     emif.flagZero_in = aluif.flagZero;
     emif.rdat2_in = deif.rdat2_out;
     emif.alu_portOut_out = aluif.portOut;
-
+    //emif.reg_rd_in=deif.reg_rd_out;
     
     //wsel - should get value in writeback stage
     if(deif.jal_s_out)  //add
@@ -350,23 +350,22 @@ module datapath_for_pipeline (
     //emif.dWEN_in = deif.dWEN_out;
     //emif.bne_s_in =  deif.bne_s_out;
     //emif.beq_s_in = deif.beq_s_out;
-    mwif.jal_s_in =emif.jal_s_out;
     //emif.jr_s_in = deif.jr_s_out;
     //emif.jump_s_in= deif.jump_s_out;
+    //emif.MemWr_in = deif.MemWr_out;
+    //emif.reg_rd_in=deif.reg_rd_out;
+    //mwif.j_addr_in = deif.j_addr_out;
+    mwif.jal_s_in =emif.jal_s_out;
     mwif.lui_in = emif.lui_out;
     mwif.aluopinmem_in = emif.aluopinexec_out;
     mwif.pcplusfour_in=emif.pcplusfour_out;
     mwif.instr_in = emif.instr_out;
     mwif.RegWr_in = emif.RegWr_out;
-    //emif.MemWr_in = deif.MemWr_out;
     mwif.MemtoReg_in = emif.MemtoReg_out;
     mwif.halt_in = emif.halt_out;
-    //emif.reg_rd_in=deif.reg_rd_out;
     mwif.imm_addr_in=emif.imm_addr_out;
-    //mwif.j_addr_in = deif.j_addr_out;
     mwif.shift_amt_in = emif.shift_amt_out;
     mwif.functinmem_in = emif.functinexec_out;
-
     mwif.wdat_for_reg_in = dpif.dmemload;
 
     // dpif.dmemstore=emif.rdat2_out;  

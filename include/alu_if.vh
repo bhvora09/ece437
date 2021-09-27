@@ -15,12 +15,12 @@ interface alu_if;
   import cpu_types_pkg::*;
 
   //logic     WEN;
-    logic flagNeg,flagZero,flagOvf;
+  logic flagNeg,flagZero,flagOvf;
   //regbits_t wsel, rsel1, rsel2;
-    logic[3:0] op;
+  logic[3:0] op;
     //aluop_t op;
   //word_t    wdat, rdat1, rdat2;
-    word_t portA,portB,portOut;
+  word_t portA,portB,portOut;
     
   // alu  ports
   modport alu_ports (

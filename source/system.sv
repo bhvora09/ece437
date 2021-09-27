@@ -12,6 +12,7 @@
 // types
 `include "cpu_types_pkg.vh"
 
+
 module system (input logic CLK, nRST, system_if.sys syif);
 
 
@@ -50,7 +51,7 @@ module system (input logic CLK, nRST, system_if.sys syif);
 //singlecycle #(.PC0('h0))              CPU (CPUCLK, nRST, halt, prif);
   //pipeline    #(.PC0('h0))              CPU (CLK, nRST, halt, prif);
 //=======
-  singlecycle #(.PC0('h0))              CPU (CPUCLK, nRST, halt, prif);
+  //singlecycle #(.PC0('h0))              CPU (CPUCLK, nRST, halt, prif);
   //pipeline    #(.PC0('h0))              CPU (CLK, nRST, halt, prif);
 //=======
   //singlecycle #(.PC0('h0))              CPU (CPUCLK, nRST, halt, prif);
@@ -60,7 +61,7 @@ module system (input logic CLK, nRST, system_if.sys syif);
   //multicore   #(.PC0('h0), .PC1('h200)) CPU (CLK, nRST, halt, prif);
 
   // memory
-  ram  #(.LAT('h2))                                 RAM (CLK, nRST, prif);
+  ram  #(.LAT('h0))                                 RAM (CLK, nRST, prif);
   //sdram                                 RAM (CLK, nRST, prif);
 
   // interface connections
