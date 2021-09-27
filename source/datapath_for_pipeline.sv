@@ -190,22 +190,18 @@ module datapath_for_pipeline (
     fdif.instr_in = dpif.imemload; //add
     fdif.pcplusfour_in = pcif.pc + 4; //add
     fdif.pc_in = pcif.pc; //add
-    //------------------------------------------------------------------------
-     //ifetch idecode if----- added by akshaj
-    // fdif.instr_in = instr;
-    // fdif.pc = pc;
-    // fdif.nxt_pc_in = pc_next;
-    // fdif.stall = stall;
-    // fdif.lui_s_in = cuif.lui_s;
-    // fdif.jal_s_in = cuif.jal_s;
-    // fdif.jr_s_in = cuif.jr_s;
-    // fdif.j_s_in = cuif.j_s;
-    // fdif.ihit_in = dpif.ihit;
-    // fdif.dhit_in = dpif.dhit;
-    // fdif.jal_addr_in = instr[25:0];
-    // fdif.jr_addr_in = instr[25:0];
-    // fdif.j_addr_in = instr[25:0];
-    // fdif.branch_addr_in = [15:0];
+    fdif.instr_in = instr;
+    fdif.stall = stall;
+    fdif.lui_s_in = cuif.lui_s;
+    fdif.jal_s_in = cuif.jal_s;
+    fdif.jr_s_in = cuif.jr_s;
+    fdif.j_s_in = cuif.j_s;
+    fdif.ihit_in = dpif.ihit;
+    fdif.dhit_in = dpif.dhit;
+    fdif.jal_addr_in = instr[25:0];
+    fdif.jr_addr_in = instr[25:0];
+    fdif.j_addr_in = instr[25:0];
+    fdif.branch_addr_in = [15:0];
     //==========================================================================
     
     //DECODE stage 1.cu 2.regfile  3.decode_execute_if
@@ -250,8 +246,8 @@ module datapath_for_pipeline (
     deif.beq_s_in = cuif.beq_s;
     deif.jal_s_in =cuif.jal_s;
     deif.jr_s_in = cuif.jr_s;
-    deif.jump_s_in= cuif.jump_s;
-    deif.lui_in = cuif.lui;
+    deif.j_s_in= cuif.jump_s;
+    deif.lui_s_in = cuif.lui;
     deif.RegDst_in = cuif.RegDest;
     deif.ALUctr_in = cuif.ALUctr;
     deif.aluopindecode_in = cuif.opcode;
@@ -262,13 +258,13 @@ module datapath_for_pipeline (
     deif.MemWr_in = cuif.MemWr;
     deif.MemtoReg_in = cuif.MemtoReg;
     deif.halt_in = cuif.halt;
-    deif.reg_rd_in=cuif.reg_rd;
-    deif.imm_addr_in=cuif.imm_addr;
+    deif.rd=cuif.reg_rd;
+    deif.imm_addr=cuif.imm_addr;
     deif.j_addr_in = cuif.j_addr;
     deif.shift_amt_in = cuif.shift_amt;
     deif.funct_in = cuif.funct;
-    deif.rdat1_in = rfif.rdat1;
-    deif.rdat2_in = rfif.rdat2;
+    deif.rdat1 = rfif.rdat1;
+    deif.rdat2 = rfif.rdat2;
 
     
     //-----------------------------------------------------------------------------------
@@ -283,7 +279,7 @@ module datapath_for_pipeline (
     //signed ext
 
     //portB
-    if (deif.ALUSrc)
+    if (deif.ALUSrc_out)
       aluif.portB = deif.Ext_addr_out;  //add
     else
       aluif.portB = deif.rdat2_out;     //add
@@ -299,8 +295,8 @@ module datapath_for_pipeline (
     emif.beq_s_in = deif.beq_s_out;
     emif.jal_s_in =deif.jal_s_out;
     emif.jr_s_in = deif.jr_s_out;
-    emif.jump_s_in= deif.jump_s_out;
-    emif.lui_in = deif.lui_out;
+    emif.jump_s_in= deif.j_s_out;
+    emif.lui_in = deif.lui_s_out;
     emif.aluopinexec_in = deif.aluopindecode_out;
     emif.pcplusfour_in=deif.pcplusfour_out;
     emif.instr_in = deif.instr_out;
@@ -308,7 +304,7 @@ module datapath_for_pipeline (
     emif.MemWr_in = deif.MemWr_out;
     emif.MemtoReg_in = deif.MemtoReg_out;
     emif.halt_in = deif.halt_out;
-    //emif.reg_rd_in=deif.reg_rd_out;
+    emif.reg_rd_in=deif.rd_out;
     emif.imm_addr_in=deif.imm_addr_out;
     emif.j_addr_in = deif.j_addr_out;
     emif.shift_amt_in = deif.shift_amt_out;
@@ -323,13 +319,13 @@ module datapath_for_pipeline (
     if(deif.jal_s_out)  //add
       rd = 'b11111;
     else
-      rd = deif.reg_rd_out; //add
+      rd = deif.rd_out; //add
     //wsel
     
     if(deif.RegDst_out) //happens in execute stage
       emif.wsel_in= rd;  //going to execute mem pipeline
     else
-      emif.wsel_in=deif.reg_rt_out; //going to execute mem pipeline
+      emif.wsel_in=deif.rt_out; //going to execute mem pipeline
 
     //--------------------------------------------------------------------
     //===================================================================================
@@ -350,22 +346,22 @@ module datapath_for_pipeline (
     //emif.dWEN_in = deif.dWEN_out;
     //emif.bne_s_in =  deif.bne_s_out;
     //emif.beq_s_in = deif.beq_s_out;
-    mwif.jal_s_in =emif.jal_s_out;
+    mwif.jal_s_in =deif.jal_s_out;
     //emif.jr_s_in = deif.jr_s_out;
-    //emif.jump_s_in= deif.jump_s_out;
-    mwif.lui_in = emif.lui_out;
-    mwif.aluopinmem_in = emif.aluopinexec_out;
-    mwif.pcplusfour_in=emif.pcplusfour_out;
-    mwif.instr_in = emif.instr_out;
-    mwif.RegWr_in = emif.RegWr_out;
+    //emif.jump_s_in= deif.j_s_out;
+    mwif.lui_in = deif.lui_s_out;
+    mwif.aluopinmem_in = deif.aluopinexec_out;
+    mwif.pcplusfour_in=deif.pcplusfour_out;
+    mwif.instr_in = deif.instr_out;
+    mwif.RegWr_in = deif.RegWr_out;
     //emif.MemWr_in = deif.MemWr_out;
-    mwif.MemtoReg_in = emif.MemtoReg_out;
-    mwif.halt_in = emif.halt_out;
+    mwif.MemtoReg_in = deif.MemtoReg_out;
+    mwif.halt_in = deif.halt_out;
     //emif.reg_rd_in=deif.reg_rd_out;
-    mwif.imm_addr_in=emif.imm_addr_out;
+    mwif.imm_addr_in=deif.imm_addr_out;
     //mwif.j_addr_in = deif.j_addr_out;
-    mwif.shift_amt_in = emif.shift_amt_out;
-    mwif.functinmem_in = emif.functinexec_out;
+    mwif.shift_amt_in = deif.shift_amt_out;
+    mwif.functinmem_in = deif.functinexec_out;
 
     mwif.wdat_for_reg_in = dpif.dmemload;
 
