@@ -167,7 +167,7 @@ module datapath_for_pipeline (
         end
     else if (emif.jr_s_out) //add
       //pcif.pc_next = rfif.rdat1;
-      pcif.pc_next = deif.rdat1_out;   //add
+      pcif.pc_next = emif.rdat1_out;   //add
     else 
       pcif.pc_next= pcif.pc + 4;
     //------------------------------------------------------
@@ -301,7 +301,7 @@ module datapath_for_pipeline (
     emif.jr_s_in = deif.jr_s_out;
     emif.jump_s_in= deif.jump_s_out;
     emif.lui_in = deif.lui_out;
-    emif.aluopinexec_in = deif.aluopindecode_out;
+    //emif.aluopinexec_in = deif.aluopindecode_out;
     emif.pcplusfour_in=deif.pcplusfour_out;
     emif.instr_in = deif.instr_out;
     emif.RegWr_in = deif.RegWr_out;
@@ -310,7 +310,7 @@ module datapath_for_pipeline (
     emif.halt_in = deif.halt_out;
     
     emif.imm_addr_in=deif.imm_addr_out;
-    emif.j_addr_in = deif.j_addr_out;
+    emif.j_addr_in = deif.j_addr_out;   //add from here
     emif.shift_amt_in = deif.shift_amt_out;
     emif.functinexec_in = deif.functindecode_out; //funct in execute
     
