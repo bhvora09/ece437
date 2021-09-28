@@ -14,10 +14,6 @@ import cpu_types_pkg::*;
 word_t [31:0] regfile;
 word_t [31:0] regfile_next;
 
-//assign wires
-assign rfif.rdat1=regfile[rfif.rsel1];
-assign rfif.rdat2=regfile[rfif.rsel2];
-
 
 //comb block
 //keeping wdat ready by next clock cycle
@@ -36,6 +32,16 @@ begin
     else if (rfif.WEN)
         regfile<=regfile_next;
    
+end
+always @ (negedge CLK or negedge nRST) begin
+    if(!nRST) begin
+        rfif.rdat1<= 'b0;
+        rfif.rdat2<= 'b0;
+    end
+    else begin
+    rfif.rdat1<=regfile[rfif.rsel1];
+    rfif.rdat2<=regfile[rfif.rsel2];
+    end
 end
 
 endmodule

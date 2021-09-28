@@ -15,8 +15,8 @@ import cpu_types_pkg::*;
 always_ff@(posedge CLK or negedge nRST) begin
     if(!nRST)
     begin
-    emif.dRENout <= 'b0;
-    emif.dWENout <= 'b0;
+    emif.dREN_out <= 'b0;
+    emif.dWEN_out <= 'b0;
     emif.bne_s_out <= 'b0;
     emif.beq_s_out <= 'b0;
     emif.jal_s_out<='b0;
@@ -47,8 +47,8 @@ always_ff@(posedge CLK or negedge nRST) begin
     end
 
     else begin
-        emif.dRENout <= emif.dRENin;
-        emif.dWENout <= emif.dWENin;
+        emif.dREN_out <= emif.dREN_in;
+        emif.dWEN_out <= emif.dWEN_in;
         emif.bne_s_out <= emif.bne_s_in;
         emif.beq_s_out <= emif.beq_s_in;
         emif.jal_s_out<=emif.jal_s_in;

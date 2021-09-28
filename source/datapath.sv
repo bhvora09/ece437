@@ -174,13 +174,13 @@ module datapath (
 
     // 3. Memory Request Unit
     //---------------------------------------------------------
-    mruif.iren=cuif.iREN; //always 1???
+    mruif.iren=1'b1; //always 1???
       //dren- data read happens in mem stage
     mruif.dren = emif.dREN_out; //add 
       //dwen- data write also happens in mem stage
     mruif.dwen = emif.dWEN_out; //add
       //dhit - affected by data read or write in mem stage
-    mruif.dhit = emif.dhit_out; //add
+    mruif.dhit = dpif.dhit; //add
       //ihit
     mruif.ihit = dpif.ihit; //not sure about ihit
     //--------------------------------------------------------------------------
@@ -252,7 +252,7 @@ module datapath (
     deif.jr_s_in = cuif.jr_s;
     deif.jump_s_in= cuif.jump_s;
     deif.lui_in = cuif.lui;
-    deif.RegDst_in = cuif.RegDest;
+    deif.RegDst_in = cuif.RegDst;
     deif.ALUctr_in = cuif.ALUctr;
     //deif.aluopindecode_in = cuif.opcode;
     deif.ALUSrc_in = cuif.ALUSrc;
@@ -269,7 +269,7 @@ module datapath (
     deif.funct_in = cuif.funct;
     deif.rdat1_in = rfif.rdat1;
     deif.rdat2_in = rfif.rdat2;
-
+    deif.reg_rt_in = cuif.reg_rt;
     
     //-----------------------------------------------------------------------------------
 
@@ -283,7 +283,7 @@ module datapath (
     //signed ext
 
     //portB
-    if (deif.ALUSrc)
+    if (deif.ALUSrc_out)
       aluif.portB = deif.Ext_addr_out;  //add
     else
       aluif.portB = deif.rdat2_out;     //add
@@ -312,11 +312,11 @@ module datapath (
     emif.imm_addr_in=deif.imm_addr_out;
     emif.j_addr_in = deif.j_addr_out;   //add 
     emif.shift_amt_in = deif.shift_amt_out;
-    emif.funct_in = deif.functindecode_out; //funct in execute
+    emif.funct_in = deif.funct_out; //funct in execute
     
     emif.flagZero_in = aluif.flagZero;
     emif.rdat2_in = deif.rdat2_out;
-    emif.alu_portOut_out = aluif.portOut;
+    emif.alu_portOut_in = aluif.portOut;
     //emif.reg_rd_in=deif.reg_rd_out;
     
     //wsel - should get value in writeback stage
@@ -365,7 +365,7 @@ module datapath (
     mwif.halt_in = emif.halt_out;
     mwif.imm_addr_in=emif.imm_addr_out;
     mwif.shift_amt_in = emif.shift_amt_out;
-    mwif.functinmem_in = emif.functinexec_out;
+    mwif.funct_in = emif.funct_out;
     mwif.wdat_in = dpif.dmemload;
 
     // dpif.dmemstore=emif.rdat2_out;  

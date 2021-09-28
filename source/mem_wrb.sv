@@ -31,7 +31,7 @@ always_ff@(posedge CLK or negedge nRST) begin
     mwif.imm_addr_out <='b0;
     mwif.wsel_out <='b0;
     mwif.shift_amt_out <= 'b0;
-    mwif.functinmem_out <='b0;
+    mwif.funct_out <='b0;
     end
 
     else begin
@@ -44,12 +44,12 @@ always_ff@(posedge CLK or negedge nRST) begin
     mwif.pcplusfour_out<=mwif.pcplusfour_in;
     mwif.instr_out <= mwif.instr_in;
     mwif.wdat_out <= mwif.wdat_in;
-    mwif.alu_portOut_out <= mwif.aluportOut_in;
+    mwif.alu_portOut_out <= mwif.alu_portOut_in;
     
     mwif.imm_addr_out <=mwif.imm_addr_in;
     mwif.wsel_out <=mwif.wsel_in;
     mwif.shift_amt_out <= mwif.shift_amt_in;
-    mwif.functinmem_out <=mwif.functinmem_in;
+    mwif.funct_out <=mwif.funct_in;
     end
 end
 endmodule

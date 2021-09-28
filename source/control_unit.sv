@@ -31,7 +31,7 @@ always_comb begin
     cuif.jal_s='b0;
     cuif.dREN='b0;
     cuif.dWEN='b0;
-    cuif.iREN='b1;
+    //cuif.iREN='b1;
     cuif.halt='b0;
     cuif.beq_s='b0;
     cuif.bne_s='b0;
