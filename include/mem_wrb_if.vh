@@ -9,35 +9,48 @@ interface  mem_wrb_if;
   import cpu_types_pkg::*;
 
     //from exec mem stage
-    logic jALin,lUIin,memtoReg_in,regwr_in;
-    logic jALout,lUIout,memtoReg_out,regwr_in;
-    word_t pcplusfour_in, alu_portOut_in;
-    word_t pcplusfour_out, alu_portOut_out,dest_reg_out,
-    logic [15:0] imm_addr_for_lui_in;
-    logic [15:0] imm_addr_for_lui_out;
-    logic [4:0] dest_reg_in, dest_reg_out;
+    logic jal_s_in,lui_in,MemtoReg_in,RegWr_in,halt_in;
+    logic jal_s_out,lui_out,MemtoReg_out,RegWr_out,halt_out;
+
+    word_t pcplusfour_in, alu_portOut_in,instr_in,wdat_in;
+    word_t pcplusfour_out,instr_out,wdat_out,alu_portOut_out;
+
+    logic [15:0] imm_addr_in;
+    logic [15:0] imm_addr_out;
+    logic [4:0] wsel_in,shift_amt_in;
+    logic [4:0] wsel_out,shift_amt_out;
+    logic  [5:0] functinmem_in;
+    logic [5:0] functinmem_out;
     //removed dren,dwen, bne,beq,flagzero,rdat2_from_reg, branch_addr
     //newly added
-    word_t data_from_mem_in,data_from_mem_out;
+    //word_t data_from_mem_in,data_from_mem_out;
   
     
   
   modport mw_if (
-    input jALin,lUIin,memtoReg_in,regwr_in,
-          pcplusfour_in, alu_portOut_in,dest_reg_in,data_from_mem_in,
-          imm_addr_for_lui_in,
-    output jALout,lUIout,memtoReg_out,regwr_in,
-            pcplusfour_out, alu_portOut_out,dest_reg_out,data_from_mem_out,
-            imm_addr_for_lui_out
+    input jal_s_in,lui_in,MemtoReg_in,RegWr_in,halt_in,
+          pcplusfour_in,instr_in,wdat_in,alu_portOut_in,
+          imm_addr_in,
+          wsel_in,shift_amt_in,
+          functinmem_in,
+    output jal_s_out,lui_out,MemtoReg_out,RegWr_out,halt_out,
+           pcplusfour_out,instr_out,wdat_out,alu_portOut_out,
+          imm_addr_out,
+          wsel_out,shift_amt_out,
+          functinmem_out
   );
   
   modport tb (
-    input jALout,lUIout,memtoReg_out,regwr_in,
-            pcplusfour_out, alu_portOut_out,dest_reg_out,data_from_mem_out,
-            imm_addr_for_lui_out,
-    input jALin,lUIin,memtoReg_in,regwr_in,
-          pcplusfour_in, alu_portOut_in,dest_reg_in,data_from_mem_in,
-          imm_addr_for_lui_in
+    input jal_s_out,lui_out,MemtoReg_out,RegWr_out,halt_out,
+           pcplusfour_out,instr_out,wdat_out,alu_portOut_out,
+          imm_addr_out,
+          wsel_out,shift_amt_out,
+          functinmem_out,
+     output jal_s_in,lui_in,MemtoReg_in,RegWr_in,halt_in,
+          pcplusfour_in,instr_in,wdat_in,alu_portOut_in,
+          imm_addr_in,
+          wsel_in,shift_amt_in,
+          functinmem_in
   );
 endinterface
 

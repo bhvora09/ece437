@@ -20,7 +20,7 @@
 `include "cpu_types_pkg.vh"
 
 
-module datapath_for_pipeline (
+module datapath (
   input logic CLK, nRST,
   datapath_cache_if.dp dpif
   );
@@ -76,11 +76,11 @@ module datapath_for_pipeline (
   assign opinmem = opcode_t'(mwif.instr_in[31:26]);
   assign opinwrback = opcode_t'(mwif.instr_out[31:26]);
 
-  funct aluopinfetch;
-  funct aluopindecode;
-  funct aluopinexec;
-  funct aluopinmem;
-  funct aluopinwrback;
+  funct_t aluopinfetch;
+  funct_t aluopindecode;
+  funct_t aluopinexec;
+  funct_t aluopinmem;
+  funct_t aluopinwrback;
 
   assign aluopinfetch = funct_t'(fdif.instr_in[5:0]);
   assign aluopindecode = funct_t'(deif.instr_in[5:0]);
@@ -254,7 +254,7 @@ module datapath_for_pipeline (
     deif.lui_in = cuif.lui;
     deif.RegDst_in = cuif.RegDest;
     deif.ALUctr_in = cuif.ALUctr;
-    deif.aluopindecode_in = cuif.opcode;
+    //deif.aluopindecode_in = cuif.opcode;
     deif.ALUSrc_in = cuif.ALUSrc;
     deif.pcplusfour_in=fdif.pcplusfour_out;
     deif.instr_in = fdif.instr_out;
@@ -312,7 +312,7 @@ module datapath_for_pipeline (
     emif.imm_addr_in=deif.imm_addr_out;
     emif.j_addr_in = deif.j_addr_out;   //add 
     emif.shift_amt_in = deif.shift_amt_out;
-    emif.funct_in = deif.funct_out; //funct in execute
+    emif.funct_in = deif.functindecode_out; //funct in execute
     
     emif.flagZero_in = aluif.flagZero;
     emif.rdat2_in = deif.rdat2_out;
@@ -357,7 +357,7 @@ module datapath_for_pipeline (
     //mwif.j_addr_in = deif.j_addr_out;
     mwif.jal_s_in =emif.jal_s_out;
     mwif.lui_in = emif.lui_out;
-    mwif.aluopinmem_in = emif.aluopinexec_out;
+    //mwif.aluopinmem_in = emif.aluopinexec_out;
     mwif.pcplusfour_in=emif.pcplusfour_out;
     mwif.instr_in = emif.instr_out;
     mwif.RegWr_in = emif.RegWr_out;
@@ -366,7 +366,7 @@ module datapath_for_pipeline (
     mwif.imm_addr_in=emif.imm_addr_out;
     mwif.shift_amt_in = emif.shift_amt_out;
     mwif.functinmem_in = emif.functinexec_out;
-    mwif.wdat_for_reg_in = dpif.dmemload;
+    mwif.wdat_in = dpif.dmemload;
 
     // dpif.dmemstore=emif.rdat2_out;  
     // //dpif.dmemaddr=aluif.portOut;

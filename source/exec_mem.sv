@@ -17,37 +17,65 @@ always_ff@(posedge CLK or negedge nRST) begin
     begin
     emif.dRENout <= 'b0;
     emif.dWENout <= 'b0;
-    emif.bNEout <= 'b0;
-    emif.bEQout <= 'b0;
-    emif.jALout<='b0;
-    emif.pcplusfour_out<='b0;
-    emif.flagZero_out<= 'b0;
-    emif.branch_addr_out<='b0;
-    emif.alu_portOut_out <= 'b0;
-    emif.rdat2_from_reg_out <= 'b0;
-    emif.lUIout<= 'b0;
-    emif.imm_addr_for_lui_out<='b0;
-    emif.dest_reg_out<='b0;
-    emif.memtoReg_out <='b0;
-    emif.regwr_out<= 'b0;
-    end
-    else begin
-    emif.dRENout <= emif.dRENin;
-    emif.dWENout <= emif.dWENin;
-    emif.bNEout <= emif.bNEin;
-    emif.bEQout <= emif.bEQin;
-    emif.jALout<=emif.jALin;
-    emif.pcplusfour_out<=emif.pcplusfour_in;
-    emif.flagZero_out<= emif.flagZero_in;
-    emif.branch_addr_out<=emif.branch_addr_in;
-    emif.alu_portOut_out <= emif.aluportOut_in;
-    emif.rdat2_from_reg_out <= emif.rdat2_from_reg_in;
-    emif.lUIout<= emif.lUIin;
-    emif.imm_addr_for_lui_out<=emif.imm_addr_for_lui_in;
+    emif.bne_s_out <= 'b0;
+    emif.beq_s_out <= 'b0;
+    emif.jal_s_out<='b0;
+    emif.flagZero_out<='b0;
+    emif.lui_out<='b0;
+    emif.MemtoReg_out<='b0;
+    emif.RegWr_out <='b0;
+    emif.jump_s_out <='b0;
+    emif.jr_s_out <= 'b0;
+    emif.dhit_out <= 'b0;
+    emif.MemWr_out <='b0;
+    emif.halt_out <='b0;
 
-    emif.dest_reg_out<=emif.dest_reg_in;
-    emif.memtoReg_out <=emif.memtoReg_in;
-    emif.regwr_out<= emif.regwr_in;
+    emif.pcplusfour_out<='b0;
+    emif.rdat2_out <='b0;
+    emif.branch_addr_out <='b0;
+    emif.alu_portOut_out <= 'b0;
+    emif.instr_out <= 'b0;
+    emif.Ext_addr_out <= 'b0;
+    emif.rdat1_out <= 'b0;
+
+    emif.imm_addr_out <='b0;
+    emif.j_addr_out <='b0;
+    emif.wsel_out <='b0;
+    emif.shift_amt_out <='b0;
+    emif.funct_out  <= 'b0;
+
+    end
+
+    else begin
+        emif.dRENout <= emif.dRENin;
+        emif.dWENout <= emif.dWENin;
+        emif.bne_s_out <= emif.bne_s_in;
+        emif.beq_s_out <= emif.beq_s_in;
+        emif.jal_s_out<=emif.jal_s_in;
+        emif.flagZero_out<=emif.flagZero_in;
+        emif.lui_out<=emif.lui_in;
+        emif.MemtoReg_out<=emif.MemtoReg_in;
+        emif.RegWr_out <=emif.RegWr_in;
+        emif.jump_s_out <=emif.jump_s_in;
+        emif.jr_s_out <= emif.jr_s_in;
+        emif.dhit_out <= emif.dhit_in;
+        emif.MemWr_out <=emif.MemWr_in;
+        emif.halt_out <=emif.halt_in ;
+
+        emif.pcplusfour_out<=emif.pcplusfour_in;
+        emif.rdat2_out <=emif.rdat2_in;
+        emif.branch_addr_out <=emif.branch_addr_in ;
+        emif.alu_portOut_out <= emif.alu_portOut_in;
+        emif.instr_out <=  emif.instr_in;
+        emif.Ext_addr_out <= emif.Ext_addr_in ;
+        emif.rdat1_out <= emif.rdat1_in;
+
+        emif.imm_addr_out <=emif.imm_addr_in;
+        emif.j_addr_out <=emif.j_addr_in ;
+        emif.wsel_out <=emif.wsel_in;
+        emif.shift_amt_out <=emif.shift_amt_in;
+        emif.funct_out  <= emif.funct_in;
 
     end
 end
+endmodule
