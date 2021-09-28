@@ -82,11 +82,11 @@ module datapath_for_pipeline (
   funct aluopinmem;
   funct aluopinwrback;
 
-  assign aluopinfetch = funct'(fdif.instr_in[5:0]);
-  assign aluopindecode = funct'(deif.instr_in[5:0]);
-  assign aluopinexec = funct'(emif.instr_in[5:0]);
-  assign aluopinmem = funct'(mwif.instr_in[5:0]);
-  assign aluopinwrback = funct'(mwif.instr_out[5:0]);
+  assign aluopinfetch = funct_t'(fdif.instr_in[5:0]);
+  assign aluopindecode = funct_t'(deif.instr_in[5:0]);
+  assign aluopinexec = funct_t'(emif.instr_in[5:0]);
+  assign aluopinmem = funct_t'(mwif.instr_in[5:0]);
+  assign aluopinwrback = funct_t'(mwif.instr_out[5:0]);
 
 
 
@@ -310,9 +310,9 @@ module datapath_for_pipeline (
     emif.halt_in = deif.halt_out;
     
     emif.imm_addr_in=deif.imm_addr_out;
-    emif.j_addr_in = deif.j_addr_out;   //add from here
+    emif.j_addr_in = deif.j_addr_out;   //add 
     emif.shift_amt_in = deif.shift_amt_out;
-    emif.functinexec_in = deif.functindecode_out; //funct in execute
+    emif.funct_in = deif.funct_out; //funct in execute
     
     emif.flagZero_in = aluif.flagZero;
     emif.rdat2_in = deif.rdat2_out;

@@ -19,8 +19,10 @@ interface  exec_mem_if;
     logic [15:0] imm_addr_for_lui_out,imm_addr_out;
     logic [25:0] j_addr_in;
     logic [25:0] j_addr_out;
-    logic [4:0] dest_reg_in, dest_reg_out;
-  
+    logic [4:0] dest_reg_in, shift_amt_in ;
+    logic [4:0] dest_reg_out,shift_amt_out;
+    logic [5:0] funct_in;
+    logic [5:0] funct_out;
     
   // alu  ports
   modport em_if (
