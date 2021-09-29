@@ -203,7 +203,7 @@ always_comb begin
         cuif.ExtOp='b1; //signed ..??
         cuif.ALUSrc='b1;
         cuif.ALUctr= ALU_ADD;
-        cuif.MemWr='b0;
+        cuif.MemWr='b1;
         //cuif.PCen='b0;
         cuif.dWEN='b1;
         //cuif.iREN='b0;

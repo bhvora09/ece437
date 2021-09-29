@@ -43,8 +43,8 @@ module idecode_iexec(
 
             idieif.funct_out <='b0;
 
-            idieif.ihit_out <='b0;
-            idieif.dhit_out <='b0;
+            //idieif.ihit_out <='b0;
+            //idieif.dhit_out <='b0;
             end
 
         // else if(idieif.stall) begin
@@ -117,8 +117,8 @@ module idecode_iexec(
 
             idieif.funct_out <=idieif.funct_in;
 
-            idieif.ihit_out <= idieif.ihit_in;
-            idieif.dhit_out <= idieif.dhit_in;    
+            //idieif.ihit_out <= idieif.ihit_in;
+            //idieif.dhit_out <= idieif.dhit_in;    
         end
      end
 endmodule

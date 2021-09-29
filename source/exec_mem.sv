@@ -32,7 +32,6 @@ always_ff@(posedge CLK or negedge nRST) begin
 
     emif.pcplusfour_out<='b0;
     emif.rdat2_out <='b0;
-    emif.branch_addr_out <='b0;
     emif.alu_portOut_out <= 'b0;
     emif.instr_out <= 'b0;
     emif.Ext_addr_out <= 'b0;
@@ -43,6 +42,8 @@ always_ff@(posedge CLK or negedge nRST) begin
     emif.wsel_out <='b0;
     emif.shift_amt_out <='b0;
     emif.funct_out  <= 'b0;
+
+    emif.rdat1_out <='b0;
 
     end
 
@@ -64,7 +65,6 @@ always_ff@(posedge CLK or negedge nRST) begin
 
         emif.pcplusfour_out<=emif.pcplusfour_in;
         emif.rdat2_out <=emif.rdat2_in;
-        emif.branch_addr_out <=emif.branch_addr_in ;
         emif.alu_portOut_out <= emif.alu_portOut_in;
         emif.instr_out <=  emif.instr_in;
         emif.Ext_addr_out <= emif.Ext_addr_in ;
@@ -75,6 +75,8 @@ always_ff@(posedge CLK or negedge nRST) begin
         emif.wsel_out <=emif.wsel_in;
         emif.shift_amt_out <=emif.shift_amt_in;
         emif.funct_out  <= emif.funct_in;
+
+        emif.rdat1_out <= emif.rdat1_in;
 
     end
 end

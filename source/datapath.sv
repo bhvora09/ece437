@@ -76,17 +76,17 @@ module datapath (
   assign opinmem = opcode_t'(mwif.instr_in[31:26]);
   assign opinwrback = opcode_t'(mwif.instr_out[31:26]);
 
-  funct_t aluopinfetch;
-  funct_t aluopindecode;
-  funct_t aluopinexec;
-  funct_t aluopinmem;
-  funct_t aluopinwrback;
+  aluop_t aluopinfetch;
+  aluop_t aluopindecode;
+  aluop_t aluopinexec;
+  aluop_t aluopinmem;
+  aluop_t aluopinwrback;
 
-  assign aluopinfetch = funct_t'(fdif.instr_in[5:0]);
-  assign aluopindecode = funct_t'(deif.instr_in[5:0]);
-  assign aluopinexec = funct_t'(emif.instr_in[5:0]);
-  assign aluopinmem = funct_t'(mwif.instr_in[5:0]);
-  assign aluopinwrback = funct_t'(mwif.instr_out[5:0]);
+  assign aluopinfetch = aluop_t'(fdif.instr_in[5:0]);
+  assign aluopindecode = aluop_t'(deif.instr_in[5:0]);
+  assign aluopinexec = aluop_t'(emif.instr_in[5:0]);
+  assign aluopinmem = aluop_t'(mwif.instr_in[5:0]);
+  assign aluopinwrback = aluop_t'(mwif.instr_out[5:0]);
 
 
 
@@ -317,6 +317,9 @@ module datapath (
     emif.flagZero_in = aluif.flagZero;
     emif.rdat2_in = deif.rdat2_out;
     emif.alu_portOut_in = aluif.portOut;
+    emif.Ext_addr_in = deif.Ext_addr_out;
+    emif.rdat1_in = deif.rdat1_out;
+    
     //emif.reg_rd_in=deif.reg_rd_out;
     
     //wsel - should get value in writeback stage
@@ -367,6 +370,8 @@ module datapath (
     mwif.shift_amt_in = emif.shift_amt_out;
     mwif.funct_in = emif.funct_out;
     mwif.wdat_in = dpif.dmemload;
+    mwif.alu_portOut_in = emif.alu_portOut_out;
+    mwif.wsel_in= emif.wsel_out;
 
     // dpif.dmemstore=emif.rdat2_out;  
     // //dpif.dmemaddr=aluif.portOut;
