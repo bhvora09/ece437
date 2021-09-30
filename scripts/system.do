@@ -1,12 +1,12 @@
 onerror {resume}
 quietly WaveActivateNextPane {} 0
-add wave -noupdate -group rfif /system_tb/DUT/CPU/DP/rfif/WEN
-add wave -noupdate -group rfif /system_tb/DUT/CPU/DP/rfif/wsel
-add wave -noupdate -group rfif /system_tb/DUT/CPU/DP/rfif/rsel1
-add wave -noupdate -group rfif /system_tb/DUT/CPU/DP/rfif/rsel2
-add wave -noupdate -group rfif /system_tb/DUT/CPU/DP/rfif/wdat
-add wave -noupdate -group rfif /system_tb/DUT/CPU/DP/rfif/rdat1
-add wave -noupdate -group rfif /system_tb/DUT/CPU/DP/rfif/rdat2
+add wave -noupdate -expand -group rfif /system_tb/DUT/CPU/DP/rfif/WEN
+add wave -noupdate -expand -group rfif /system_tb/DUT/CPU/DP/rfif/wsel
+add wave -noupdate -expand -group rfif /system_tb/DUT/CPU/DP/rfif/rsel1
+add wave -noupdate -expand -group rfif /system_tb/DUT/CPU/DP/rfif/rsel2
+add wave -noupdate -expand -group rfif /system_tb/DUT/CPU/DP/rfif/wdat
+add wave -noupdate -expand -group rfif /system_tb/DUT/CPU/DP/rfif/rdat1
+add wave -noupdate -expand -group rfif /system_tb/DUT/CPU/DP/rfif/rdat2
 add wave -noupdate -group deif /system_tb/DUT/CPU/DP/deif/instr_in
 add wave -noupdate -group deif /system_tb/DUT/CPU/DP/deif/Ext_addr_in
 add wave -noupdate -group deif /system_tb/DUT/CPU/DP/deif/pcplusfour_in
@@ -97,7 +97,6 @@ add wave -noupdate -group emif /system_tb/DUT/CPU/DP/emif/MemtoReg_in
 add wave -noupdate -group emif /system_tb/DUT/CPU/DP/emif/RegWr_in
 add wave -noupdate -group emif /system_tb/DUT/CPU/DP/emif/jump_s_in
 add wave -noupdate -group emif /system_tb/DUT/CPU/DP/emif/jr_s_in
-add wave -noupdate -group emif /system_tb/DUT/CPU/DP/emif/dhit_in
 add wave -noupdate -group emif /system_tb/DUT/CPU/DP/emif/MemWr_in
 add wave -noupdate -group emif /system_tb/DUT/CPU/DP/emif/halt_in
 add wave -noupdate -group emif /system_tb/DUT/CPU/DP/emif/dREN_out
@@ -111,7 +110,6 @@ add wave -noupdate -group emif /system_tb/DUT/CPU/DP/emif/MemtoReg_out
 add wave -noupdate -group emif /system_tb/DUT/CPU/DP/emif/RegWr_out
 add wave -noupdate -group emif /system_tb/DUT/CPU/DP/emif/jump_s_out
 add wave -noupdate -group emif /system_tb/DUT/CPU/DP/emif/jr_s_out
-add wave -noupdate -group emif /system_tb/DUT/CPU/DP/emif/dhit_out
 add wave -noupdate -group emif /system_tb/DUT/CPU/DP/emif/MemWr_out
 add wave -noupdate -group emif /system_tb/DUT/CPU/DP/emif/halt_out
 add wave -noupdate -group emif /system_tb/DUT/CPU/DP/emif/pcplusfour_in
@@ -184,8 +182,11 @@ add wave -noupdate -expand -group cif /system_tb/DUT/CPU/cif0/ccinv
 add wave -noupdate -expand -group cif /system_tb/DUT/CPU/cif0/ccwrite
 add wave -noupdate -expand -group cif /system_tb/DUT/CPU/cif0/cctrans
 add wave -noupdate -expand -group cif /system_tb/DUT/CPU/cif0/ccsnoopaddr
+add wave -noupdate -expand -group pcif /system_tb/DUT/CPU/DP/pcif/PCen
+add wave -noupdate -expand -group pcif /system_tb/DUT/CPU/DP/pcif/pc
+add wave -noupdate -expand -group pcif /system_tb/DUT/CPU/DP/pcif/pc_next
 TreeUpdate [SetDefaultTree]
-WaveRestoreCursors {{Cursor 1} {320000 ps} 0}
+WaveRestoreCursors {{Cursor 1} {103843 ps} 0}
 quietly wave cursor active 1
 configure wave -namecolwidth 334
 configure wave -valuecolwidth 100
@@ -201,4 +202,4 @@ configure wave -griddelta 40
 configure wave -timeline 0
 configure wave -timelineunits ns
 update
-WaveRestoreZoom {174376 ps} {1046268 ps}
+WaveRestoreZoom {0 ps} {1412661 ps}
