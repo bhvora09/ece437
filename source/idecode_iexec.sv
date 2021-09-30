@@ -45,45 +45,47 @@ module idecode_iexec(
 
             idieif.funct_out <='b0;
 
+            idieif.dhit_out <= 'b0;
             //idieif.ihit_out <='b0;
             //idieif.dhit_out <='b0;
             end
 
-        // else if(idieif.stall) begin
-        //     idieif.dWEN_out <= idieif.dWEN_out;
-        //     idieif.dREN_out <= idieif.dREN_out;
-        //     idieif.jal_s_out <= idieif.jal_s_out;
-        //     idieif.jr_s_out <= idieif.jr_s_out;
-        //     idieif.j_s_out <= idieif.j_s_out;
-        //     idieif.RegDst_out <= idieif.RegDst_out;
-        //     idieif.ALUsrc_out <= idieif.ALUsrc_out;
-        //     idieif.ALUctr_out <= idieif.ALUctr_out;
-        //     idieif.nxt_pc_out <= idieif.nxt_pc_out;
-        //     idieif.rdat1_out <= idieif.rdat1_out;
-        //     idieif.rdat2_out <= idieif.rdat2_out;
-        //     idieif.rs_out <= idieif.rs_out;
-        //     idieif.rt_out <= idieif.rt_out;
-        //     idieif.rd_out <= idieif.rd_out;
-        //     idieif.imm_addr <= idieif.imm_addr;
-        //     idieif.lui_s_out <= idieif.lui_s_out;
-        //     idieif.ihit_out <= idieif.ihit_out;
-        //     idieif.dhit_out <= idieif.dhit_out;
-        //     idieif.instr_out <= idieif.instr_out;
-        //     idieif.jal_addr_out <= idieif.jal_addr_out; 
-        //     idieif.jr_addr_out <= idieif.jr_addr_out;
-        //     idieif.j_addr_out <= idieif.j_addr_out;
-        //     idieif.branch_addr_out <= idieif.branch_addr_out;
-        //     idieif.Ext_addr_out<=idieif.Ext_addr_out;
-        //     idieif.bne_s_out<=idieif.bne_s_out;
-        //     idieif.beq_s_out<=idieif.beq_s_out;
-        //     idieif.aluopindecode_out<=idieif.aluopindecode_out;
-        //     idieif.RegWr_out<=idieif.RegWr_out;
-        //     idieif.MemWr_out<=idieif.MemWr_out;
-        //     idieif.MemtoReg_out<=idieif.MemtoReg_out;
-        //     idieif.halt_out<=idieif.halt_out;
-        //     idieif.shift_amt_out <= idieif.shift_amt_out;
-        //     idieif.functindecode_out <=idieif.functindecode_out;
-        // end
+        else if(idieif.stall_for_data) begin
+            idieif.instr_out <=idieif.instr_out;
+            idieif.Ext_addr_out<=idieif.Ext_addr_out;
+            idieif.pcplusfour_out<=idieif.pcplusfour_out;
+            idieif.rdat1_out <=idieif.rdat1_out;
+            idieif.rdat2_out <=idieif.rdat2_out;
+
+            idieif.dWEN_out <=idieif.dWEN_out;
+            idieif.dREN_out <=idieif.dREN_out; 
+            idieif.jal_s_out <=idieif.jal_s_out; 
+            idieif.jr_s_out <= idieif.jr_s_out;
+            idieif.jump_s_out <=idieif.jump_s_out; 
+            idieif.bne_s_out<=idieif.bne_s_out;
+            idieif.beq_s_out<=idieif.beq_s_out;
+            idieif.lui_out <=idieif.lui_out;
+
+            idieif.RegDst_out <=idieif.RegDst_out;
+            idieif.ALUSrc_out <=idieif.ALUSrc_out;
+            idieif.ALUctr_out <=idieif.ALUctr_out;
+            idieif.RegWr_out<=idieif.RegWr_out;
+            idieif.MemWr_out<=idieif.MemWr_out;
+            idieif.MemtoReg_out<=idieif.MemtoReg_out;
+            idieif.halt_out<=idieif.halt_out;
+            
+            idieif.imm_addr_out <=idieif.imm_addr_out;
+            
+            idieif.reg_rt_out <=idieif.reg_rt_out;
+            idieif.reg_rd_out<=idieif.reg_rd_out;
+            idieif.shift_amt_out <=idieif.shift_amt_out;
+
+            idieif.j_addr_out <= idieif.j_addr_out;
+
+            idieif.funct_out <=idieif.funct_out;
+
+            idieif.dhit_out <=idieif.dhit_out;
+        end
 
         else   begin //let it pass only if ihit has come
             idieif.instr_out <= idieif.instr_in;
@@ -118,7 +120,7 @@ module idecode_iexec(
             idieif.j_addr_out <= idieif.j_addr_in;
 
             idieif.funct_out <=idieif.funct_in;
-
+            idieif.dhit_out <= idieif.dhit_in;
             //idieif.ihit_out <= idieif.ihit_in;
             //idieif.dhit_out <= idieif.dhit_in;    
         end

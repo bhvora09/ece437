@@ -1,7 +1,6 @@
 /*
   Eric Villasenor
   evillase@gmail.com
-
   single cycle top block
   holds data path components
   and cache level
@@ -26,18 +25,7 @@ parameter PC0 = 0;
   // map datapath
   datapath #(.PC_INIT(PC0)) DP (CLK, nRST, dcif);
   // map caches
-// <<<<<<< HEAD
-// <<<<<<< HEAD:source/singlecycle.sv
-  caches                    CM (CLK, nRST, dcif, cif0);
-// =======
   caches #(.CPUID(0))       CM (CLK, nRST, dcif, cif0);
-// >>>>>>> singlecycle
-// =======
-  caches #(.CPUID(0))       CM (CLK, nRST, dcif, cif0);
-// =======
-  caches                    CM (CLK, nRST, dcif, cif0);
-// >>>>>>> 06d6d2ca6704ebf35a725d6ad479e4aa9723e632
-// >>>>>>> 1ac40db70f9e0525d126bc9ae8633e0e1aa71449:pipeline/source/singlecycle.sv
   // map coherence
   memory_control            CC (CLK, nRST, ccif);
 

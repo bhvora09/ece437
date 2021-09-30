@@ -32,7 +32,7 @@ interface  mem_wrb_if;
           pcplusfour_in,instr_in,wdat_in,alu_portOut_in,
           imm_addr_in,
           wsel_in,shift_amt_in,
-          funct_in,
+          funct_in,stall_for_data,
     output jal_s_out,lui_out,MemtoReg_out,RegWr_out,halt_out,
            pcplusfour_out,instr_out,wdat_out,alu_portOut_out,
           imm_addr_out,
@@ -50,7 +50,7 @@ interface  mem_wrb_if;
           pcplusfour_in,instr_in,wdat_in,alu_portOut_in,
           imm_addr_in,
           wsel_in,shift_amt_in,
-          funct_in
+          funct_in,stall_for_data
   );
 endinterface
 

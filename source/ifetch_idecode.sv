@@ -5,8 +5,13 @@ module ifetch_idecode(
     input CLK, nRST,
     ifetch_idecode_if.fd_if ifidif
 );
+import cpu_types_pkg::*;
 
-    import cpu_types_pkg::*;
+// assign ifidif.instr_in2 = (~ifidif.stall_for_instr) & ifidif.instr_in ;
+// assign ifidif.pc_in2 =(~ifidif.stall_for_instr) & ifidif.pc_in ;
+// assign ifidif.pcplusfour_in2 =(~ifidif.stall_for_instr) & ifidif.pcplusfour_in ;
+
+   
 
     always_ff @(posedge CLK, negedge nRST) begin : PROCEED
         if(!nRST) begin
@@ -38,9 +43,9 @@ module ifetch_idecode(
         // end
         else 
         begin
-            ifidif.instr_out <= ifidif.instr_in;
-            ifidif.pc_out <=ifidif.pc_in;
-            ifidif.pcplusfour_out <= ifidif.pcplusfour_in;
+            ifidif.instr_out <= ifidif.instr_in2;
+            ifidif.pc_out <=ifidif.pc_in2;
+            ifidif.pcplusfour_out <= ifidif.pcplusfour_in2;
             //ifidif.dhit_out <= ifidif.dhit_in;
             //ifidif.ihit_out <= ifidif.ihit_in;
         end

@@ -1,12 +1,12 @@
 onerror {resume}
 quietly WaveActivateNextPane {} 0
-add wave -noupdate -expand -group rfif /system_tb/DUT/CPU/DP/rfif/WEN
-add wave -noupdate -expand -group rfif /system_tb/DUT/CPU/DP/rfif/wsel
-add wave -noupdate -expand -group rfif /system_tb/DUT/CPU/DP/rfif/rsel1
-add wave -noupdate -expand -group rfif /system_tb/DUT/CPU/DP/rfif/rsel2
-add wave -noupdate -expand -group rfif /system_tb/DUT/CPU/DP/rfif/wdat
-add wave -noupdate -expand -group rfif /system_tb/DUT/CPU/DP/rfif/rdat1
-add wave -noupdate -expand -group rfif /system_tb/DUT/CPU/DP/rfif/rdat2
+add wave -noupdate -group rfif /system_tb/DUT/CPU/DP/rfif/WEN
+add wave -noupdate -group rfif /system_tb/DUT/CPU/DP/rfif/wsel
+add wave -noupdate -group rfif /system_tb/DUT/CPU/DP/rfif/rsel1
+add wave -noupdate -group rfif /system_tb/DUT/CPU/DP/rfif/rsel2
+add wave -noupdate -group rfif /system_tb/DUT/CPU/DP/rfif/wdat
+add wave -noupdate -group rfif /system_tb/DUT/CPU/DP/rfif/rdat1
+add wave -noupdate -group rfif /system_tb/DUT/CPU/DP/rfif/rdat2
 add wave -noupdate -group deif /system_tb/DUT/CPU/DP/deif/instr_in
 add wave -noupdate -group deif /system_tb/DUT/CPU/DP/deif/Ext_addr_in
 add wave -noupdate -group deif /system_tb/DUT/CPU/DP/deif/pcplusfour_in
