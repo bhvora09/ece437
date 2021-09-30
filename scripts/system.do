@@ -156,8 +156,36 @@ add wave -noupdate -group dp_variables /system_tb/DUT/CPU/DP/aluopindecode
 add wave -noupdate -group dp_variables /system_tb/DUT/CPU/DP/aluopinexec
 add wave -noupdate -group dp_variables /system_tb/DUT/CPU/DP/aluopinmem
 add wave -noupdate -group dp_variables /system_tb/DUT/CPU/DP/aluopinwrback
+add wave -noupdate -expand -group dpif /system_tb/DUT/CPU/DP/dpif/halt
+add wave -noupdate -expand -group dpif /system_tb/DUT/CPU/DP/dpif/ihit
+add wave -noupdate -expand -group dpif /system_tb/DUT/CPU/DP/dpif/imemREN
+add wave -noupdate -expand -group dpif /system_tb/DUT/CPU/DP/dpif/imemload
+add wave -noupdate -expand -group dpif /system_tb/DUT/CPU/DP/dpif/imemaddr
+add wave -noupdate -expand -group dpif /system_tb/DUT/CPU/DP/dpif/dhit
+add wave -noupdate -expand -group dpif /system_tb/DUT/CPU/DP/dpif/datomic
+add wave -noupdate -expand -group dpif /system_tb/DUT/CPU/DP/dpif/dmemREN
+add wave -noupdate -expand -group dpif /system_tb/DUT/CPU/DP/dpif/dmemWEN
+add wave -noupdate -expand -group dpif /system_tb/DUT/CPU/DP/dpif/flushed
+add wave -noupdate -expand -group dpif /system_tb/DUT/CPU/DP/dpif/dmemload
+add wave -noupdate -expand -group dpif /system_tb/DUT/CPU/DP/dpif/dmemstore
+add wave -noupdate -expand -group dpif /system_tb/DUT/CPU/DP/dpif/dmemaddr
+add wave -noupdate -expand -group cif /system_tb/DUT/CPU/cif0/iwait
+add wave -noupdate -expand -group cif /system_tb/DUT/CPU/cif0/dwait
+add wave -noupdate -expand -group cif /system_tb/DUT/CPU/cif0/iREN
+add wave -noupdate -expand -group cif /system_tb/DUT/CPU/cif0/dREN
+add wave -noupdate -expand -group cif /system_tb/DUT/CPU/cif0/dWEN
+add wave -noupdate -expand -group cif /system_tb/DUT/CPU/cif0/iload
+add wave -noupdate -expand -group cif /system_tb/DUT/CPU/cif0/dload
+add wave -noupdate -expand -group cif /system_tb/DUT/CPU/cif0/dstore
+add wave -noupdate -expand -group cif /system_tb/DUT/CPU/cif0/iaddr
+add wave -noupdate -expand -group cif /system_tb/DUT/CPU/cif0/daddr
+add wave -noupdate -expand -group cif /system_tb/DUT/CPU/cif0/ccwait
+add wave -noupdate -expand -group cif /system_tb/DUT/CPU/cif0/ccinv
+add wave -noupdate -expand -group cif /system_tb/DUT/CPU/cif0/ccwrite
+add wave -noupdate -expand -group cif /system_tb/DUT/CPU/cif0/cctrans
+add wave -noupdate -expand -group cif /system_tb/DUT/CPU/cif0/ccsnoopaddr
 TreeUpdate [SetDefaultTree]
-WaveRestoreCursors {{Cursor 1} {358549 ps} 0}
+WaveRestoreCursors {{Cursor 1} {320000 ps} 0}
 quietly wave cursor active 1
 configure wave -namecolwidth 334
 configure wave -valuecolwidth 100
@@ -173,4 +201,4 @@ configure wave -griddelta 40
 configure wave -timeline 0
 configure wave -timelineunits ns
 update
-WaveRestoreZoom {0 ps} {886839 ps}
+WaveRestoreZoom {174376 ps} {1046268 ps}

@@ -30,10 +30,10 @@ interface idecode_iexec_if;
     logic [25:0] j_addr_out;
     logic [5:0] funct_out;
     logic [3:0] ALUctr_out;
-    //logic ihit_out, dhit_out;
+    logic ihit, dhit;
 
     modport de_if (
-        input instr_in,Ext_addr_in, pcplusfour_in,rdat1_in, rdat2_in,
+        input instr_in,Ext_addr_in, pcplusfour_in,rdat1_in, rdat2_in,ihit, dhit,
                 dWEN_in, dREN_in, bne_s_in, beq_s_in, jal_s_in, jr_s_in, jump_s_in,lui_in,
                 RegDst_in, ALUSrc_in, ALUctr_in, RegWr_in, MemWr_in, MemtoReg_in, halt_in,
                 imm_addr_in,
@@ -60,7 +60,7 @@ interface idecode_iexec_if;
                 j_addr_out,
                 funct_out,
                 //ihit_out, dhit_out,
-        output instr_in,Ext_addr_in, pcplusfour_in,rdat1_in, rdat2_in,
+        output instr_in,Ext_addr_in, pcplusfour_in,rdat1_in, rdat2_in,ihit, dhit,
                 dWEN_in, dREN_in, bne_s_in, beq_s_in, jal_s_in, jr_s_in, jump_s_in,lui_in,
                 RegDst_in, ALUSrc_in, ALUctr_in, RegWr_in, MemWr_in, MemtoReg_in, halt_in,
                 imm_addr_in,

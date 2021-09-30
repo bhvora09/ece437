@@ -36,7 +36,7 @@ module ifetch_idecode(
         //     idieif.jr_s_out <= idieif.jr_s_out;
         //     idieif.j_s_out <= idieif.j_s_out;
         // end
-        else
+        else 
         begin
             ifidif.instr_out <= ifidif.instr_in;
             ifidif.pc_out <=ifidif.pc_in;

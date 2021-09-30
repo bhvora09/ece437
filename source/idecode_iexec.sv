@@ -10,14 +10,16 @@ module idecode_iexec(
 
     always_ff @(posedge CLK, negedge nRST) begin : PROCEED
         if(!nRST) begin
+            idieif.dREN_out <='b0;
+            idieif.dWEN_out <= 'b0;
             idieif.instr_out <='b0;
             idieif.Ext_addr_out<='b0;
             idieif.pcplusfour_out<='b0;
             idieif.rdat1_out <='b0;
             idieif.rdat2_out <='b0;
 
-            idieif.dWEN_out <='b0;
-            idieif.dREN_out <='b0;
+            //idieif.dWEN_out <='b0;
+            //idieif.dREN_out <='b0;
             idieif.jal_s_out <='b0;
             idieif.jr_s_out <= 'b0;
             idieif.jump_s_out <= 'b0;
@@ -83,7 +85,7 @@ module idecode_iexec(
         //     idieif.functindecode_out <=idieif.functindecode_out;
         // end
 
-        else begin
+        else   begin //let it pass only if ihit has come
             idieif.instr_out <= idieif.instr_in;
             idieif.Ext_addr_out<=idieif.Ext_addr_in;
             idieif.pcplusfour_out<=idieif.pcplusfour_in;
@@ -91,7 +93,7 @@ module idecode_iexec(
             idieif.rdat2_out <=idieif.rdat2_in;
 
             idieif.dWEN_out <=idieif.dWEN_in;
-            idieif.dREN_out <=idieif.dWEN_in;
+            idieif.dREN_out <=idieif.dREN_in;
             idieif.jal_s_out <=idieif.jal_s_in;
             idieif.jr_s_out <= idieif.jr_s_in;
             idieif.jump_s_out <= idieif.jump_s_in;

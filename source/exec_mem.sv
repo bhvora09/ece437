@@ -26,7 +26,7 @@ always_ff@(posedge CLK or negedge nRST) begin
     emif.RegWr_out <='b0;
     emif.jump_s_out <='b0;
     emif.jr_s_out <= 'b0;
-    emif.dhit_out <= 'b0;
+    //emif.dhit_out <= 'b0;
     emif.MemWr_out <='b0;
     emif.halt_out <='b0;
 
@@ -59,7 +59,7 @@ always_ff@(posedge CLK or negedge nRST) begin
         emif.RegWr_out <=emif.RegWr_in;
         emif.jump_s_out <=emif.jump_s_in;
         emif.jr_s_out <= emif.jr_s_in;
-        emif.dhit_out <= emif.dhit_in;
+        //emif.dhit_out <= emif.dhit_in;
         emif.MemWr_out <=emif.MemWr_in;
         emif.halt_out <=emif.halt_in ;
 
