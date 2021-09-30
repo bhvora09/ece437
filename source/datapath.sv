@@ -43,7 +43,7 @@ module datapath (
   //interfaces initialised as functions
   alu_if aluif();
   control_unit_if cuif();
-  memory_request_unit_if mruif();
+  //memory_request_unit_if mruif();
   program_counter_if pcif();
   register_file_if rfif();
   ifetch_idecode_if fdif();
@@ -54,7 +54,7 @@ module datapath (
   //adding all units in the datapath
   alu ALU(aluif);
   control_unit CU(cuif);
-  memory_request_unit MRU(CLK,nRST,mruif);
+  //memory_request_unit MRU(CLK,nRST,mruif);
   program_counter PC(CLK,nRST,pcif);
   register_file RF(CLK,nRST,rfif);
   ifetch_idecode FETCHDECODE(CLK, nRST, fdif);
@@ -99,10 +99,10 @@ module datapath (
     npc=32'b0;
     shift_left_1=32'b0;
     extended_address=32'b0;
+    //dpif.dmemREN = 'b0;
+    //dpif.dmemWEN = 'b0;
     //instr = dpif.imemload;
 
-    //ADD LOGIC FOR STALL in each stage 
-    //stall = ; not sure
 
     //aluif.portA='b0;
     //aluif.portB='b0;
@@ -112,19 +112,89 @@ module datapath (
     //1.DP
     //-----------------------------------------------------------
     dpif.imemaddr=pcif.pc;
-    dpif.dmemWEN=mruif.dmemWEN;
-    dpif.imemREN=mruif.imemREN;
+    //emif.dREN_in = emif.dREN_out;
+    //emif.dWEN_in = emif.dWEN_out;
+    // if (dpif.dhit) begin
+    //     //$display("dhit");
+    //     emif.dREN_in=1'b0;
+    //     emif.dWEN_in=1'b0;
+        
+    //   end
+    // else begin
+    dpif.imemREN=1'b1;
+    dpif.dmemREN=emif.dREN_out;
+    dpif.dmemWEN=emif.dWEN_out;
+    dpif.dmemstore=emif.rdat2_out;
+    dpif.dmemaddr=emif.alu_portOut_out; 
+
+    emif.dREN_in = deif.dREN_out;
+    emif.dWEN_in = deif.dWEN_out;
+    //   end
+
+    if((emif.dREN_out | emif.dWEN_out)&(~dpif.dhit))begin //stall until dhit comes
+      mwif.wdat_in =mwif.wdat_out;
+      mwif.MemtoReg_in = mwif.MemtoReg_out;
+      mwif.wsel_in= mwif.wsel_out;
+      mwif.RegWr_in =  mwif.RegWr_out;
+      emif.stall_for_data = 1'b1;
+      deif.stall_for_data =1'b1;
+      fdif.stall_for_data =1'b1;
+      mwif.pcplusfour_in=mwif.pcplusfour_out;
+      mwif.instr_in = mwif.instr_out;
+      mwif.halt_in = mwif.halt_out;
+      mwif.imm_addr_in=mwif.imm_addr_out;
+      mwif.shift_amt_in = mwif.shift_amt_out;
+      mwif.funct_in = mwif.funct_out;
+      mwif.alu_portOut_in = mwif.alu_portOut_out;
+    end
+    else if((emif.dREN_out | emif.dWEN_out) & dpif.dhit) begin //pass all the data from prev stage, stalls = 0
+      mwif.wdat_in = dpif.dmemload;
+      mwif.MemtoReg_in = emif.MemtoReg_out;
+      mwif.wsel_in= emif.wsel_out;
+      mwif.RegWr_in = emif.RegWr_out;
+      emif.stall_for_data = 1'b0;
+      deif.stall_for_data =1'b0;
+      fdif.stall_for_data =1'b0;
+      mwif.pcplusfour_in=emif.pcplusfour_out;
+      mwif.instr_in = emif.instr_out;
+      mwif.halt_in = emif.halt_out;
+      mwif.imm_addr_in=emif.imm_addr_out;
+      mwif.shift_amt_in = emif.shift_amt_out;
+      mwif.funct_in = emif.funct_out;
+      mwif.alu_portOut_in = emif.alu_portOut_out;
+    end
+    else begin
+      mwif.wdat_in = dpif.dmemload;
+      mwif.MemtoReg_in = emif.MemtoReg_out;
+      mwif.wsel_in= emif.wsel_out;
+      mwif.RegWr_in = emif.RegWr_out;
+      emif.stall_for_data = 1'b0;
+      deif.stall_for_data =1'b0;
+      fdif.stall_for_data =1'b0;
+      mwif.pcplusfour_in=emif.pcplusfour_out;
+      mwif.instr_in = emif.instr_out;
+      mwif.halt_in = emif.halt_out;
+      mwif.imm_addr_in=emif.imm_addr_out;
+      mwif.shift_amt_in = emif.shift_amt_out;
+      mwif.funct_in = emif.funct_out;
+      mwif.alu_portOut_in = emif.alu_portOut_out;
+    
+    end
+    
+
+    //dpif.dmemWEN=mruif.dmemWEN;
+    
     //read happens in mem stage
-    dpif.dmemREN=mruif.dmemREN;
+    //dpif.dmemREN=mruif.dmemREN;
     //dpif.dmemstore=rfif.rdat2;
-    dpif.dmemstore=emif.rdat2_out;  //add
+      //add
     //dpif.dmemaddr=aluif.portOut;
-    dpif.dmemaddr=emif.alu_portOut_out; //add
+    //add
     //--------------------------------------------
     //2.PC
     //2.1 pcen
     //-------------------------------------------
-    pcif.PCen = dpif.ihit && (~dpif.dhit);
+    pcif.PCen = dpif.ihit;// && (~dpif.dhit);
     //------------------------------------------
     
     //2.2 sign extender in decode stage
@@ -174,15 +244,16 @@ module datapath (
 
     // 3. Memory Request Unit
     //---------------------------------------------------------
-    mruif.iren=1'b1; //always 1???
+    //mruif.iren=1'b1; //always 1???
       //dren- data read happens in mem stage
-    mruif.dren = emif.dREN_out; //add 
+    //mruif.dren = emif.dREN_out; //add 
       //dwen- data write also happens in mem stage
-    mruif.dwen = emif.dWEN_out; //add
+    //mruif.dwen = emif.dWEN_out; //add
       //dhit - affected by data read or write in mem stage
-    mruif.dhit = dpif.dhit; //add
+      // dhit =dpif.dhit
+    //mruif.dhit = dpif.dhit; //add
       //ihit
-    mruif.ihit = dpif.ihit; //not sure about ihit
+    //mruif.ihit = dpif.ihit; //not sure about ihit
     //--------------------------------------------------------------------------
 
     //4.ifetch idecode if
@@ -270,7 +341,7 @@ module datapath (
     deif.rdat1_in = rfif.rdat1;
     deif.rdat2_in = rfif.rdat2;
     deif.reg_rt_in = cuif.reg_rt;
-    
+    //deif.dhit_in = dpif.dhit;   //seems wrong
     //-----------------------------------------------------------------------------------
 
 
@@ -293,8 +364,7 @@ module datapath (
     //----------------------------------------------------------------------------------
     ////exec mem if ----add all
     //----------------------------------------------------------------------------------
-    emif.dREN_in = deif.dREN_out;
-    emif.dWEN_in = deif.dWEN_out;
+    
     emif.bne_s_in =  deif.bne_s_out;
     emif.beq_s_in = deif.beq_s_out;
     emif.jal_s_in =deif.jal_s_out;
@@ -319,7 +389,16 @@ module datapath (
     emif.alu_portOut_in = aluif.portOut;
     emif.Ext_addr_in = deif.Ext_addr_out;
     emif.rdat1_in = deif.rdat1_out;
-    
+    //emif.dhit_in = deif.dhit_out;
+
+    /*
+    mwif.stall_for_data =(emif.dREN_out | emif.dWEN_out )&&(~dpif.dhit);
+    emif.stall_for_data = (emif.dREN_out | emif.dWEN_out )&&(~dpif.dhit);
+    deif.stall_for_data = mwif.stall_for_data | emif.stall_for_data;
+    fdif.stall_for_data = deif.stall_for_data | mwif.stall_for_data | emif.stall_for_data;
+    fdif.stall_for_instr = ~dpif.ihit; //add
+   */
+
     //emif.reg_rd_in=deif.reg_rd_out;
     
     //wsel - should get value in writeback stage
@@ -358,21 +437,10 @@ module datapath (
     //emif.MemWr_in = deif.MemWr_out;
     //emif.reg_rd_in=deif.reg_rd_out;
     //mwif.j_addr_in = deif.j_addr_out;
-    mwif.jal_s_in =emif.jal_s_out;
-    mwif.lui_in = emif.lui_out;
+    
     //mwif.aluopinmem_in = emif.aluopinexec_out;
-    mwif.pcplusfour_in=emif.pcplusfour_out;
-    mwif.instr_in = emif.instr_out;
-    mwif.RegWr_in = emif.RegWr_out;
-    mwif.MemtoReg_in = emif.MemtoReg_out;
-    mwif.halt_in = emif.halt_out;
-    mwif.imm_addr_in=emif.imm_addr_out;
-    mwif.shift_amt_in = emif.shift_amt_out;
-    mwif.funct_in = emif.funct_out;
-    mwif.wdat_in = dpif.dmemload;
-    mwif.alu_portOut_in = emif.alu_portOut_out;
-    mwif.wsel_in= emif.wsel_out;
-
+   
+    
     // dpif.dmemstore=emif.rdat2_out;  
     // //dpif.dmemaddr=aluif.portOut;
     // dpif.dmemaddr=emif.alu_portOut_out; 
@@ -404,7 +472,8 @@ module datapath (
        dpif.halt<='b0;
       //dpif.halt<=cuif.halt || (nRST);
      else
-      dpif.halt<=dpif.halt||cuif.halt;
+      //dpif.halt<=dpif.halt||cuif.halt;
+      dpif.halt<=dpif.halt||mwif.halt_out;
       //dpif.halt<=(~cuif.halt) || (nRST && cuif.halt);
       
   end

@@ -38,45 +38,45 @@ module system_tb;
 
   // CPU Tracker. Uncomment and change signal names to enable.
   
-  cpu_tracker                         cpu_track0 (
-    // No need to change this
-    .CLK(DUT.CPU.DP.CLK),
-    // Since single cycle, this is just PC enable
-    .wb_stall(~DUT.CPU.DP.pcif.PCen),
-    // The 'funct' portion of an instruction. Must be of funct_t type
-    .funct(DUT.CPU.DP.cuif.funct),
-    // The 'opcode' portion of an instruction. Must be of opcode_t type
-    .opcode(DUT.CPU.DP.cuif.opcode),
-    // The 'rs' portion of an instruction
-    .rs(DUT.CPU.DP.cuif.reg_rs),
-    // The 'rt' portion of an instruction
-    .rt(DUT.CPU.DP.cuif.reg_rt),
-    // The final selected wsel
-    .wsel(DUT.CPU.DP.rfif.wsel),
-    // Make sure the interface (dpif) matches your name
-    .instr(DUT.CPU.DP.dpif.imemload),
-    // Connect the PC to this
-    .pc(DUT.CPU.DP.pcif.pc),
-    // Connect the next PC value (the next registered value) here
-    .npc(DUT.CPU.DP.pcif.pc_next),
-    // The final imm/shamt signals
-    // This means it should already be shifted/extended/whatever
-    .imm(DUT.CPU.DP.SignExt_addr),
-    .shamt(DUT.CPU.DP.cuif.shift_amt),
-     .lui(DUT.CPU.DP.cuif.imm_addr),
-    // The branch target (aka offset added to npc)
-    //.branch_addr(DUT.CPU.DP.pc_branch),
-    // Make sure the interface (dpif) matches your name
-    .dat_addr(DUT.CPU.DP.dpif.dmemaddr),
-    // Make sure the interface (dpif) matches your name
-    .store_dat(DUT.CPU.DP.dpif.dmemstore),
-    // Make sure the interface (dpif) matches your name
-    .reg_dat(DUT.CPU.DP.rfif.wdat),
-    // Make sure the interface (dpif) matches your name
-    .load_dat(DUT.CPU.DP.dpif.dmemload),
-    // Make sure the interface (dpif) matches your name
-    .dhit(DUT.CPU.DP.dpif.dhit)
-  );
+  // cpu_tracker                         cpu_track0 (
+  //   // No need to change this
+  //   .CLK(DUT.CPU.DP.CLK),
+  //   // Since single cycle, this is just PC enable
+  //   .wb_stall(~DUT.CPU.DP.pcif.PCen),
+  //   // The 'funct' portion of an instruction. Must be of funct_t type
+  //   .funct(DUT.CPU.DP.cuif.funct),
+  //   // The 'opcode' portion of an instruction. Must be of opcode_t type
+  //   .opcode(DUT.CPU.DP.cuif.opcode),
+  //   // The 'rs' portion of an instruction
+  //   .rs(DUT.CPU.DP.cuif.reg_rs),
+  //   // The 'rt' portion of an instruction
+  //   .rt(DUT.CPU.DP.cuif.reg_rt),
+  //   // The final selected wsel
+  //   .wsel(DUT.CPU.DP.rfif.wsel),
+  //   // Make sure the interface (dpif) matches your name
+  //   .instr(DUT.CPU.DP.dpif.imemload),
+  //   // Connect the PC to this
+  //   .pc(DUT.CPU.DP.pcif.pc),
+  //   // Connect the next PC value (the next registered value) here
+  //   .npc(DUT.CPU.DP.pcif.pc_next),
+  //   // The final imm/shamt signals
+  //   // This means it should already be shifted/extended/whatever
+  //   .imm(DUT.CPU.DP.SignExt_addr),
+  //   .shamt(DUT.CPU.DP.cuif.shift_amt),
+  //    .lui(DUT.CPU.DP.cuif.imm_addr),
+  //   // The branch target (aka offset added to npc)
+  //   //.branch_addr(DUT.CPU.DP.pc_branch),
+  //   // Make sure the interface (dpif) matches your name
+  //   .dat_addr(DUT.CPU.DP.dpif.dmemaddr),
+  //   // Make sure the interface (dpif) matches your name
+  //   .store_dat(DUT.CPU.DP.dpif.dmemstore),
+  //   // Make sure the interface (dpif) matches your name
+  //   .reg_dat(DUT.CPU.DP.rfif.wdat),
+  //   // Make sure the interface (dpif) matches your name
+  //   .load_dat(DUT.CPU.DP.dpif.dmemload),
+  //   // Make sure the interface (dpif) matches your name
+  //   .dhit(DUT.CPU.DP.dpif.dhit)
+  // );
   
 
 `else

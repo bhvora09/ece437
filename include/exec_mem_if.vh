@@ -9,7 +9,7 @@ interface  exec_mem_if;
   import cpu_types_pkg::*;
 
   
-    logic dREN_in,dWEN_in,bne_s_in,beq_s_in,jal_s_in,flagZero_in,lui_in,MemtoReg_in,RegWr_in,jump_s_in,jr_s_in,dhit_in,MemWr_in,halt_in;
+    logic dREN_in,dWEN_in,bne_s_in,beq_s_in,jal_s_in,flagZero_in,lui_in,MemtoReg_in,RegWr_in,jump_s_in,jr_s_in,dhit_in,MemWr_in,halt_in,stall_for_data;
     logic dREN_out,dWEN_out,bne_s_out,beq_s_out,jal_s_out,flagZero_out,lui_out,MemtoReg_out,RegWr_out,jump_s_out,jr_s_out,dhit_out,MemWr_out,halt_out;
     
     word_t pcplusfour_in,rdat2_in, alu_portOut_in,instr_in,Ext_addr_in,rdat1_in;
@@ -31,7 +31,7 @@ interface  exec_mem_if;
           imm_addr_in,
           j_addr_in,
           wsel_in, shift_amt_in,
-          funct_in,
+          funct_in,stall_for_data,
     output dREN_out,dWEN_out,bne_s_out,beq_s_out,jal_s_out,flagZero_out,lui_out,MemtoReg_out,RegWr_out,jump_s_out,jr_s_out,dhit_out,MemWr_out,halt_out,
           pcplusfour_out,rdat2_out, alu_portOut_out,instr_out,Ext_addr_out,rdat1_out,
           imm_addr_out,
@@ -52,7 +52,7 @@ interface  exec_mem_if;
           imm_addr_in,
           j_addr_in,
           wsel_in, shift_amt_in,
-          funct_in
+          funct_in,stall_for_data
   );
 endinterface
 

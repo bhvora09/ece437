@@ -9,8 +9,9 @@ interface ifetch_idecode_if;
     import cpu_types_pkg::*;
 
     //in
-    word_t instr_in;
+    word_t instr_in,
     word_t pc_in, pcplusfour_in;
+    logic stall_for_data,stall_for_instr;
     //logic ihit_in, dhit_in;
 
     //out
@@ -19,7 +20,7 @@ interface ifetch_idecode_if;
     //logic ihit_out, dhit_out;
     
     modport fd_if (
-        input instr_in,
+        input instr_in,stall_for_data,stall_for_instr,
             pc_in, pcplusfour_in,
             //ihit_in, dhit_in,
         output instr_out, 
@@ -31,7 +32,7 @@ interface ifetch_idecode_if;
         input instr_out, 
             pc_out, pcplusfour_out,
             //ihit_out, dhit_out,
-        output instr_in,
+        output instr_in,stall_for_data,stall_for_instr,
             pc_in, pcplusfour_in
             //ihit_in, dhit_in
     );
