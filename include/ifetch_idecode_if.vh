@@ -9,7 +9,7 @@ interface ifetch_idecode_if;
     import cpu_types_pkg::*;
 
     //in
-    word_t instr_in,
+    word_t instr_in;
     word_t pc_in, pcplusfour_in;
     logic ihit, dhit;
 

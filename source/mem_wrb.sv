@@ -12,22 +12,22 @@ module mem_wrb(
 //variables
 import cpu_types_pkg::*;
 
-assign mwif.jal_s_out = (~mwif.stall_for_data) && mwif.jal_s_out;
-assign mwif.lui_out =(~mwif.stall_for_data) && mwif.lui_out;
-assign mwif.MemtoReg_out =(~mwif.stall_for_data) && mwif.MemtoReg_out;
-assign mwif.RegWr_out = (~mwif.stall_for_data) && mwif.RegWr_out;
-assign mwif.halt_out = (~mwif.stall_for_data) && mwif.halt_out;
+// assign mwif.jal_s_out = (~mwif.stall_for_data) && mwif.jal_s_out;
+// assign mwif.lui_out =(~mwif.stall_for_data) && mwif.lui_out;
+// assign mwif.MemtoReg_out =(~mwif.stall_for_data) && mwif.MemtoReg_out;
+// assign mwif.RegWr_out = (~mwif.stall_for_data) && mwif.RegWr_out;
+// assign mwif.halt_out = (~mwif.stall_for_data) && mwif.halt_out;
 
     
-assign mwif.pcplusfour_out =(~mwif.stall_for_data) && mwif.pcplusfour_out;
-assign mwif.instr_out = (~mwif.stall_for_data) && mwif.instr_out;
-assign mwif.wdat_out =  (~mwif.stall_for_data) && mwif.wdat_out;
-assign mwif.alu_portOut_out =(~mwif.stall_for_data) && mwif.alu_portOut_out;
+// assign mwif.pcplusfour_out =(~mwif.stall_for_data) && mwif.pcplusfour_out;
+// assign mwif.instr_out = (~mwif.stall_for_data) && mwif.instr_out;
+// assign mwif.wdat_out =  (~mwif.stall_for_data) && mwif.wdat_out;
+// assign mwif.alu_portOut_out =(~mwif.stall_for_data) && mwif.alu_portOut_out;
     
-assign mwif.imm_addr_out =(~mwif.stall_for_data) && mwif.imm_addr_out;
-assign mwif.wsel_out =(~mwif.stall_for_data) && mwif.wsel_out;
-assign mwif.shift_amt_out = (~mwif.stall_for_data) && mwif.shift_amt_out;
-assign mwif.funct_out =(~mwif.stall_for_data) && mwif.funct_out;
+// assign mwif.imm_addr_out =(~mwif.stall_for_data) && mwif.imm_addr_out;
+// assign mwif.wsel_out =(~mwif.stall_for_data) && mwif.wsel_out;
+// assign mwif.shift_amt_out = (~mwif.stall_for_data) && mwif.shift_amt_out;
+// assign mwif.funct_out =(~mwif.stall_for_data) && mwif.funct_out;
 
 always_ff@(posedge CLK or negedge nRST) begin
     if(!nRST)

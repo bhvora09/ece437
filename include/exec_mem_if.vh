@@ -52,7 +52,7 @@ interface  exec_mem_if;
           imm_addr_in,
           j_addr_in,
           wsel_in, shift_amt_in,
-          funct_in,stall_for_data
+          funct_in
   );
 endinterface
 

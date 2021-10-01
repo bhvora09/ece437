@@ -43,9 +43,9 @@ import cpu_types_pkg::*;
         // end
         else 
         begin
-            ifidif.instr_out <= ifidif.instr_in2;
-            ifidif.pc_out <=ifidif.pc_in2;
-            ifidif.pcplusfour_out <= ifidif.pcplusfour_in2;
+            ifidif.instr_out <= ifidif.instr_in;
+            ifidif.pc_out <=ifidif.pc_in;
+            ifidif.pcplusfour_out <= ifidif.pcplusfour_in;
             //ifidif.dhit_out <= ifidif.dhit_in;
             //ifidif.ihit_out <= ifidif.ihit_in;
         end
