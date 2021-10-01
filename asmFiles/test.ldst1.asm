@@ -10,9 +10,6 @@
   ori   $4, $zero, 0x300
   ori   $5, $zero, 0x400
   lw    $6, 0($1)
-  nop
-  nop
-  nop
   lw    $7, 4($1)
   lw    $8, 8($1)
   ori   $4, $zero, 0x500
