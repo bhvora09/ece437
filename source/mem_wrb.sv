@@ -41,14 +41,20 @@ always_ff@(posedge CLK or negedge nRST) begin
 
     
     mwif.pcplusfour_out<='b0;
+    mwif.pc_out<='b0;
     mwif.instr_out <='b0;
     mwif.wdat_out <= 'b0;
     mwif.alu_portOut_out <= 'b0;
+    mwif.rdat2_out <= 'b0;
     
     mwif.imm_addr_out <='b0;
     mwif.wsel_out <='b0;
     mwif.shift_amt_out <= 'b0;
-    mwif.funct_out <='b0;
+    mwif.reg_rs_out <='b0;
+    mwif.reg_rt_out<='b0;
+
+    mwif.opcode_out <= opcode_t'('b0);
+    mwif.funct_out <=funct_t'('b0);
     end
     
     // else if(mwif.stall_for_data)
@@ -63,13 +69,19 @@ always_ff@(posedge CLK or negedge nRST) begin
     mwif.halt_out <= mwif.halt_in;
 
     mwif.pcplusfour_out<=mwif.pcplusfour_in;
+    mwif.pc_out<=mwif.pc_in;
     mwif.instr_out <= mwif.instr_in;
     mwif.wdat_out <= mwif.wdat_in;
     mwif.alu_portOut_out <= mwif.alu_portOut_in;
+    mwif.rdat2_out <= mwif.rdat2_in;
     
     mwif.imm_addr_out <=mwif.imm_addr_in;
     mwif.wsel_out <=mwif.wsel_in;
     mwif.shift_amt_out <= mwif.shift_amt_in;
+    mwif.reg_rs_out <=mwif.reg_rs_in;
+    mwif.reg_rt_out<=mwif.reg_rt_in;
+
+    mwif.opcode_out <= mwif.opcode_in;
     mwif.funct_out <=mwif.funct_in;
     end
 end

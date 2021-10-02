@@ -129,6 +129,7 @@ module datapath (
   assign deif.ALUctr_in = cuif.ALUctr;
   assign deif.ALUSrc_in = cuif.ALUSrc;
   assign deif.pcplusfour_in=fdif.pcplusfour_out;
+  assign deif.pc_in =fdif.pc_out;
   assign deif.instr_in = fdif.instr_out;
   assign deif.RegWr_in = cuif.RegWr;
   assign deif.MemWr_in = cuif.MemWr;
@@ -138,9 +139,11 @@ module datapath (
   assign deif.imm_addr_in=cuif.imm_addr;
   assign deif.j_addr_in = cuif.j_addr;
   assign deif.shift_amt_in = cuif.shift_amt;
+  assign deif.opcode_in = cuif.opcode;
   assign deif.funct_in = cuif.funct;
   assign deif.rdat1_in = rfif.rdat1;
   assign deif.rdat2_in = rfif.rdat2;
+  assign deif.reg_rs_in = cuif.reg_rs;
   assign deif.reg_rt_in = cuif.reg_rt;
   assign deif.ihit = dpif.ihit;
   assign deif.dhit = dpif.dhit;
@@ -160,6 +163,7 @@ module datapath (
   assign emif.lui_in = deif.lui_out;
 
   assign emif.pcplusfour_in=deif.pcplusfour_out;
+  assign emif.pc_in =deif.pc_out;
   assign emif.instr_in = deif.instr_out;
   assign emif.RegWr_in = deif.RegWr_out;
   assign emif.MemWr_in = deif.MemWr_out;
@@ -169,6 +173,10 @@ module datapath (
   assign emif.imm_addr_in=deif.imm_addr_out;
   assign emif.j_addr_in = deif.j_addr_out;   //add 
   assign emif.shift_amt_in = deif.shift_amt_out;
+  assign emif.reg_rs_in =deif.reg_rs_out;
+  assign emif.reg_rt_in =deif.reg_rt_out;
+
+  assign emif.opcode_in = deif.opcode_out;
   assign emif.funct_in = deif.funct_out; //funct in execute
     
   assign emif.flagZero_in = aluif.flagZero;
@@ -185,13 +193,21 @@ module datapath (
   assign mwif.lui_in = emif.lui_out;
     
   assign mwif.pcplusfour_in=emif.pcplusfour_out;
+  assign mwif.pc_in =emif.pc_out;
   assign mwif.instr_in = emif.instr_out;
+  assign mwif.rdat2_in = emif.rdat2_out;
+
   assign mwif.RegWr_in = emif.RegWr_out;
   assign mwif.MemtoReg_in = emif.MemtoReg_out;
   assign mwif.halt_in = emif.halt_out;
   assign mwif.imm_addr_in=emif.imm_addr_out;
   assign mwif.shift_amt_in = emif.shift_amt_out;
+  
+  assign mwif.reg_rs_in =emif.reg_rs_out;
+  assign mwif.reg_rt_in =emif.reg_rt_out;
+
   assign mwif.funct_in = emif.funct_out;
+  assign mwif.opcode_in = emif.opcode_out;
   assign mwif.wdat_in = dpif.dmemload;
   assign mwif.alu_portOut_in = emif.alu_portOut_out;
   assign mwif.wsel_in= emif.wsel_out;

@@ -15,37 +15,23 @@ import cpu_types_pkg::*;
 always_ff@(posedge CLK or negedge nRST) begin
     if(!nRST)
     begin
-    emif.dREN_out <= 'b0;
-    emif.dWEN_out <= 'b0;
-    emif.bne_s_out <= 'b0;
-    emif.beq_s_out <= 'b0;
-    emif.jal_s_out<='b0;
-    emif.flagZero_out<='b0;
-    emif.lui_out<='b0;
-    emif.MemtoReg_out<='b0;
-    emif.RegWr_out <='b0;
-    emif.jump_s_out <='b0;
-    emif.jr_s_out <= 'b0;
-    //emif.dhit_out <= 'b0;
-    emif.MemWr_out <='b0;
-    emif.halt_out <='b0;
-
-    emif.pcplusfour_out<='b0;
-    emif.rdat2_out <='b0;
-    emif.alu_portOut_out <= 'b0;
-    emif.instr_out <= 'b0;
-    emif.Ext_addr_out <= 'b0;
-    emif.rdat1_out <= 'b0;
-
-    emif.imm_addr_out <='b0;
-    emif.j_addr_out <='b0;
-    emif.wsel_out <='b0;
-    emif.shift_amt_out <='b0;
-    emif.funct_out  <= 'b0;
-
-    emif.rdat1_out <='b0;
+        emif.dREN_out <= 'b0;
+        emif.dWEN_out <= 'b0;
+        emif.bne_s_out <= 'b0;
+        emif.beq_s_out <= 'b0;
+        emif.jal_s_out<='b0;
+        emif.flagZero_out<='b0;
+        emif.lui_out<='b0;
+        emif.MemtoReg_out<='b0;
+        emif.RegWr_out <='b0;
+        emif.jump_s_out <='b0;
+        emif.jr_s_out <= 'b0;
+        //emif.dhit_out <= 'b0;
+        emif.MemWr_out <='b0;
+        emif.halt_out <='b0;
 
         emif.pcplusfour_out<='b0;
+        emif.pc_out<= 'b0;
         emif.rdat2_out <='b0;
         emif.alu_portOut_out <= 'b0;
         emif.instr_out <= 'b0;
@@ -56,10 +42,14 @@ always_ff@(posedge CLK or negedge nRST) begin
         emif.j_addr_out <='b0;
         emif.wsel_out <='b0;
         emif.shift_amt_out <='b0;
-        emif.funct_out  <= 'b0;
+        emif.opcode_out <=opcode_t'('b0);
+        emif.funct_out  <=funct_t'('b0);
 
         emif.rdat1_out <='b0;
 
+
+        emif.reg_rs_out <='b0;
+        emif.reg_rt_out<='b0;
         end
 
     // else if(emif.stall_for_data) begin
@@ -111,6 +101,7 @@ always_ff@(posedge CLK or negedge nRST) begin
         emif.halt_out <=emif.halt_in ;
 
         emif.pcplusfour_out<=emif.pcplusfour_in;
+        emif.pc_out <= emif.pc_in;
         emif.rdat2_out <=emif.rdat2_in;
         emif.alu_portOut_out <= emif.alu_portOut_in;
         emif.instr_out <=  emif.instr_in;
@@ -121,6 +112,10 @@ always_ff@(posedge CLK or negedge nRST) begin
         emif.j_addr_out <=emif.j_addr_in ;
         emif.wsel_out <=emif.wsel_in;
         emif.shift_amt_out <=emif.shift_amt_in;
+        emif.reg_rs_out <=emif.reg_rs_in;
+        emif.reg_rt_out<=emif.reg_rt_in;
+
+        emif.opcode_out <= emif.opcode_in;
         emif.funct_out  <= emif.funct_in;
 
         emif.rdat1_out <= emif.rdat1_in;

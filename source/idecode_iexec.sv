@@ -37,14 +37,16 @@ module idecode_iexec(
             
             idieif.imm_addr_out <='b0;
             
+            idieif.reg_rs_out <= 'b0;
             idieif.reg_rt_out <='b0;
             idieif.reg_rd_out<='b0;
             idieif.shift_amt_out <='b0;
 
             idieif.j_addr_out <= 'b0;
 
-            idieif.funct_out <='b0;
-
+            idieif.funct_out <=funct_t'('b0);
+            idieif.opcode_out <=opcode_t'('b0);
+            idieif.pc_out <= 'b0;
             //idieif.dhit_out <= 'b0;
             //idieif.ihit_out <='b0;
             //idieif.dhit_out <='b0;
@@ -113,6 +115,7 @@ module idecode_iexec(
             
             idieif.imm_addr_out <= idieif.imm_addr_in;
             
+            idieif.reg_rs_out <= idieif.reg_rs_in;
             idieif.reg_rt_out <=idieif.reg_rt_in;
             idieif.reg_rd_out<=idieif.reg_rd_in;
             idieif.shift_amt_out <= idieif.shift_amt_in;
@@ -120,6 +123,8 @@ module idecode_iexec(
             idieif.j_addr_out <= idieif.j_addr_in;
 
             idieif.funct_out <=idieif.funct_in;
+            idieif.opcode_out <= idieif.opcode_in;
+            idieif.pc_out <= idieif.pc_in;
             //idieif.dhit_out <= idieif.dhit_in;
             //idieif.ihit_out <= idieif.ihit_in;
             //idieif.dhit_out <= idieif.dhit_in;    
