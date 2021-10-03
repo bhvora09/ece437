@@ -4,8 +4,7 @@
 
 //initialise module
 module register_file(
-    input CLK,
-    input nRST,
+    input logic CLK, nRST,
     register_file_if.rf rfif
  );
 

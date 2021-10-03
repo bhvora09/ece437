@@ -14,7 +14,7 @@
 `include "cpu_types_pkg.vh"
 
 module memory_control (
-  input CLK, nRST,
+  input logic CLK, nRST,
   //datapath_cache_if.dp dcif
   cache_control_if.cc ccif
   //cpu_ram_if.ram crif

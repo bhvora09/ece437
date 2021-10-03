@@ -2,8 +2,7 @@
 `include "cpu_types_pkg.vh"
 
 module memory_request_unit(
-    input CLK,
-    output nRST,
+    input logic CLK, nRST,
     memory_request_unit_if.mru mruif
 );
   // type import
