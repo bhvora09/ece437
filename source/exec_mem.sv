@@ -45,7 +45,7 @@ always_ff@(posedge CLK or negedge nRST) begin
         emif.opcode_out <=opcode_t'('b0);
         emif.funct_out  <=funct_t'('b0);
 
-        emif.rdat1_out <='b0;
+        //emif.rdat1_out <='b0;
 
 
         emif.reg_rs_out <='b0;

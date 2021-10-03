@@ -13,34 +13,35 @@ module hazard_unit(
     hazard_unit_if.hu huif
 );
 
-    always_comb begin : LOG
+    always_comb 
+    begin 
         huif.PCWrite = 1;
         //branch prediction
-        if(huif.emif_bneS == 1) begin
+        if(huif.emif_bneS) begin
             huif.deif_flush = 1;
             huif.fdif_flush = 1;
             huif.emif_flush = 1;
         end
-        else if(huif.emif_beqS == 1) begin
+        else if(huif.emif_beqS) begin
             huif.deif_flush = 1;
             huif.fdif_flush = 1;
             huif.emif_flush = 1;
         end
 
         //jump
-        else if(huif.emif_jS == 1) begin
+        else if(huif.emif_jS) begin
             huif.deif_flush = 1;
             huif.fdif_flush = 1;
             huif.emif_flush = 1;
         end
 
-        else if(huif.emif_jrS == 1) begin
+        else if(huif.emif_jrS) begin
             huif.deif_flush = 1;
             huif.fdif_flush = 1;
             huif.emif_flush = 1;
         end
 
-        else if(huif.emif_jalS == 1) begin
+        else if(huif.emif_jalS) begin
             huif.deif_flush = 1;
             huif.fdif_flush = 1;
             huif.emif_flush = 1;
