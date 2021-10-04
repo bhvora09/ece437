@@ -11,7 +11,7 @@ interface ifetch_idecode_if;
     //in
     word_t instr_in;
     word_t pc_in, pcplusfour_in;
-    logic ihit, dhit;
+    logic ihit, dhit,stall;
 
     //out
     word_t instr_out;
@@ -20,7 +20,7 @@ interface ifetch_idecode_if;
     
     modport fd_if (
         input instr_in,ihit, dhit,
-            pc_in, pcplusfour_in,
+            pc_in, pcplusfour_in, stall,
             //ihit_in, dhit_in,
         output instr_out, 
             pc_out, pcplusfour_out
@@ -31,7 +31,7 @@ interface ifetch_idecode_if;
         input instr_out, 
             pc_out, pcplusfour_out,
             //ihit_out, dhit_out,
-        output instr_in,ihit, dhit,
+        output instr_in,ihit, dhit,stall,
             pc_in, pcplusfour_in
             //ihit_in, dhit_in
     );

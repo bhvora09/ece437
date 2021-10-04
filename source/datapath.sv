@@ -92,7 +92,7 @@ module datapath (
   assign aluopinwrback = aluop_t'(mwif.instr_out[5:0]);
 
   //1.pc
-  assign pcif.PCen = dpif.ihit;
+   assign pcif.PCen = dpif.ihit & huif.PCWrite;
 
   //1. fdif
   assign fdif.instr_in = huif.fdif_flush ? 'b0: dpif.imemload; //huif added
@@ -100,6 +100,7 @@ module datapath (
   assign fdif.pc_in = huif.fdif_flush ? 'b0 : pcif.pc; //huif added
   assign fdif.ihit = dpif.ihit;
   assign fdif.dhit = dpif.dhit;
+  assign fdif.stall = huif.fdif_stall;
 
   //1/4.dp
   assign dpif.imemREN=1'b1;
@@ -158,6 +159,7 @@ module datapath (
   
   assign deif.ihit = dpif.ihit;
   assign deif.dhit = dpif.dhit;
+  assign deif.stall = huif.deif_stall;
 
   //3.ALU
   assign aluif.portA = deif.rdat1_out;
@@ -228,6 +230,14 @@ module datapath (
 
   //hu
   assign huif.emif_bneS = emif.bne_s_out ? (emif.flagZero_out=='b0 ? 'b1:'b0 ):'b0;
+  assign huif.fdif_rs = cuif.reg_rs;
+  assign huif.fdif_rt = cuif.reg_rt;
+  assign huif.deif_rt = deif.reg_rt_out;
+  assign huif.deif_MemtoReg = deif.MemtoReg_out;
+  assign huif.deif_RegWr = deif.RegWr_out;
+  assign huif.emif_rt =  emif.reg_rt_out;
+  assign huif.emif_MemtoReg = emif.MemtoReg_out;
+  assign huif.emif_RegWr = emif.RegWr_out;
   //mru
     // if (dpif.dhit) begin
     //     //$display("dhit");
@@ -272,11 +282,11 @@ module datapath (
     huif.emif_jalS=0;
     huif.emif_jrS=0;
     huif.emif_jS=0;
-    huif.deif_MemtoReg = 'b0;
-    huif.deif_rt='b0;
-    huif.fdif_rs='b0;
-    huif.fdif_rt='b0;
-    huif.emif_rt ='b0;
+    //huif.deif_MemtoReg = 'b0;
+    // huif.deif_rt='b0;
+    // huif.fdif_rs='b0;
+    // huif.fdif_rt='b0;
+    // huif.emif_rt ='b0;
 
 
     if(emif.jal_s_out || emif.jump_s_out) 

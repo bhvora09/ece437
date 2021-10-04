@@ -242,6 +242,7 @@ add wave -noupdate -group MWIF /system_tb/DUT/CPU/DP/mwif/opcode_out
 add wave -noupdate -group MWIF /system_tb/DUT/CPU/DP/mwif/funct_in
 add wave -noupdate -group MWIF /system_tb/DUT/CPU/DP/mwif/funct_out
 add wave -noupdate -expand -group HUIF /system_tb/DUT/CPU/DP/huif/PCWrite
+add wave -noupdate -expand -group HUIF /system_tb/DUT/CPU/DP/hazard_unit/huif/deif_RegWr
 add wave -noupdate -expand -group HUIF /system_tb/DUT/CPU/DP/huif/deif_MemtoReg
 add wave -noupdate -expand -group HUIF /system_tb/DUT/CPU/DP/huif/deif_memWr
 add wave -noupdate -expand -group HUIF /system_tb/DUT/CPU/DP/huif/emif_bneS
@@ -267,7 +268,7 @@ add wave -noupdate -expand -group HUIF /system_tb/DUT/CPU/DP/huif/emif_rt
 add wave -noupdate -expand -group HUIF /system_tb/DUT/CPU/DP/huif/emif_rs
 add wave -noupdate -expand -group HUIF /system_tb/DUT/CPU/DP/huif/emif_rd
 TreeUpdate [SetDefaultTree]
-WaveRestoreCursors {{Cursor 1} {764087580 ps} 0}
+WaveRestoreCursors {{Cursor 1} {65048 ps} 0}
 quietly wave cursor active 1
 configure wave -namecolwidth 334
 configure wave -valuecolwidth 100
@@ -283,4 +284,4 @@ configure wave -griddelta 40
 configure wave -timeline 0
 configure wave -timelineunits ns
 update
-WaveRestoreZoom {0 ps} {1377180 ns}
+WaveRestoreZoom {0 ps} {1344904 ps}

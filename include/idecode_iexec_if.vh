@@ -33,7 +33,7 @@ interface idecode_iexec_if;
     funct_t funct_out;
     opcode_t opcode_out;
     logic [3:0] ALUctr_out;
-    logic ihit, dhit;
+    logic ihit, dhit,stall;
 
     modport de_if (
         input instr_in,Ext_addr_in, pcplusfour_in,rdat1_in, rdat2_in,pc_in,ihit, dhit,
@@ -43,7 +43,7 @@ interface idecode_iexec_if;
                 reg_rs_in,reg_rt_in,reg_rd_in,shift_amt_in,
                 j_addr_in,
                 funct_in,
-                opcode_in,
+                opcode_in,stall,
                 //ihit_in,
                 //dhit_in,
                 //stall_for_data,
@@ -76,7 +76,7 @@ interface idecode_iexec_if;
                 reg_rs_in, reg_rt_in,reg_rd_in,shift_amt_in,
                 j_addr_in,
                 funct_in,
-                opcode_in
+                opcode_in,stall
                 //ihit_in,
                 //dhit_in,
                 
