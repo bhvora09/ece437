@@ -57,6 +57,7 @@ module datapath (
     npc=32'b0;
     shift_left_1=32'b0;
     extended_address=32'b0;
+    luiwdat ='b0;
     //aluif.portA='b0;
     //aluif.portB='b0;
 
