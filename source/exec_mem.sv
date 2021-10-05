@@ -50,6 +50,7 @@ always_ff@(posedge CLK or negedge nRST) begin
 
         emif.reg_rs_out <='b0;
         emif.reg_rt_out<='b0;
+        emif.reg_rd_out <= 'b0;
         end
 
     // else if(emif.stall_for_data) begin
@@ -114,6 +115,7 @@ always_ff@(posedge CLK or negedge nRST) begin
         emif.shift_amt_out <=emif.shift_amt_in;
         emif.reg_rs_out <=emif.reg_rs_in;
         emif.reg_rt_out<=emif.reg_rt_in;
+        emif.reg_rd_out <= emif.reg_rd_in;
 
         emif.opcode_out <= emif.opcode_in;
         emif.funct_out  <= emif.funct_in;

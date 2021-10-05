@@ -188,6 +188,7 @@ module datapath (
   assign emif.shift_amt_in = huif.emif_flush ? 'b0: deif.shift_amt_out;
   assign emif.reg_rs_in =huif.emif_flush ? 'b0: deif.reg_rs_out;
   assign emif.reg_rt_in =huif.emif_flush ? 'b0: deif.reg_rt_out;
+  assign emif.reg_rd_in = emif.wsel_in;
 
   assign emif.opcode_in =huif.emif_flush ? opcode_t'('b0):  deif.opcode_out;
   assign emif.funct_in = huif.emif_flush ? funct_t'('b0): deif.funct_out; //funct in execute
@@ -238,6 +239,12 @@ module datapath (
   assign huif.emif_rt =  emif.reg_rt_out;
   assign huif.emif_MemtoReg = emif.MemtoReg_out;
   assign huif.emif_RegWr = emif.RegWr_out;
+  assign huif.deif_opcode = deif.opcode_out;
+  assign huif.emif_opcode = emif.opcode_out;
+  assign huif.deif_rd = deif.reg_rd_out;
+  assign huif.emif_rd = emif.reg_rd_out;
+  assign huif.decode_memWr = cuif.MemWr;
+
   //mru
     // if (dpif.dhit) begin
     //     //$display("dhit");
@@ -406,7 +413,7 @@ module datapath (
     else
       emif.wsel_in= huif.emif_flush ? 'b0: deif.reg_rt_out; //going to execute mem pipeline
   end
-    
+    // emif.reg_rd_in = emif.wsel_in;
   always_ff @(posedge CLK or negedge nRST) begin
      if(!nRST)
        dpif.halt<='b0;
