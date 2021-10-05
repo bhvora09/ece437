@@ -239,8 +239,8 @@ module datapath (
   assign huif.emif_rt =  emif.reg_rt_out;
   assign huif.emif_MemtoReg = emif.MemtoReg_out;
   assign huif.emif_RegWr = emif.RegWr_out;
-  assign huif.deif_opcode = deif.opcode_out;
-  assign huif.emif_opcode = emif.opcode_out;
+  assign huif.deif_opcode = opcode_t'(deif.opcode_out);
+  assign huif.emif_opcode = opcode_t'(emif.opcode_out);
   assign huif.deif_rd = deif.reg_rd_out;
   assign huif.emif_rd = emif.reg_rd_out;
   assign huif.decode_memWr = cuif.MemWr;

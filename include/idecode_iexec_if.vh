@@ -17,6 +17,8 @@ interface idecode_iexec_if;
     logic [25:0] j_addr_in;
     funct_t funct_in;
     opcode_t opcode_in;
+    //opcode_t opcode_out;
+    //funct_t funct_out;
     logic [3:0] ALUctr_in;
     
     //logic ihit_in, 
