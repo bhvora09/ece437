@@ -1,7 +1,7 @@
 //COPIED FROM HAZARD UNIT TB
 
 `include "cpu_types_pkg.vh"
-`include "fowarding_unit_if.vh"
+`include "forwarding_unit_if.vh"
 
 
 // mapped timing needs this. 1ns is too fast
@@ -15,19 +15,27 @@ module forwarding_unit_tb;
   test PROG (.tb_IO(fuif));
   // DUT
 `ifndef MAPPED
-  hazard_unit DUT(fuif);
+  forwarding_unit DUT(fuif);
 `else
-  hazard_unit DUT(
-      .\fuif.deif_rt, (fuif.deif_rt),
-      .\fuif.deif_rd, (fuif.deif_rd),
-      .\fuif.emif_rt, (fuif.emif_rt),
-      .\fuif.emif_rs, (fuif.emif_rs)
+  forwarding_unit DUT(
+    .\fuif.emif_RegWr, (fuif.emif_RegWr),
+    .\fuif.mwif_RegWr, (fuif.mwif_RegWr),
+    .\fuif.emif_rd, (fuif.emif_rd),
+    .\fuif.mwif_rd, (fuif.mwif_rd),
+    .\fuif.deif_rs, (fuif.deif_rs),
+    .\fuif.deif_rt, (fuif.deif_rt),
+    .\fuif.emif_portout, (fuif.emif_portout),
+    .\fuif.mwif_portout, (fuif.mwif_portout),
+    .\fuif.Asel, (fuif.Asel),
+    .\fuif.Bsel, (fuif.Bsel),
+    .\fuif.DataB, (fuif.DataB),
+    .\fuif.DataA, (fuif.DataA)      
   );
 `endif
 endmodule
 
 program test(
-  hazard_unit_if tb_IO
+  forwarding_unit_if tb_IO
 );
 
   import cpu_types_pkg::*;
@@ -36,7 +44,15 @@ program test(
 
   task init;
   begin
-    
+    fuif.emif_RegWr = '0;
+    fuif.mwif_RegWr = '0;
+    fuif.emif_rd = '0;
+    fuif.mwif_rd = '0;
+    fuif.deif_rs = '0;
+    fuif.deif_rt = '0;
+    fuif.emif_portout = '0;
+    fuif.mwif_portout = '0;
+    #(PERIOD);
   end
   endtask
 
@@ -53,93 +69,112 @@ program test(
     init;
 
     //******************************************************
-    // TEST 1: RAW ex fetch
+    // TEST 1: Forward from mem
     //******************************************************
     tb_test_num = tb_test_num +1;
-    tb_test_case = "RAW ex";
-
-    huif.deif_MemtoReg = 1;
-    huif.fdif_rs = 5'd4;
-    huif.deif_rt = 5'd4;
-    
-    #(PERIOD);
-
-    init;
-
-    huif.deif_MemtoReg = 1;
-    huif.fdif_rt = 5'd7;
-    huif.deif_rt = 5'd7;
+    tb_test_case = "mem";
+    fuif.emif_RegWr = 1;
+    fuif.deif_rs = 5;
+    fuif.deif_rt = 5;
+    fuif.emif_rd = 5;
+    fuif.emif_portout = 'hFF00FF00;
 
     #(PERIOD);
 
     //******************************************************
-    // TEST 2: RAW mem fetch
+    // TEST 2: Forward from wb
     //******************************************************
     tb_test_num = tb_test_num +1;
-    tb_test_case = "RAW mem";
-    
-    init;
-    
-    huif.deif_MemtoReg = 1;
-    huif.fdif_rs = 5'd4;
-    huif.emif_rt = 5'd4;
-    
-    #(PERIOD);
-
+    tb_test_case = "wb";
     init;
 
-    huif.deif_MemtoReg = 1;
-    huif.fdif_rt = 5'd7;
-    huif.emif_rt = 5'd7;
+    fuif.mwif_RegWr = 1;
+    fuif.deif_rs = 18;
+    fuif.deif_rt = 18;
+    fuif.mwif_rd = 18;
+    fuif.mwif_portout = 'hBEEF;
 
     #(PERIOD);
 
     //******************************************************
-    // TEST 3: branch
+    // TEST 3: regWr 0 wb
     //******************************************************
     tb_test_num = tb_test_num +1;
-    tb_test_case = "branch";
-    
-    init;
-    
-    huif.emif_beqS = 1;
-    
-    #(PERIOD);
-
+    tb_test_case = "regWr 0 wb";
     init;
 
-    huif.emif_bneS = 1;
+    fuif.mwif_RegWr = 0;
+    fuif.deif_rs = 18;
+    fuif.deif_rt = 18;
+    fuif.mwif_rd = 18;
+    fuif.mwif_portout = 'hBEEF;
 
     #(PERIOD);
 
     //******************************************************
-    // TEST 4: jump
+    // TEST 4: regWr 0 mem
     //******************************************************
     tb_test_num = tb_test_num +1;
-    tb_test_case = "jump";
-    
-    init;
-    
-    huif.emif_jS = 1;
-    
-    #(PERIOD);
-
-    init;
-
-    huif.emif_jrS = 1;
+    tb_test_case = "regWr 0 mem";
+    fuif.emif_RegWr = 0;
+    fuif.deif_rs = 5;
+    fuif.deif_rt = 5;
+    fuif.emif_rd = 5;
+    fuif.emif_portout = 'hFF00FF00;
 
     #(PERIOD);
-
+    
+    //******************************************************
+    // TEST 5: reg 0 wb
+    //******************************************************
+    tb_test_num = tb_test_num +1;
+    tb_test_case = "reg 0 wb";
     init;
 
-    huif.emif_jalS = 1;
+    fuif.mwif_RegWr = 1;
+    fuif.deif_rs = 0;
+    fuif.deif_rt = 0;
+    fuif.mwif_rd = 0;
+    fuif.mwif_portout = 'hBEEF;
 
     #(PERIOD);
 
+    //******************************************************
+    // TEST 6: reg 0 mem
+    //******************************************************
+    tb_test_num = tb_test_num +1;
+    tb_test_case = "reg 0 mem";
+    fuif.emif_RegWr = 1;
+    fuif.deif_rs = 0;
+    fuif.deif_rt = 0;
+    fuif.emif_rd = 0;
+    fuif.emif_portout = 'hFF00FF00;
 
-    
+    #(PERIOD);
+
+    //******************************************************
+    // TEST 7: sametime
+    //******************************************************
+    tb_test_num = tb_test_num +1;
+    tb_test_case = "both";
+    init;
+
+    fuif.mwif_RegWr = 1;
+    fuif.deif_rs = 18;
+    fuif.deif_rt = 18;
+    fuif.mwif_rd = 18;
+    fuif.mwif_portout = 'hBEEF;
+
+    fuif.emif_RegWr = 1;
+    fuif.deif_rs = 5;
+    fuif.deif_rt = 5;
+    fuif.emif_rd = 5;
+    fuif.emif_portout = 'hFF00FF00;
+
+    #(PERIOD);
 
     $finish;
+    
 
   end
 
