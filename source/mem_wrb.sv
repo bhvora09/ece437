@@ -87,7 +87,7 @@ always_ff@(posedge CLK or negedge nRST) begin
     // begin
     
     //end
-    else if (mwif.ihit) begin
+    else if (mwif.ihit | mwif.dhit) begin
         mwif.jal_s_out<=mwif.jal_s_in;
         mwif.lui_out<=mwif.lui_in;
         mwif.MemtoReg_out <= mwif.MemtoReg_in;
