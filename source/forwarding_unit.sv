@@ -15,24 +15,29 @@ module forwarding_unit
         fuif.DataA = 0;
         fuif.DataB = 0; 
 
-        if((fuif.emif_RegWr)  & (fuif.emif_rd != 'b0) & (fuif.emif_rd == fuif.deif_rs)) begin
+        
+        if((fuif.emif_RegWr)  & (fuif.emif_rd != 0) & (fuif.emif_rd == fuif.deif_rs)) begin
                 fuif.Asel = 1;
                 fuif.DataA = fuif.emif_portout;
         end
+        else begin
+                if((fuif.mwif_RegWr)  & (fuif.mwif_rd != 0) & (fuif.mwif_rd == fuif.deif_rs)) begin
+                        fuif.Asel = 1;
+                        fuif.DataA = fuif.mwif_portout;
+                end
+        end
 
-        if((fuif.emif_RegWr)  & (fuif.emif_rd != 'b0) & (fuif.emif_rd == fuif.deif_rt)) begin
+
+        if((fuif.emif_RegWr)  & (fuif.emif_rd != 0) & (fuif.emif_rd == fuif.deif_rt)) begin
                 fuif.Bsel = 1;
                 fuif.DataB = fuif.emif_portout;
         end
 
-        if((fuif.mwif_RegWr)  & (fuif.mwif_rd != 'b0) & (fuif.mwif_rd == fuif.deif_rs)) begin
-                fuif.Asel = 1;
-                fuif.DataA = fuif.mwif_portout;
-        end
-
-        if((fuif.mwif_RegWr)  & (fuif.mwif_rd != 'b0) & (fuif.mwif_rd == fuif.deif_rt)) begin
-                fuif.Bsel = 1;
-                fuif.DataB = fuif.mwif_portout;
+        else begin
+                if((fuif.mwif_RegWr)  & (fuif.mwif_rd != 0) & (fuif.mwif_rd == fuif.deif_rt)) begin
+                        fuif.Bsel = 1;
+                        fuif.DataB = fuif.mwif_portout;
+                end
         end
     end
 
