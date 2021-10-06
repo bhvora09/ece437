@@ -55,28 +55,37 @@ module hazard_unit(
             huif.emif_flush = 1;
         end
         //for rtype
-        else if((!((huif.emif_rd == 'b0) & (huif.fdif_rs == 'b0) & (huif.fdif_rt=='b0))) & ( huif.emif_MemtoReg | huif.emif_RegWr) & (huif.emif_opcode==6'b000000)& ((huif.emif_rd == huif.fdif_rs) | (huif.emif_rd == huif.fdif_rt)))begin
-            huif.fdif_stall = 1;
-            huif.deif_flush = 1;
-            huif.PCWrite = 0;
-        end
+        // else if((!((huif.emif_rd == 'b0) & (huif.fdif_rs == 'b0) & (huif.fdif_rt=='b0))) & ( huif.emif_MemtoReg | huif.emif_RegWr) & (huif.emif_opcode==6'b000000)& ((huif.emif_rd == huif.fdif_rs) | (huif.emif_rd == huif.fdif_rt)))begin
+        //     huif.fdif_stall = 1;
+        //     huif.deif_flush = 1;
+        //     huif.PCWrite = 0;
+        // end
             //raw
-        else if((!((huif.emif_rt == 'b0) & (huif.fdif_rs == 'b0) & (huif.fdif_rt=='b0)) )& ( huif.emif_MemtoReg | huif.emif_RegWr) &((huif.emif_rt == huif.fdif_rs) | (huif.emif_rt == huif.fdif_rt)))begin
+        else if((huif.emif_rt != 'b0) & (!((huif.fdif_rs == 'b0) & (huif.fdif_rt=='b0))) & ( huif.emif_MemtoReg | huif.decode_memWr) &((huif.emif_rt == huif.fdif_rs) | (huif.emif_rt == huif.fdif_rt)))begin
             huif.fdif_stall = 1;
             huif.deif_flush =1;
             huif.PCWrite = 0;
         end
         //rtype and raw
-        else if ((huif.deif_MemtoReg | huif.deif_RegWr)& (huif.deif_opcode==6'b000000)& (!((huif.deif_rd == 'b0) & (huif.fdif_rs == 'b0) & (huif.fdif_rt=='b0))) & ((huif.deif_rd == huif.fdif_rs) | (huif.deif_rd == huif.fdif_rt)))begin
-            huif.fdif_stall = 1;
-            huif.deif_flush = 1;
-            huif.PCWrite = 0;
-        end
-        else if((huif.deif_MemtoReg | huif.deif_RegWr)& (!((huif.deif_rt == 'b0) & (huif.fdif_rs == 'b0) & (huif.fdif_rt=='b0)))& ((huif.deif_rt == huif.fdif_rs) | (huif.deif_rt == huif.fdif_rt))) begin
+        // else if ((huif.deif_MemtoReg | huif.deif_RegWr)& (huif.deif_opcode==6'b000000)& (!((huif.deif_rd == 'b0) & (huif.fdif_rs == 'b0) & (huif.fdif_rt=='b0))) & ((huif.deif_rd == huif.fdif_rs) | (huif.deif_rd == huif.fdif_rt)))begin
+        //     huif.fdif_stall = 1;
+        //     huif.deif_flush = 1;
+        //     huif.PCWrite = 0;
+        // end
+        else if((huif.deif_MemtoReg | huif.decode_memWr )& (huif.deif_rt != 'b0) & (!((huif.fdif_rs == 'b0) & (huif.fdif_rt=='b0)))& ((huif.deif_rt == huif.fdif_rs) | (huif.deif_rt == huif.fdif_rt))) begin
             huif.fdif_stall = 1;
             huif.deif_flush =1;
             huif.PCWrite = 0;
         end
-            
+        else if(huif.decode_memWr & (huif.emif_rd != 'b0) & (!((huif.fdif_rs == 'b0) & (huif.fdif_rt=='b0))) & ((huif.emif_rd == huif.fdif_rs) | (huif.emif_rd == huif.fdif_rt)))begin
+            huif.fdif_stall = 1;
+            huif.deif_flush =1;
+            huif.PCWrite = 0;
+        end
+        else if(huif.decode_memWr & (huif.deif_rd != 'b0) & (!((huif.fdif_rs == 'b0) & (huif.fdif_rt=='b0))) & ((huif.deif_rd == huif.fdif_rs) | (huif.deif_rd == huif.fdif_rt))) begin
+            huif.fdif_stall = 1;
+            huif.deif_flush =1;
+            huif.PCWrite = 0;
+        end
     end
 endmodule

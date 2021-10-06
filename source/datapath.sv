@@ -52,6 +52,7 @@ module datapath (
   exec_mem_if emif();
   mem_wrb_if mwif();
   hazard_unit_if huif();
+  forwarding_unit_if fuif();
 
   //adding all units in the datapath
   alu ALU(aluif);
@@ -64,6 +65,7 @@ module datapath (
   exec_mem EXECMEM(CLK, nRST, emif);
   mem_wrb MEMWRB(CLK, nRST, mwif);
   hazard_unit hazard_unit (huif);
+  forwarding_unit forwarding_unit (fuif);
 
 
   //opcodes
@@ -162,7 +164,7 @@ module datapath (
   assign deif.stall = huif.deif_stall;
 
   //3.ALU
-  assign aluif.portA = deif.rdat1_out;
+  assign aluif.portA = fuif.Asel? fuif.DataA : deif.rdat1_out;
   assign aluif.op =  deif.ALUctr_out;
 
   //3.execute/mem pipeline reg
@@ -195,7 +197,7 @@ module datapath (
     
   assign emif.flagZero_in = huif.emif_flush ? 'b0: aluif.flagZero;
   assign emif.rdat2_in = huif.emif_flush ? 'b0: deif.rdat2_out;
-  assign emif.alu_portOut_in = huif.emif_flush ? 'b0: aluif.portOut;
+  assign emif.alu_portOut_in = huif.emif_flush ? 'b0: (deif.lui_out ? {deif.imm_addr_out,16'h0000} : aluif.portOut);
   assign emif.Ext_addr_in = huif.emif_flush ? 'b0: deif.Ext_addr_out;
   assign emif.rdat1_in = huif.emif_flush ? 'b0: deif.rdat1_out;
 
@@ -219,6 +221,7 @@ module datapath (
   
   assign mwif.reg_rs_in =emif.reg_rs_out;
   assign mwif.reg_rt_in =emif.reg_rt_out;
+  assign mwif.reg_rd_in = emif.reg_rd_out;
 
   assign mwif.funct_in = emif.funct_out;
   assign mwif.opcode_in = emif.opcode_out;
@@ -245,6 +248,17 @@ module datapath (
   assign huif.emif_rd = emif.reg_rd_out;
   assign huif.decode_memWr = cuif.MemWr;
 
+  //fu
+  assign fuif.emif_RegWr = emif.RegWr_out;
+  assign fuif.emif_rd = emif.wsel_out;
+  assign fuif.deif_rs = deif.reg_rs_out;
+  assign fuif.deif_rt = deif.reg_rt_out;
+  assign fuif.emif_portout = emif.alu_portOut_out;
+  assign fuif.mwif_RegWr = mwif.RegWr_out;
+  assign fuif.mwif_rd = mwif.wsel_out;
+  assign fuif.mwif_portout = mwif.alu_portOut_out;
+
+  assign dpif.halt=mwif.halt_out;
   //mru
     // if (dpif.dhit) begin
     //     //$display("dhit");
@@ -381,9 +395,9 @@ module datapath (
     
     //wdat
   always_comb begin
-    if(mwif.lui_out)begin 
-      rfif.wdat = {mwif.imm_addr_out,16'h0000};end  
-    else if (mwif.jal_s_out) 
+    // if(mwif.lui_out)begin 
+    //   rfif.wdat = {mwif.imm_addr_out,16'h0000};end  
+    if (mwif.jal_s_out) 
       rfif.wdat=mwif.pcplusfour_out;  
     else if(mwif.MemtoReg_out)  
       rfif.wdat=mwif.wdat_out;  
@@ -397,7 +411,9 @@ module datapath (
   always_comb begin
     if (deif.ALUSrc_out)
       aluif.portB = deif.Ext_addr_out;  //add
-    else
+    else if(fuif.Bsel)
+      aluif.portB = fuif.DataB;
+    else 
       aluif.portB = deif.rdat2_out;     //add
   end      
     
@@ -414,13 +430,13 @@ module datapath (
       emif.wsel_in= huif.emif_flush ? 'b0: deif.reg_rt_out; //going to execute mem pipeline
   end
     // emif.reg_rd_in = emif.wsel_in;
-  always_ff @(posedge CLK or negedge nRST) begin
-     if(!nRST)
-       dpif.halt<='b0;
-      //dpif.halt<=cuif.halt || (nRST);
-     else if (mwif.halt_out)
-      dpif.halt<=mwif.halt_out;
-      //dpif.halt<=(~cuif.halt) || (nRST && cuif.halt);
+  // always_comb begin
+  //    if(!nRST)
+  //      dpif.halt='b0;
+  //     //dpif.halt<=cuif.halt || (nRST);
+  //    else if (mwif.halt_out)
+  //       dpif.halt=mwif.halt_out;
+  //     //dpif.halt<=(~cuif.halt) || (nRST && cuif.halt);
       
-  end
+  // end
 endmodule

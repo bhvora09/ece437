@@ -17,8 +17,8 @@ interface  mem_wrb_if;
 
     logic [15:0] imm_addr_in;
     logic [15:0] imm_addr_out;
-    logic [4:0] wsel_in,shift_amt_in,reg_rs_in,reg_rt_in;
-    logic [4:0] wsel_out,shift_amt_out,reg_rs_out,reg_rt_out;
+    logic [4:0] wsel_in,shift_amt_in,reg_rs_in,reg_rt_in,reg_rd_in;;
+    logic [4:0] wsel_out,shift_amt_out,reg_rs_out,reg_rt_out,reg_rd_out;
 
     opcode_t opcode_in;
     opcode_t opcode_out;
@@ -34,13 +34,13 @@ interface  mem_wrb_if;
     input jal_s_in,lui_in,MemtoReg_in,RegWr_in,halt_in,ihit, dhit,
           pcplusfour_in,pc_in,instr_in,wdat_in,alu_portOut_in,rdat2_in,
           imm_addr_in,
-          wsel_in,shift_amt_in,reg_rs_in,reg_rt_in,
+          wsel_in,shift_amt_in,reg_rs_in,reg_rt_in,reg_rd_in,
           opcode_in,
           funct_in,
     output jal_s_out,lui_out,MemtoReg_out,RegWr_out,halt_out,
           pcplusfour_out,pc_out,instr_out,wdat_out,alu_portOut_out,rdat2_out,
           imm_addr_out,
-          wsel_out,shift_amt_out,reg_rs_out,reg_rt_out,
+          wsel_out,shift_amt_out,reg_rs_out,reg_rt_out,reg_rd_out,
           opcode_out,
           funct_out
   );
@@ -49,13 +49,13 @@ interface  mem_wrb_if;
     input jal_s_out,lui_out,MemtoReg_out,RegWr_out,halt_out,
           pcplusfour_out,pc_out,instr_out,wdat_out,alu_portOut_out,rdat2_out,
           imm_addr_out,
-          wsel_out,shift_amt_out,reg_rs_out,reg_rt_out,
+          wsel_out,shift_amt_out,reg_rs_out,reg_rt_out,reg_rd_out,
           opcode_out,
           funct_out,
     output jal_s_in,lui_in,MemtoReg_in,RegWr_in,halt_in,ihit, dhit,
           pcplusfour_in,pc_in,instr_in,wdat_in,alu_portOut_in,rdat2_in,
           imm_addr_in,
-          wsel_in,shift_amt_in,reg_rs_in,reg_rt_in,
+          wsel_in,shift_amt_in,reg_rs_in,reg_rt_in,reg_rd_in,
           opcode_in,
           funct_in
   );

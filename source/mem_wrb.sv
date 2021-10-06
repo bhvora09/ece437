@@ -52,9 +52,11 @@ always_ff@(posedge CLK or negedge nRST) begin
     mwif.shift_amt_out <= 'b0;
     mwif.reg_rs_out <='b0;
     mwif.reg_rt_out<='b0;
+    mwif.reg_rd_out <='b0;
 
     mwif.opcode_out <= opcode_t'('b0);
     mwif.funct_out <=funct_t'('b0);
+
     end
     
     // else if(mwif.stall_for_data)
@@ -80,6 +82,7 @@ always_ff@(posedge CLK or negedge nRST) begin
     mwif.shift_amt_out <= mwif.shift_amt_in;
     mwif.reg_rs_out <=mwif.reg_rs_in;
     mwif.reg_rt_out<=mwif.reg_rt_in;
+    mwif.reg_rd_out <=mwif.reg_rd_in;
 
     mwif.opcode_out <= mwif.opcode_in;
     mwif.funct_out <=mwif.funct_in;
