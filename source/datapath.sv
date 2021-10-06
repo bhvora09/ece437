@@ -19,6 +19,7 @@
 `include "mem_wrb_if.vh"
 `include "hazard_unit_if.vh"
 `include "cpu_types_pkg.vh"
+`include "forwarding_unit_if.vh"
 
 
 module datapath (
@@ -30,6 +31,7 @@ module datapath (
 
   parameter PC_INIT=0;
 
+  logic dREN_from_mem,dWEN_from_mem;
   logic [31:0] SignExt_addr;
   //logic [31:0] luiwdat;
   logic [31:0] ZeroExt_addr;
@@ -102,8 +104,9 @@ module datapath (
   assign fdif.pc_in = huif.fdif_flush ? 'b0 : pcif.pc; //huif added
   assign fdif.ihit = dpif.ihit;
   assign fdif.dhit = dpif.dhit;
-  assign fdif.stall = huif.fdif_stall;
+  assign fdif.stall = huif.fdif_stall | ((emif.dREN_out| emif.dWEN_out) & ~dpif.dhit);
 
+  
   //1/4.dp
   assign dpif.imemREN=1'b1;
   assign dpif.imemaddr=pcif.pc;
@@ -161,7 +164,7 @@ module datapath (
   
   assign deif.ihit = dpif.ihit;
   assign deif.dhit = dpif.dhit;
-  assign deif.stall = huif.deif_stall;
+  assign deif.stall = huif.deif_stall | ((dREN_from_mem | dWEN_from_mem) & ~dpif.dhit);
 
   //3.ALU
   assign aluif.portA = fuif.Asel? fuif.DataA : deif.rdat1_out;
@@ -203,34 +206,36 @@ module datapath (
 
   assign emif.ihit = dpif.ihit;
   assign emif.dhit = dpif.dhit;
+  assign emif.stall =((emif.dREN_out | emif.dWEN_out) & ~dpif.dhit);
   
   //mem/wrb stage 
-  assign mwif.jal_s_in =emif.jal_s_out;
-  assign mwif.lui_in = emif.lui_out;
+  assign mwif.jal_s_in =mwif.flush  ? 'b0 :emif.jal_s_out;
+  assign mwif.lui_in = mwif.flush  ? 'b0 : emif.lui_out;
     
-  assign mwif.pcplusfour_in=emif.pcplusfour_out;
-  assign mwif.pc_in =emif.pc_out;
-  assign mwif.instr_in = emif.instr_out;
-  assign mwif.rdat2_in = emif.rdat2_out;
+  assign mwif.pcplusfour_in=mwif.flush  ? 'b0 : emif.pcplusfour_out;
+  assign mwif.pc_in =mwif.flush  ? 'b0 : emif.pc_out;
+  assign mwif.instr_in = mwif.flush  ? 'b0 : emif.instr_out;
+  assign mwif.rdat2_in = mwif.flush  ? 'b0 : emif.rdat2_out;
 
-  assign mwif.RegWr_in = emif.RegWr_out;
-  assign mwif.MemtoReg_in = emif.MemtoReg_out;
-  assign mwif.halt_in = emif.halt_out;
-  assign mwif.imm_addr_in=emif.imm_addr_out;
-  assign mwif.shift_amt_in = emif.shift_amt_out;
+  assign mwif.RegWr_in = mwif.flush  ? 'b0 : emif.RegWr_out;
+  assign mwif.MemtoReg_in = mwif.flush  ? 'b0 : emif.MemtoReg_out;
+  assign mwif.halt_in = mwif.flush  ? 'b0 : emif.halt_out;
+  assign mwif.imm_addr_in=mwif.flush  ? 'b0 : emif.imm_addr_out;
+  assign mwif.shift_amt_in = mwif.flush  ? 'b0 : emif.shift_amt_out;
   
-  assign mwif.reg_rs_in =emif.reg_rs_out;
-  assign mwif.reg_rt_in =emif.reg_rt_out;
-  assign mwif.reg_rd_in = emif.reg_rd_out;
+  assign mwif.reg_rs_in =mwif.flush  ? 'b0 : emif.reg_rs_out;
+  assign mwif.reg_rt_in =mwif.flush  ? 'b0 : emif.reg_rt_out;
+  assign mwif.reg_rd_in = mwif.flush  ? 'b0 : emif.reg_rd_out;
 
-  assign mwif.funct_in = emif.funct_out;
-  assign mwif.opcode_in = emif.opcode_out;
-  assign mwif.wdat_in = dpif.dmemload;
-  assign mwif.alu_portOut_in = emif.alu_portOut_out;
-  assign mwif.wsel_in= emif.wsel_out;
+  assign mwif.funct_in =mwif.flush  ?funct_t'('b0) :  emif.funct_out;
+  assign mwif.opcode_in = mwif.flush  ? opcode_t'('b0): emif.opcode_out;
+  assign mwif.wdat_in =mwif.flush  ? 'b0 :  dpif.dmemload;
+  assign mwif.alu_portOut_in = mwif.flush  ? 'b0 : emif.alu_portOut_out;
+  assign mwif.wsel_in= mwif.flush  ? 'b0 : emif.wsel_out;
   
   assign mwif.ihit = dpif.ihit;
   assign mwif.dhit = dpif.dhit;
+  assign mwif.flush = ((emif.dREN_out| emif.dWEN_out) & ~dpif.dhit);
 
   //hu
   assign huif.emif_bneS = emif.bne_s_out ? (emif.flagZero_out=='b0 ? 'b1:'b0 ):'b0;

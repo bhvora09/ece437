@@ -40,42 +40,42 @@ module system_tb;
   // to the write back stage and sampled in the WRITEBACK stage.
   // This means more signals that would normally be necessary
   // for correct execution must be passed along to help with debugging.
-  // cpu_tracker                         cpu_track0 (
-  //   // No need to change this
-  //   .CLK(DUT.CPU.DP.CLK),
-  //   // This is the enable signal for the write back stage
-  //   //.wb_enable(DUT.CPU.DP.pipeline_enable), //??
-  //   // The 'funct' portion of an instruction. Must be of funct_t type
-  //   .funct(DUT.CPU.DP.mwif.funct_out),
-  //   // The 'opcode' portion of an instruction. Must be of opcode_t type
-  //   .opcode(DUT.CPU.DP.mwif.opcode_out),  
-  //   // The 'rs' portion of an instruction
-  //   .rs(DUT.CPU.DP.mwif.reg_rs_out),  
-  //   // The 'rt' portion of an instruction
-  //   .rt(DUT.CPU.DP.mwif.reg_rt_out),  
-  //   // The final wsel
-  //   .wsel(DUT.CPU.DP.mwif.wsel_out),
-  //   // The 32 bit instruction
-  //   .instr(DUT.CPU.DP.mwif.instr_out),
-  //   // Connect the PC to this
-  //   .pc(DUT.CPU.DP.mwif.pc_out), 
-  //   // Connect the next PC value (the next registered value) here
-  //   //.next_pc_val(DUT.CPU.DP.mwif.pcplusfour_out), --error
-  //   // The final imm/shamt signals
-  //   // This means it should already be extended //need to ask about this 
-  //   .imm(DUT.CPU.DP.mwif.shift_amt_out),
-  //   //.shamt(DUT.CPU.DP.MW_o.imm_shamt_final),  //add
-  //   // the value for lui BEFORE being being shifted
-  //   //.lui_pre_shift(DUT.CPU.DP.mwif.imm_addr_out), --error
-  //   // The branch target (aka offset added to npc)
-  //   //.branch_addr(DUT.CPU.DP.MW_o.baddr), //add
-  //   // Port O of the ALU from the M/W register
-  //   .dat_addr(DUT.CPU.DP.mwif.alu_portOut_out), 
-  //   // The value that was stored in memory during MEM stage
-  //   .store_dat(DUT.CPU.DP.mwif.rdat2_out),  
-  //   // The value selected to be written into register during WB stage
-  //   .reg_dat(DUT.CPU.DP.mwif.wdat_out)  
-  // );
+  cpu_tracker                         cpu_track0 (
+    // No need to change this
+    .CLK(DUT.CPU.DP.CLK),
+    // This is the enable signal for the write back stage
+    .wb_enable(DUT.CPU.DP.mwif.stall), //??
+    // The 'funct' portion of an instruction. Must be of funct_t type
+    .funct(DUT.CPU.DP.mwif.funct_out),
+    // The 'opcode' portion of an instruction. Must be of opcode_t type
+    .opcode(DUT.CPU.DP.mwif.opcode_out),  
+    // The 'rs' portion of an instruction
+    .rs(DUT.CPU.DP.mwif.reg_rs_out),  
+    // The 'rt' portion of an instruction
+    .rt(DUT.CPU.DP.mwif.reg_rt_out),  
+    // The final wsel
+    .wsel(DUT.CPU.DP.mwif.wsel_out),
+    // The 32 bit instruction
+    .instr(DUT.CPU.DP.mwif.instr_out),
+    // Connect the PC to this
+    .pc(DUT.CPU.DP.mwif.pc_out), 
+    // Connect the next PC value (the next registered value) here
+    .next_pc_val(DUT.CPU.DP.mwif.pcplusfour_out), //--error
+    // The final imm/shamt signals
+    // This means it should already be extended //need to ask about this 
+    .imm(DUT.CPU.DP.mwif.shift_amt_out),
+    //.shamt(DUT.CPU.DP.MW_o.imm_shamt_final),  //add
+    // the value for lui BEFORE being being shifted
+    .lui_pre_shift(DUT.CPU.DP.mwif.imm_addr_out),// --error
+    // The branch target (aka offset added to npc)
+    //.branch_addr(DUT.CPU.DP.MW_o.baddr), //add
+    // Port O of the ALU from the M/W register
+    .dat_addr(DUT.CPU.DP.mwif.alu_portOut_out), 
+    // The value that was stored in memory during MEM stage
+    .store_dat(DUT.CPU.DP.mwif.rdat2_out),  
+    // The value selected to be written into register during WB stage
+    .reg_dat(DUT.CPU.DP.mwif.wdat_out)  
+  );
   
 `else
   system                              DUT (,,,,//for altera debug ports

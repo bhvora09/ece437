@@ -80,7 +80,7 @@ module idecode_iexec(
             idieif.pc_out <= idieif.pc_out;
         end
 
-        else   begin //let it pass only if ihit has come
+        else if(idieif.ihit | idieif.dhit )  begin //let it pass only if ihit has come
             idieif.instr_out <= idieif.instr_in;
             idieif.Ext_addr_out<=idieif.Ext_addr_in;
             idieif.pcplusfour_out<=idieif.pcplusfour_in;

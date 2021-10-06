@@ -9,7 +9,7 @@ interface  mem_wrb_if;
   import cpu_types_pkg::*;
 
     //from exec mem stage
-    logic jal_s_in,lui_in,MemtoReg_in,RegWr_in,halt_in,ihit, dhit;
+    logic jal_s_in,lui_in,MemtoReg_in,RegWr_in,halt_in,ihit, dhit,stall,flush;
     logic jal_s_out,lui_out,MemtoReg_out,RegWr_out,halt_out;
 
     word_t pcplusfour_in, pc_in, alu_portOut_in,instr_in,wdat_in, rdat2_in;
@@ -31,7 +31,7 @@ interface  mem_wrb_if;
     
   
   modport mw_if (
-    input jal_s_in,lui_in,MemtoReg_in,RegWr_in,halt_in,ihit, dhit,
+    input jal_s_in,lui_in,MemtoReg_in,RegWr_in,halt_in,ihit, dhit,stall,flush,
           pcplusfour_in,pc_in,instr_in,wdat_in,alu_portOut_in,rdat2_in,
           imm_addr_in,
           wsel_in,shift_amt_in,reg_rs_in,reg_rt_in,reg_rd_in,
@@ -52,7 +52,7 @@ interface  mem_wrb_if;
           wsel_out,shift_amt_out,reg_rs_out,reg_rt_out,reg_rd_out,
           opcode_out,
           funct_out,
-    output jal_s_in,lui_in,MemtoReg_in,RegWr_in,halt_in,ihit, dhit,
+    output jal_s_in,lui_in,MemtoReg_in,RegWr_in,halt_in,ihit, dhit,stall,flush,
           pcplusfour_in,pc_in,instr_in,wdat_in,alu_portOut_in,rdat2_in,
           imm_addr_in,
           wsel_in,shift_amt_in,reg_rs_in,reg_rt_in,reg_rd_in,
