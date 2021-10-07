@@ -17,7 +17,7 @@ interface  mem_wrb_if;
 
     logic [15:0] imm_addr_in;
     logic [15:0] imm_addr_out;
-    logic [4:0] wsel_in,shift_amt_in,reg_rs_in,reg_rt_in,reg_rd_in;;
+    logic [4:0] wsel_in,shift_amt_in,reg_rs_in,reg_rt_in,reg_rd_in;
     logic [4:0] wsel_out,shift_amt_out,reg_rs_out,reg_rt_out,reg_rd_out;
 
     opcode_t opcode_in;
@@ -61,4 +61,4 @@ interface  mem_wrb_if;
   );
 endinterface
 
-`endif //ALU_IF_VH
+`endif 

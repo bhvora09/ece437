@@ -11,11 +11,9 @@ import cpu_types_pkg::*;
 
 always_ff @(posedge CLK or negedge nRST)
 begin
-if (nRST) begin
-    if(pcif.PCen)
+    if (!nRST)
+        pcif.pc<='b0;
+    else if(pcif.PCen)
         pcif.pc<=pcif.pc_next;
-end
-else
-    pcif.pc<='b0;
 end
 endmodule
