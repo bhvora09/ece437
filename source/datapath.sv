@@ -40,6 +40,7 @@ module datapath (
   logic [31:0] shift_left_1;
   logic [31:0] extended_address;
   logic [4:0] rd;
+  logic halt;
   //logic [31:0] instr;
   //logic  stall;
 
@@ -263,7 +264,7 @@ module datapath (
   assign fuif.mwif_rd = mwif.wsel_out;
   assign fuif.mwif_portout = mwif.alu_portOut_out;
 
-  assign dpif.halt=mwif.halt_out;
+  assign dpif.halt= halt | mwif.halt_out;
   //mru
     // if (dpif.dhit) begin
     //     //$display("dhit");
@@ -444,4 +445,11 @@ module datapath (
   //     //dpif.halt<=(~cuif.halt) || (nRST && cuif.halt);
       
   // end
+
+  always_ff @(posedge CLK or negedge nRST) begin
+    if(!nRST)
+      halt <= 1'b0;
+    else
+      halt = halt | mwif.halt_out;
+  end
 endmodule
