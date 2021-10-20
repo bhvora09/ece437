@@ -56,6 +56,19 @@ program test(
     end
     endtask
 
+    task inputs;
+        input  logic [31:0] i;
+        input  logic j, k;
+        input  logic [31:0] l;
+    begin
+        dctb.imemaddr = i;
+        dctb.imemREN = j;
+        cctb.iwait = k;
+        cctb.iload = l;
+        #(PERIOD);
+    end
+    endtask
+
     integer tb_test_num;
     string tb_test_case;
 
@@ -68,14 +81,51 @@ program test(
         nRST = 1;
         
         dctb.imemaddr = 1;
-        dcif.imemREN = 1;
+        dctb.imemREN = 1;
         cctb.iwait = 1;
         cctb.iload = 1;
         #(PERIOD);
         nRST = 0;
-        #(PERIOD);
+        #(PERIOD*2);
+        
+
+        //******************************************************
+        // TEST 1: empty read
+        //******************************************************
+        tb_test_num = tb_test_num+1;
+        tb_test_case = "init";
+        
         nRST = 1;
         #(PERIOD);
+        init;
+
+        tb_test_case = "miss then hit";
+        inputs({26'h45, 4'd5, 2'b1}, 1, 1, 32'hBEEF);
+        #(PERIOD*3);  
+        ccif.iwait = 0;
+        #(PERIOD);
+
+        //******************************************************
+        // TEST 2: another empty read
+        //******************************************************
+        tb_test_num = tb_test_num+1;
+        tb_test_case = "diff empty read";
+
+        inputs({26'h729, 4'd11, 2'b0}, 1, 1, 32'h7337);
+        #(PERIOD*3);  
+        ccif.iwait = 0;
+        #(PERIOD);
+
+        //******************************************************
+        // TEST 2: non empty read
+        //******************************************************
+        tb_test_num = tb_test_num+1;
+        tb_test_case = "hit";
+        
+        inputs({26'h45, 4'd5, 2'b1}, 1, 0, 0);
+        #(PERIOD*3);
+
+
 
         $finish;
     end
