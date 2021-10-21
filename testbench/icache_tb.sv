@@ -106,18 +106,20 @@ program test(
         #(PERIOD);
 
         //******************************************************
-        // TEST 2: another empty read
+        // TEST 2: another empty read later CLK the data comes in
         //******************************************************
         tb_test_num = tb_test_num+1;
         tb_test_case = "diff empty read";
 
         inputs({26'h729, 4'd11, 2'b0}, 1, 1, 32'h7337);
         #(PERIOD*3);  
+        cctb.iload = 32'h7337;
+        #(PERIOD)
         ccif.iwait = 0;
         #(PERIOD);
 
         //******************************************************
-        // TEST 2: non empty read
+        // TEST 3: hit read
         //******************************************************
         tb_test_num = tb_test_num+1;
         tb_test_case = "hit";
@@ -125,7 +127,29 @@ program test(
         inputs({26'h45, 4'd5, 2'b1}, 1, 0, 0);
         #(PERIOD*3);
 
+        //******************************************************
+        // TEST 4: evict
+        //******************************************************
+        tb_test_num = tb_test_num+1;
+        tb_test_case = "evict";
+        
+        nRST = 1;
+        #(PERIOD);
+        init;
 
+        inputs({26'h140, 4'd5, 2'b0}, 1, 1, 32'hC007);
+        #(PERIOD*3);  
+        ccif.iwait = 0;
+        #(PERIOD);
+
+        //******************************************************
+        // TEST 5: hit read other address
+        //******************************************************
+        tb_test_num = tb_test_num+1;
+        tb_test_case = "hit other addr";
+        
+        inputs({26'h729, 4'd11, 2'b1}, 1, 0, 0);
+        #(PERIOD*1);
 
         $finish;
     end
