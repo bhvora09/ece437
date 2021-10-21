@@ -6,18 +6,15 @@
 `timescale 1 ns / 1 ns
 
 module dcache_tb;
+    datapath_cache_if dcif();
+    caches_if cdif();
     
     parameter PERIOD = 10;
     logic CLK = 0, nRST;
 
-    
+    test PROG (CLK,nRST,dcif,cdif);
 
     always #(PERIOD/2) CLK++;
-
-    datapath_cache_if dcif();
-    caches_if cdif();
-
-    test PROG ();
 
     //DUT
     `ifndef MAPPED
@@ -60,7 +57,7 @@ program test(
         dctb.dmemREN = 1'b0;
         dctb.dmemWEN = 1'b0;
         //cctb.dwait = 1'b0; //dwait is input
-        cctb.dload = 32'b0;
+        //cctb.dload = 32'b0;
         cctb.dstore =32'b0;
         #(PERIOD);
     end
@@ -74,16 +71,70 @@ program test(
         //******************************************************
         tb_test_num = 0;
         tb_test_case = "initialization";
-        nRST = 1;
+        nRST = 0;
+
+        //lw checking 
         
-        dctb.dmemaddr = 'b100;
+        dctb.dmemaddr = 'hF0;
         dcif.dmemREN = 1'b1;
         dcif.dmemWEN = 1'b0;
         cctb.dwait = 0;
-        cctb.dload = 32'b1;
+        dcif.halt = 0;
+        //lw value of addr[F0] -> 7337
+        dctb.dmemstore = 32'b01010;
+        cctb.dload = 32'h7337;
         #(PERIOD);
+        nRST =1;
         #(PERIOD);
 
+        #(PERIOD);
+        cctb.dload = 32'h2701;
+        #(PERIOD);
+
+        //lw value at [F4]
+        #(PERIOD);
+        dctb.dmemaddr = 'hF4;
+        #(PERIOD);
+        
+        //lw value at [F8]
+        dctb.dmemaddr = 'hF8;
+        cctb.dload = 32'h1337;
+        #(PERIOD);
+        #(PERIOD);
+        cctb.dload = 32'hDEAD;
+        #(PERIOD);
+        //----------sw words-------//
+        dcif.dmemREN =1'b0;
+        dcif.dmemWEN =1'b1;
+        //sw value 7331 at [80]
+        dctb.dmemaddr = 32'h80;
+        dctb.dmemstore = 32'h7331;
+
+        #(PERIOD);
+        #(PERIOD);
+        #(PERIOD);
+        //sw 2700 at [84]
+        dcif.dmemaddr = 32'h84;
+        dcif.dmemstore = 32'h2700;
+        #(PERIOD);
+        #(PERIOD);
+        #(PERIOD);
+        //sw 1331 at [88]
+        dcif.dmemaddr = 32'h88;
+        dcif.dmemstore = 32'h1331;
+        #(PERIOD);
+        #(PERIOD);
+        #(PERIOD);
+        //sw DEADBEEF at [8C]
+        dcif.dmemaddr = 32'h8C;
+        dcif.dmemstore = 32'hDEADBEEF;
+        #(PERIOD);
+        #(PERIOD);
+        #(PERIOD);
+        dcif.halt = 1;
+        #(PERIOD);
+        #(PERIOD);
+        #(PERIOD);
         $finish;
     end
 endprogram
