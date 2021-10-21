@@ -27,7 +27,9 @@ states nS;
 
 //Datapath Signals
 assign valid = dcif.imemREN;
-assign addr = icachef_t' (dcif.imemaddr);
+assign addr.tag = dcif.imemaddr[31:6];
+assign addr.idx = dcif.imemaddr[5:2];
+assign addr.bytoff = dcif.imemaddr[1:0];
 assign dcif.ihit = hit;
 assign dcif.imemload = data;
 
@@ -65,7 +67,7 @@ always_comb begin
     hit = 0;
     n_frames = frames;
     frame = 0;
-    ccif.iREN = 1;
+    ccif.iREN = 0;
     ccif.iaddr = 0;
     data = 0;
 
