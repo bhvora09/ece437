@@ -6,36 +6,38 @@
 `timescale 1 ns / 1 ns
 
 module dcache_tb;
-
-    datapath_cache_if dcif();
-    caches_if ccif();
-
-    logic CLK = 0, nRST;
+    
     parameter PERIOD = 10;
+    logic CLK = 0, nRST;
 
-    test PROG (CLK, nRST, dcif, ccif);
+    
 
     always #(PERIOD/2) CLK++;
 
+    datapath_cache_if dcif();
+    caches_if cdif();
+
+    test PROG ();
+
     //DUT
     `ifndef MAPPED
-        dcache DUT(CLK, nRST, ccif, dcif);
+        dcache DUT(CLK, nRST, dcif, cdif);
     `else
         dcache DUT(
         .\CLK(CLK), 
         .\nRST(nRST),
-        .\dcif.dmemREN(dcif.dmemREN),
-        .\dcif.dmemWEN(dcif.dmemWEN),
-        .\dcif.dhit(dcif.dhit),
-        .\dcif.dmemload(dcif.dmemload),
+        .\dcif.dmemREN (dcif.dmemREN),
+        .\dcif.dmemWEN (dcif.dmemWEN),
+        .\dcif.dhit (dcif.dhit),
+        .\dcif.dmemload (dcif.dmemload),
         .\dcif.dmemstore(dcif.dmemstore)
-        .\dcif.dmemaddr(dcif.dmemaddr),
-        .\ccif.dwait(ccif.dwait),
-        .\ccif.dload(ccif.dload),
-        .\ccif.daddr(ccif.daddr),
-        .\ccif.dREN(ccif.dREN),
-        .\ccif.dWEN(ccif.dWEN),
-        .\ccif.dstore(ccif.dstore)
+        .\dcif.dmemaddr (dcif.dmemaddr),
+        .\ccif.dwait (ccif.dwait),
+        .\ccif.dload (ccif.dload),
+        .\ccif.daddr (ccif.daddr),
+        .\ccif.dREN (ccif.dREN),
+        .\ccif.dWEN (ccif.dWEN),
+        .\ccif.dstore (ccif.dstore)
         );
         `endif
 
@@ -62,6 +64,7 @@ program test(
         cctb.dstore =32'b0;
         #(PERIOD);
     end
+    endtask
     integer tb_test_num;
     string tb_test_case;
 
@@ -83,7 +86,4 @@ program test(
 
         $finish;
     end
-
-
 endprogram
-    endtask
