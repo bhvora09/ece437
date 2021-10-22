@@ -88,20 +88,48 @@ program test(
         #(PERIOD);
 
         #(PERIOD);
+        #(PERIOD);
+        #(PERIOD);
+        #(PERIOD);
+        #(PERIOD);
         cctb.dload = 32'h2701;
         #(PERIOD);
-
+        #(PERIOD);
+        #(PERIOD);
+        #(PERIOD);
+        #(PERIOD);
+        #(PERIOD);
         //lw value at [F4]
+        dctb.dmemaddr = 'hB0;
+        dcif.dmemREN = 1'b1;
+        #(PERIOD);
+        #(PERIOD);
+        #(PERIOD);
+        #(PERIOD);
+        #(PERIOD);
         #(PERIOD);
         dctb.dmemaddr = 'hF4;
         #(PERIOD);
-        
+        #(PERIOD);
+        #(PERIOD);
+        #(PERIOD);
+        #(PERIOD);
+        #(PERIOD);
         //lw value at [F8]
         dctb.dmemaddr = 'hF8;
         cctb.dload = 32'h1337;
         #(PERIOD);
         #(PERIOD);
+        #(PERIOD);
+        #(PERIOD);
+        #(PERIOD);
+        #(PERIOD);
         cctb.dload = 32'hDEAD;
+        #(PERIOD);
+        #(PERIOD);
+        #(PERIOD);
+        #(PERIOD);
+        #(PERIOD);
         #(PERIOD);
         //----------sw words-------//
         dcif.dmemREN =1'b0;
@@ -109,32 +137,74 @@ program test(
         //sw value 7331 at [80]
         dctb.dmemaddr = 32'h80;
         dctb.dmemstore = 32'h7331;
-
+        #(PERIOD);
+        #(PERIOD);
+        #(PERIOD);
         #(PERIOD);
         #(PERIOD);
         #(PERIOD);
         //sw 2700 at [84]
-        dcif.dmemaddr = 32'h84;
-        dcif.dmemstore = 32'h2700;
+        cctb.dload= 32'h7331;
+        dctb.dmemaddr = 32'h84;
+        dctb.dmemstore = 32'h2700;
         #(PERIOD);
         #(PERIOD);
         #(PERIOD);
+        #(PERIOD);
+        #(PERIOD);
+        #(PERIOD);
+        #(PERIOD);
+
         //sw 1331 at [88]
-        dcif.dmemaddr = 32'h88;
-        dcif.dmemstore = 32'h1331;
+        dctb.dmemaddr = 32'h88;
+        dctb.dmemstore = 32'h1331;
+        #(PERIOD);
+        #(PERIOD);
+        #(PERIOD);
         #(PERIOD);
         #(PERIOD);
         #(PERIOD);
         //sw DEADBEEF at [8C]
-        dcif.dmemaddr = 32'h8C;
-        dcif.dmemstore = 32'hDEADBEEF;
+        dctb.dmemaddr = 32'h8C;
+        dctb.dmemstore = 32'hDEADBEEF;
         #(PERIOD);
         #(PERIOD);
         #(PERIOD);
-        dcif.halt = 1;
+        #(PERIOD);
+        #(PERIOD);
+        #(PERIOD*5);
+       
         #(PERIOD);
         #(PERIOD);
         #(PERIOD);
+        #(PERIOD);
+        #(PERIOD);
+        #(PERIOD);
+        #(PERIOD);
+        #(PERIOD);
+        dctb.halt = 1;
+        dctb.dmemWEN=0;
+        dctb.dmemREN=0;
+        dctb.dmemaddr = 32'b0;
+        dctb.dmemstore = 32'h0;
+        cctb.dload = 32'h0;
+        #(PERIOD);
+        #(PERIOD);
+        #(PERIOD);
+        #(PERIOD);
+        #(PERIOD);
+        #(PERIOD);
+        #(PERIOD);
+        #(PERIOD);
+        #(PERIOD);
+        #(PERIOD);
+        #(PERIOD);
+        #(PERIOD);
+        #(PERIOD);
+        #(PERIOD);
+        #(PERIOD);
+        #(PERIOD);
+
         $finish;
     end
 endprogram
