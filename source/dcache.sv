@@ -212,8 +212,13 @@ always_comb begin
           else if ((temptable2[i].dirty == 1 )& (cdif.dwait==0))
             next_state = HALTWB1;
           else if(i<8) begin
-            i=i+1;
-            next_state = HALT;end
+            while(!(temptable1[i].dirty == 1) & (cdif.dwait==0) & (!(temptable2[i].dirty == 1 )& (cdif.dwait==0)) & (i<8)) begin
+              temptable1[i] = 'b0;
+              temptable2[i] = 'b0;
+              i=i+1;
+            end
+            next_state = HALT;
+          end
           else begin
             temptable1 = 'b0;
             temptable2 = 'b0;
@@ -223,36 +228,36 @@ always_comb begin
       end
       HALTWB1: begin
         if ((temptable1[i].dirty == 1) & (cdif.dwait==0)) begin
-          cdif.dstore = dstore10;
+          cdif.dstore = temptable1[i].data[0];
           cdif.daddr = {tag1,index,1'b0,2'b00};
           cdif.dWEN = 1'b1;
           next_state = HALTWB2;
         end
         else if((temptable2[i].dirty == 1) & (cdif.dwait==0)) begin
-          cdif.dstore = dstore20;
+          cdif.dstore = temptable2[i].data[0];
           cdif.daddr = {tag2,index,1'b0,2'b00};
           cdif.dWEN = 1'b1;
           next_state = HALTWB2;
-      end
+        end
         else if (cdif.dwait)
           next_state = HALTWB1;
       end
       HALTWB2: begin
         if ((temptable1[i].dirty == 1) & (cdif.dwait==0)) begin
-          cdif.dstore = dstore11;
+          cdif.dstore = temptable1[i].data[1];
           cdif.daddr = {tag1,index,1'b1,2'b00};
           cdif.dWEN = 1'b1;
           temptable1[i].dirty = 1'b0;
           next_state = HALT;
         end
         else if ((temptable2[i].dirty == 1 )& (cdif.dwait==0)) begin
-          cdif.dstore = dstore21;
+          cdif.dstore = temptable2[i].data[1];
           cdif.daddr = {tag2,index,1'b1,2'b00};
           cdif.dWEN = 1'b1;
           temptable2[i].dirty = 1'b0;
           next_state = HALT;
         end
-         else if (cdif.dwait)
+        else if (cdif.dwait)
           next_state = HALTWB1;
       end
     endcase

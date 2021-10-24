@@ -58,7 +58,7 @@ program test(
         dctb.dmemWEN = 1'b0;
         //cctb.dwait = 1'b0; //dwait is input
         //cctb.dload = 32'b0;
-        cctb.dstore =32'b0;
+        dctb.dmemstore =32'b0;
         #(PERIOD);
     end
     endtask
@@ -86,16 +86,10 @@ program test(
         #(PERIOD);
         nRST =1;
         #(PERIOD);
-
-        #(PERIOD);
-        #(PERIOD);
-        #(PERIOD);
-        #(PERIOD);
         #(PERIOD);
         cctb.dload = 32'h2701;
         #(PERIOD);
-        #(PERIOD);
-        #(PERIOD);
+        
         #(PERIOD);
         #(PERIOD);
         #(PERIOD);
@@ -174,6 +168,7 @@ program test(
         #(PERIOD);
         #(PERIOD*5);
        
+        #(PERIOD);
         #(PERIOD);
         #(PERIOD);
         #(PERIOD);
