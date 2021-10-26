@@ -6,20 +6,21 @@
 `timescale 1 ns / 1 ns
 
 module icache_tb;
-
     datapath_cache_if dcif();
     caches_if ccif();
+    
+    
 
     logic CLK = 0, nRST;
     parameter PERIOD = 10;
 
-    test PROG (CLK, nRST, dcif, ccif);
+    test PROG (CLK, nRST,dcif, ccif );
 
     always #(PERIOD/2) CLK++;
 
     //DUT
     `ifndef MAPPED
-        icache DUT(CLK, nRST, ccif, dcif);
+        icache DUT(CLK, nRST, dcif, ccif);
     `else
         icache DUT(
             .\CLK(CLK), 
@@ -42,6 +43,8 @@ program test(
     output logic nRST,
     datapath_cache_if dctb,
     caches_if cctb
+    
+    
 );
     import cpu_types_pkg::*;
     parameter PERIOD = 10;

@@ -76,7 +76,6 @@ always_comb begin
     temptable2 = table2;
     dcif.flushed =1'b0;
     cdif.dstore = 32'b0;
-    
     next_state = state;
     case (state) 
       TAG: begin
