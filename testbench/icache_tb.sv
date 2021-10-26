@@ -6,12 +6,10 @@
 `timescale 1 ns / 1 ns
 
 module icache_tb;
+    logic CLK = 0, nRST;
     datapath_cache_if dcif();
     caches_if ccif();
     
-    
-
-    logic CLK = 0, nRST;
     parameter PERIOD = 10;
 
     test PROG (CLK, nRST,dcif, ccif );
