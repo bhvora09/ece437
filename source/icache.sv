@@ -1,12 +1,11 @@
 `include "datapath_cache_if.vh"
-`include "cache_control_if.vh"
 `include "caches_if.vh"
 `include "cpu_types_pkg.vh"
 
 module icache(
     input CLK, nRST,
-    caches_if.icache ccif,
-    datapath_cache_if.icache dcif
+    datapath_cache_if.icache dcif,
+    caches_if.icache ccif
 );
 
 import cpu_types_pkg::*;

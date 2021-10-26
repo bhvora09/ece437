@@ -31,7 +31,7 @@ module datapath (
 
   parameter PC_INIT=0;
 
-  logic dREN_from_mem,dWEN_from_mem;
+  //logic dREN_from_mem,dWEN_from_mem;
   logic [31:0] SignExt_addr;
   //logic [31:0] luiwdat;
   logic [31:0] ZeroExt_addr;
@@ -156,7 +156,7 @@ module datapath (
   assign deif.pc_in =huif.deif_flush ? 'b0: fdif.pc_out;
   assign deif.ihit = dpif.ihit;
   assign deif.dhit = dpif.dhit;
-  assign deif.stall = huif.deif_stall | ((dREN_from_mem | dWEN_from_mem) & ~dpif.dhit);
+  assign deif.stall = huif.deif_stall | ((emif.dREN_out | emif.dWEN_out) & ~dpif.dhit);
 
   //3.ALU
   assign aluif.portA = fuif.Asel? fuif.DataA : deif.rdat1_out;

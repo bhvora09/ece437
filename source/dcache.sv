@@ -1,6 +1,5 @@
 `include "caches_if.vh"
 `include "datapath_cache_if.vh"
-`include "cache_control_if.vh"
 `include "cpu_types_pkg.vh"
 
 module dcache(

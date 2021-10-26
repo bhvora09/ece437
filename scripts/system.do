@@ -48,34 +48,34 @@ add wave -noupdate -group DPvar /system_tb/DUT/CPU/DP/aluopinwrback
 add wave -noupdate -group Datapath /system_tb/DUT/CPU/DP/opinfetch
 add wave -noupdate -group Datapath /system_tb/DUT/CPU/DP/aluopinfetch
 add wave -noupdate -group Datapath /system_tb/DUT/CPU/DP/pcif/pc
-add wave -noupdate -expand -group dcif /system_tb/DUT/CPU/dcif/halt
-add wave -noupdate -expand -group dcif -expand -group instr /system_tb/DUT/CPU/dcif/ihit
-add wave -noupdate -expand -group dcif -expand -group instr /system_tb/DUT/CPU/dcif/imemREN
-add wave -noupdate -expand -group dcif -expand -group instr /system_tb/DUT/CPU/dcif/imemload
-add wave -noupdate -expand -group dcif -expand -group instr /system_tb/DUT/CPU/dcif/imemaddr
-add wave -noupdate -expand -group dcif -expand -group data /system_tb/DUT/CPU/dcif/dhit
-add wave -noupdate -expand -group dcif -expand -group data /system_tb/DUT/CPU/dcif/dmemREN
-add wave -noupdate -expand -group dcif -expand -group data /system_tb/DUT/CPU/dcif/dmemWEN
-add wave -noupdate -expand -group dcif -expand -group data /system_tb/DUT/CPU/dcif/flushed
-add wave -noupdate -expand -group dcif -expand -group data /system_tb/DUT/CPU/dcif/dmemload
-add wave -noupdate -expand -group dcif -expand -group data /system_tb/DUT/CPU/dcif/dmemaddr
-add wave -noupdate -expand -group dcif -expand -group data /system_tb/DUT/CPU/dcif/dmemstore
-add wave -noupdate -expand -group dcif -expand -group data /system_tb/DUT/CPU/dcif/datomic
-add wave -noupdate -expand -group cif /system_tb/DUT/CPU/cif0/iwait
-add wave -noupdate -expand -group cif /system_tb/DUT/CPU/cif0/dwait
-add wave -noupdate -expand -group cif /system_tb/DUT/CPU/cif0/iREN
-add wave -noupdate -expand -group cif /system_tb/DUT/CPU/cif0/dREN
-add wave -noupdate -expand -group cif /system_tb/DUT/CPU/cif0/dWEN
-add wave -noupdate -expand -group cif /system_tb/DUT/CPU/cif0/iload
-add wave -noupdate -expand -group cif /system_tb/DUT/CPU/cif0/dload
-add wave -noupdate -expand -group cif /system_tb/DUT/CPU/cif0/dstore
-add wave -noupdate -expand -group cif /system_tb/DUT/CPU/cif0/iaddr
-add wave -noupdate -expand -group cif /system_tb/DUT/CPU/cif0/daddr
-add wave -noupdate -expand -group cif /system_tb/DUT/CPU/cif0/ccwait
-add wave -noupdate -expand -group cif /system_tb/DUT/CPU/cif0/ccinv
-add wave -noupdate -expand -group cif /system_tb/DUT/CPU/cif0/ccwrite
-add wave -noupdate -expand -group cif /system_tb/DUT/CPU/cif0/cctrans
-add wave -noupdate -expand -group cif /system_tb/DUT/CPU/cif0/ccsnoopaddr
+add wave -noupdate -group dcif /system_tb/DUT/CPU/dcif/halt
+add wave -noupdate -group dcif -expand -group instr /system_tb/DUT/CPU/dcif/ihit
+add wave -noupdate -group dcif -expand -group instr /system_tb/DUT/CPU/dcif/imemREN
+add wave -noupdate -group dcif -expand -group instr /system_tb/DUT/CPU/dcif/imemload
+add wave -noupdate -group dcif -expand -group instr /system_tb/DUT/CPU/dcif/imemaddr
+add wave -noupdate -group dcif -expand -group data /system_tb/DUT/CPU/dcif/dhit
+add wave -noupdate -group dcif -expand -group data /system_tb/DUT/CPU/dcif/dmemREN
+add wave -noupdate -group dcif -expand -group data /system_tb/DUT/CPU/dcif/dmemWEN
+add wave -noupdate -group dcif -expand -group data /system_tb/DUT/CPU/dcif/flushed
+add wave -noupdate -group dcif -expand -group data /system_tb/DUT/CPU/dcif/dmemload
+add wave -noupdate -group dcif -expand -group data /system_tb/DUT/CPU/dcif/dmemaddr
+add wave -noupdate -group dcif -expand -group data /system_tb/DUT/CPU/dcif/dmemstore
+add wave -noupdate -group dcif -expand -group data /system_tb/DUT/CPU/dcif/datomic
+add wave -noupdate -group cif /system_tb/DUT/CPU/cif0/iwait
+add wave -noupdate -group cif /system_tb/DUT/CPU/cif0/dwait
+add wave -noupdate -group cif /system_tb/DUT/CPU/cif0/iREN
+add wave -noupdate -group cif /system_tb/DUT/CPU/cif0/dREN
+add wave -noupdate -group cif /system_tb/DUT/CPU/cif0/dWEN
+add wave -noupdate -group cif /system_tb/DUT/CPU/cif0/iload
+add wave -noupdate -group cif /system_tb/DUT/CPU/cif0/dload
+add wave -noupdate -group cif /system_tb/DUT/CPU/cif0/dstore
+add wave -noupdate -group cif /system_tb/DUT/CPU/cif0/iaddr
+add wave -noupdate -group cif /system_tb/DUT/CPU/cif0/daddr
+add wave -noupdate -group cif /system_tb/DUT/CPU/cif0/ccwait
+add wave -noupdate -group cif /system_tb/DUT/CPU/cif0/ccinv
+add wave -noupdate -group cif /system_tb/DUT/CPU/cif0/ccwrite
+add wave -noupdate -group cif /system_tb/DUT/CPU/cif0/cctrans
+add wave -noupdate -group cif /system_tb/DUT/CPU/cif0/ccsnoopaddr
 add wave -noupdate -group RegisterFile /system_tb/DUT/CPU/DP/RF/CLK
 add wave -noupdate -group RegisterFile /system_tb/DUT/CPU/DP/RF/nRST
 add wave -noupdate -group RegisterFile /system_tb/DUT/CPU/DP/RF/regfile
@@ -314,8 +314,44 @@ add wave -noupdate -group MWIF /system_tb/DUT/CPU/DP/mwif/opcode_in
 add wave -noupdate -group MWIF /system_tb/DUT/CPU/DP/mwif/opcode_out
 add wave -noupdate -group MWIF /system_tb/DUT/CPU/DP/mwif/funct_in
 add wave -noupdate -group MWIF /system_tb/DUT/CPU/DP/mwif/funct_out
+add wave -noupdate -expand -group dcache /system_tb/DUT/CPU/CM/DCACHE/CLK
+add wave -noupdate -expand -group dcache /system_tb/DUT/CPU/CM/DCACHE/nRST
+add wave -noupdate -expand -group dcache /system_tb/DUT/CPU/CM/DCACHE/table1
+add wave -noupdate -expand -group dcache /system_tb/DUT/CPU/CM/DCACHE/temptable1
+add wave -noupdate -expand -group dcache /system_tb/DUT/CPU/CM/DCACHE/table2
+add wave -noupdate -expand -group dcache /system_tb/DUT/CPU/CM/DCACHE/temptable2
+add wave -noupdate -expand -group dcache /system_tb/DUT/CPU/CM/DCACHE/LRU
+add wave -noupdate -expand -group dcache /system_tb/DUT/CPU/CM/DCACHE/dload1
+add wave -noupdate -expand -group dcache /system_tb/DUT/CPU/CM/DCACHE/dload2
+add wave -noupdate -expand -group dcache /system_tb/DUT/CPU/CM/DCACHE/dstore10
+add wave -noupdate -expand -group dcache /system_tb/DUT/CPU/CM/DCACHE/dstore11
+add wave -noupdate -expand -group dcache /system_tb/DUT/CPU/CM/DCACHE/dstore20
+add wave -noupdate -expand -group dcache /system_tb/DUT/CPU/CM/DCACHE/dstore21
+add wave -noupdate -expand -group dcache /system_tb/DUT/CPU/CM/DCACHE/tag1
+add wave -noupdate -expand -group dcache /system_tb/DUT/CPU/CM/DCACHE/tag2
+add wave -noupdate -expand -group dcache /system_tb/DUT/CPU/CM/DCACHE/index
+add wave -noupdate -expand -group dcache /system_tb/DUT/CPU/CM/DCACHE/dirty1
+add wave -noupdate -expand -group dcache /system_tb/DUT/CPU/CM/DCACHE/dirty2
+add wave -noupdate -expand -group dcache /system_tb/DUT/CPU/CM/DCACHE/hit1
+add wave -noupdate -expand -group dcache /system_tb/DUT/CPU/CM/DCACHE/hit2
+add wave -noupdate -expand -group dcache /system_tb/DUT/CPU/CM/DCACHE/i
+add wave -noupdate -expand -group dcache /system_tb/DUT/CPU/CM/DCACHE/state
+add wave -noupdate -expand -group dcache /system_tb/DUT/CPU/CM/DCACHE/next_state
+add wave -noupdate -expand -group dcache /system_tb/DUT/CPU/CM/DCACHE/daddr
+add wave -noupdate -expand -group icache /system_tb/DUT/CPU/CM/ICACHE/CLK
+add wave -noupdate -expand -group icache /system_tb/DUT/CPU/CM/ICACHE/nRST
+add wave -noupdate -expand -group icache /system_tb/DUT/CPU/CM/ICACHE/hit
+add wave -noupdate -expand -group icache /system_tb/DUT/CPU/CM/ICACHE/data
+add wave -noupdate -expand -group icache /system_tb/DUT/CPU/CM/ICACHE/addr
+add wave -noupdate -expand -group icache /system_tb/DUT/CPU/CM/ICACHE/frames
+add wave -noupdate -expand -group icache /system_tb/DUT/CPU/CM/ICACHE/n_frames
+add wave -noupdate -expand -group icache /system_tb/DUT/CPU/CM/ICACHE/frame
+add wave -noupdate -expand -group icache /system_tb/DUT/CPU/CM/ICACHE/valid
+add wave -noupdate -expand -group icache /system_tb/DUT/CPU/CM/ICACHE/iwait
+add wave -noupdate -expand -group icache /system_tb/DUT/CPU/CM/ICACHE/s
+add wave -noupdate -expand -group icache /system_tb/DUT/CPU/CM/ICACHE/nS
 TreeUpdate [SetDefaultTree]
-WaveRestoreCursors {{Cursor 1} {365823 ps} 0}
+WaveRestoreCursors {{Cursor 1} {640000 ps} 0}
 quietly wave cursor active 1
 configure wave -namecolwidth 334
 configure wave -valuecolwidth 100
@@ -331,4 +367,4 @@ configure wave -griddelta 40
 configure wave -timeline 0
 configure wave -timelineunits ns
 update
-WaveRestoreZoom {90510 ps} {795236 ps}
+WaveRestoreZoom {0 ps} {704726 ps}
