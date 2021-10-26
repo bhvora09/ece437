@@ -111,7 +111,6 @@ module datapath (
   //1/4.dp
   assign dpif.imemREN=1'b1;
   assign dpif.imemaddr=pcif.pc;
-
   assign dpif.dmemWEN=emif.dWEN_out;
   assign dpif.dmemREN=emif.dREN_out;
   assign dpif.dmemstore=emif.rdat2_out;
@@ -129,19 +128,16 @@ module datapath (
   //2.deif
   assign deif.dREN_in = huif.deif_flush ? 'b0: cuif.dREN;
   assign deif.dWEN_in = huif.deif_flush ? 'b0: cuif.dWEN;
-
   assign deif.instr_in = huif.deif_flush ? 'b0: fdif.instr_out;
   assign deif.pcplusfour_in= huif.deif_flush ? 'b0: fdif.pcplusfour_out;
   assign deif.rdat1_in =  huif.deif_flush ? 'b0: rfif.rdat1;
   assign deif.rdat2_in =  huif.deif_flush ? 'b0: rfif.rdat2;
-
   assign deif.jal_s_in =huif.deif_flush ? 'b0: cuif.jal_s;
   assign deif.jr_s_in = huif.deif_flush ? 'b0: cuif.jr_s;
   assign deif.jump_s_in= huif.deif_flush ? 'b0: cuif.jump_s;
   assign deif.bne_s_in = huif.deif_flush ? 'b0:  cuif.bne_s;
   assign deif.beq_s_in = huif.deif_flush ? 'b0: cuif.beq_s;
   assign deif.lui_in = huif.deif_flush ? 'b0: cuif.lui;
-
   assign deif.RegDst_in = huif.deif_flush ? 'b0: cuif.RegDst;
   assign deif.ALUctr_in = huif.deif_flush ? 'b0: cuif.ALUctr;
   assign deif.ALUSrc_in = huif.deif_flush ? 'b0: cuif.ALUSrc;
@@ -149,20 +145,15 @@ module datapath (
   assign deif.MemWr_in = huif.deif_flush ? 'b0: cuif.MemWr;
   assign deif.MemtoReg_in = huif.deif_flush ? 'b0: cuif.MemtoReg;
   assign deif.halt_in = huif.deif_flush ? 'b0: cuif.halt;
-
   assign deif.imm_addr_in=huif.deif_flush ? 'b0: cuif.imm_addr;
-
   assign deif.reg_rs_in = huif.deif_flush ? 'b0: cuif.reg_rs;
   assign deif.reg_rt_in = huif.deif_flush ? 'b0: cuif.reg_rt;
   assign deif.reg_rd_in=huif.deif_flush ? 'b0: cuif.reg_rd;
   assign deif.shift_amt_in = huif.deif_flush ? 'b0: cuif.shift_amt;
-  
   assign deif.j_addr_in = huif.deif_flush ? 'b0: cuif.j_addr;
-  
   assign deif.funct_in = huif.deif_flush ? funct_t'('b0): cuif.funct;
   assign deif.opcode_in = huif.deif_flush ? opcode_t'('b0): cuif.opcode;
   assign deif.pc_in =huif.deif_flush ? 'b0: fdif.pc_out;
-  
   assign deif.ihit = dpif.ihit;
   assign deif.dhit = dpif.dhit;
   assign deif.stall = huif.deif_stall | ((dREN_from_mem | dWEN_from_mem) & ~dpif.dhit);
@@ -180,7 +171,6 @@ module datapath (
   assign emif.jr_s_in = huif.emif_flush ? 'b0: deif.jr_s_out;
   assign emif.jump_s_in= huif.emif_flush ? 'b0: deif.jump_s_out;
   assign emif.lui_in =huif.emif_flush ? 'b0:  deif.lui_out;
-
   assign emif.pcplusfour_in=huif.emif_flush ? 'b0: deif.pcplusfour_out;
   assign emif.pc_in =huif.emif_flush ? 'b0: deif.pc_out;
   assign emif.instr_in = huif.emif_flush ? 'b0: deif.instr_out;
@@ -188,23 +178,19 @@ module datapath (
   assign emif.MemWr_in =huif.emif_flush ? 'b0:  deif.MemWr_out;
   assign emif.MemtoReg_in = huif.emif_flush ? 'b0: deif.MemtoReg_out;
   assign emif.halt_in = huif.emif_flush ? 'b0: deif.halt_out;
-    
   assign emif.imm_addr_in=huif.emif_flush ? 'b0: deif.imm_addr_out;
   assign emif.j_addr_in = huif.emif_flush ? 'b0: deif.j_addr_out;   //add 
   assign emif.shift_amt_in = huif.emif_flush ? 'b0: deif.shift_amt_out;
   assign emif.reg_rs_in =huif.emif_flush ? 'b0: deif.reg_rs_out;
   assign emif.reg_rt_in =huif.emif_flush ? 'b0: deif.reg_rt_out;
   assign emif.reg_rd_in = emif.wsel_in;
-
   assign emif.opcode_in =huif.emif_flush ? opcode_t'('b0):  deif.opcode_out;
   assign emif.funct_in = huif.emif_flush ? funct_t'('b0): deif.funct_out; //funct in execute
-    
   assign emif.flagZero_in = huif.emif_flush ? 'b0: aluif.flagZero;
   assign emif.rdat2_in = huif.emif_flush ? 'b0: deif.rdat2_out;
   assign emif.alu_portOut_in = huif.emif_flush ? 'b0: (deif.lui_out ? {deif.imm_addr_out,16'h0000} : aluif.portOut);
   assign emif.Ext_addr_in = huif.emif_flush ? 'b0: deif.Ext_addr_out;
   assign emif.rdat1_in = huif.emif_flush ? 'b0: deif.rdat1_out;
-
   assign emif.ihit = dpif.ihit;
   assign emif.dhit = dpif.dhit;
   assign emif.stall =((emif.dREN_out | emif.dWEN_out) & ~dpif.dhit);
@@ -212,28 +198,23 @@ module datapath (
   //mem/wrb stage 
   assign mwif.jal_s_in =mwif.flush  ? 'b0 :emif.jal_s_out;
   assign mwif.lui_in = mwif.flush  ? 'b0 : emif.lui_out;
-    
   assign mwif.pcplusfour_in=mwif.flush  ? 'b0 : emif.pcplusfour_out;
   assign mwif.pc_in =mwif.flush  ? 'b0 : emif.pc_out;
   assign mwif.instr_in = mwif.flush  ? 'b0 : emif.instr_out;
   assign mwif.rdat2_in = mwif.flush  ? 'b0 : emif.rdat2_out;
-
   assign mwif.RegWr_in = mwif.flush  ? 'b0 : emif.RegWr_out;
   assign mwif.MemtoReg_in = mwif.flush  ? 'b0 : emif.MemtoReg_out;
   assign mwif.halt_in = mwif.flush  ? 'b0 : emif.halt_out;
   assign mwif.imm_addr_in=mwif.flush  ? 'b0 : emif.imm_addr_out;
   assign mwif.shift_amt_in = mwif.flush  ? 'b0 : emif.shift_amt_out;
-  
   assign mwif.reg_rs_in =mwif.flush  ? 'b0 : emif.reg_rs_out;
   assign mwif.reg_rt_in =mwif.flush  ? 'b0 : emif.reg_rt_out;
   assign mwif.reg_rd_in = mwif.flush  ? 'b0 : emif.reg_rd_out;
-
   assign mwif.funct_in =mwif.flush  ?funct_t'('b0) :  emif.funct_out;
   assign mwif.opcode_in = mwif.flush  ? opcode_t'('b0): emif.opcode_out;
   assign mwif.wdat_in =mwif.flush  ? 'b0 :  dpif.dmemload;
   assign mwif.alu_portOut_in = mwif.flush  ? 'b0 : emif.alu_portOut_out;
   assign mwif.wsel_in= mwif.flush  ? 'b0 : emif.wsel_out;
-  
   assign mwif.ihit = dpif.ihit;
   assign mwif.dhit = dpif.dhit;
   assign mwif.flush = ((emif.dREN_out| emif.dWEN_out) & ~dpif.dhit);
@@ -263,18 +244,8 @@ module datapath (
   assign fuif.mwif_RegWr = mwif.RegWr_out;
   assign fuif.mwif_rd = mwif.wsel_out;
   assign fuif.mwif_portout = mwif.alu_portOut_out;
-
+  
   assign dpif.halt= halt | mwif.halt_out;
-  //mru
-    // if (dpif.dhit) begin
-    //     //$display("dhit");
-    //     dpif.dmemREN<=1'b0;
-    //     dpif.dmemWEN<=1'b0;
-    //   end
-    // else if (dpif.ihit) begin
-    //   dpif.dmemREN<=emif.dREN_out;
-    //   dpif.dmemWEN<=emif.dWEN_out;
-    //   end
 
     
     //2.2 sign extender in decode stage
@@ -305,16 +276,9 @@ module datapath (
     shift_left_1=32'b0;
     extended_address=32'b0;
     huif.emif_beqS=0;
-    //huif.emif_bneS=0;
     huif.emif_jalS=0;
     huif.emif_jrS=0;
     huif.emif_jS=0;
-    //huif.deif_MemtoReg = 'b0;
-    // huif.deif_rt='b0;
-    // huif.fdif_rs='b0;
-    // huif.fdif_rt='b0;
-    // huif.emif_rt ='b0;
-
 
     if(emif.jal_s_out || emif.jump_s_out) 
     begin //add both
@@ -345,7 +309,6 @@ module datapath (
         npc = emif.pcplusfour_out; //add 
         shift_left_1={emif.Ext_addr_out[29:0],2'b00}; //add
         pcif.pc_next = npc +shift_left_1;
-        //huif.emif_beqS = 1'b1;
         end
        
       else 
@@ -353,49 +316,14 @@ module datapath (
       end
     else if (emif.jr_s_out) 
     begin
-      //pcif.pc_next = rfif.rdat1;
       pcif.pc_next = emif.rdat1_out;
       huif.emif_jrS = 1;   
       end
     else 
       pcif.pc_next= pcif.pc + 4;
-    huif.emif_beqS = emif.beq_s_out  && emif.flagZero_out;
-    //huif.emif_bneS = emif.bne_s_out  && (~emif.flagZero_out);
+      huif.emif_beqS = emif.beq_s_out  && emif.flagZero_out;
   end
     //------------------------------------------------------
-
-    // 3. Memory Request Unit
-    //---------------------------------------------------------
-    //mruif.iren=1'b1; //always 1???
-      
-    //mruif.dren = emif.dREN_out; //add 
-      
-    //mruif.dwen = emif.dWEN_out; //add
-  
-    //mruif.dhit = dpif.dhit; //add
-     
-    //mruif.ihit = dpif.ihit; //not sure about ihit
- 
-    
-    //------------------------------------------------------------------------
-     //ifetch idecode if----- added by akshaj
-    // fdif.instr_in = instr;
-    // fdif.pc = pc;
-    // fdif.nxt_pc_in = pc_next;
-    // fdif.stall = stall;
-    // fdif.lui_s_in = cuif.lui_s;
-    // fdif.jal_s_in = cuif.jal_s;
-    // fdif.jr_s_in = cuif.jr_s;
-    // fdif.j_s_in = cuif.j_s;
-    // fdif.ihit_in = dpif.ihit;
-    // fdif.dhit_in = dpif.dhit;
-    // fdif.jal_addr_in = instr[25:0];
-    // fdif.jr_addr_in = instr[25:0];
-    // fdif.j_addr_in = instr[25:0];
-    // fdif.branch_addr_in = [15:0];
-    //==========================================================================
-    
-    
 
     //2.rfif
     
@@ -410,8 +338,6 @@ module datapath (
     else
       rfif.wdat=mwif.alu_portOut_out; 
   end
-
-
 
     //portB
   always_comb begin
@@ -435,16 +361,6 @@ module datapath (
     else
       emif.wsel_in= huif.emif_flush ? 'b0: deif.reg_rt_out; //going to execute mem pipeline
   end
-    // emif.reg_rd_in = emif.wsel_in;
-  // always_comb begin
-  //    if(!nRST)
-  //      dpif.halt='b0;
-  //     //dpif.halt<=cuif.halt || (nRST);
-  //    else if (mwif.halt_out)
-  //       dpif.halt=mwif.halt_out;
-  //     //dpif.halt<=(~cuif.halt) || (nRST && cuif.halt);
-      
-  // end
 
   always_ff @(posedge CLK or negedge nRST) begin
     if(!nRST)

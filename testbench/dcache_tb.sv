@@ -67,10 +67,10 @@ program test(
 
     initial begin
         //******************************************************
-        // TEST 0: reset
+        // TEST 1: 
         //******************************************************
-        tb_test_num = 0;
-        tb_test_case = "initialization";
+        tb_test_num = 1;
+        tb_test_case = "lw checking";
         nRST = 0;
 
         //lw checking 
@@ -85,120 +85,87 @@ program test(
         cctb.dload = 32'h7337;
         #(PERIOD);
         nRST =1;
-        #(PERIOD);
-        #(PERIOD);
+        #(PERIOD*2);
         cctb.dload = 32'h2701;
-        #(PERIOD);
+        #(PERIOD* 4);
         
-        #(PERIOD);
-        #(PERIOD);
-        #(PERIOD);
+        //******************************************************
+        // TEST 2: 
+        //******************************************************
+        tb_test_num = tb_test_num +1;
+        tb_test_case = "lw diff addr";
+
         //lw value at [F4]
         dctb.dmemaddr = 'hB0;
         dcif.dmemREN = 1'b1;
-        #(PERIOD);
-        #(PERIOD);
-        #(PERIOD);
-        #(PERIOD);
-        #(PERIOD);
-        #(PERIOD);
+        #(PERIOD*6);
         dctb.dmemaddr = 'hF4;
-        #(PERIOD);
-        #(PERIOD);
-        #(PERIOD);
-        #(PERIOD);
-        #(PERIOD);
-        #(PERIOD);
+        #(PERIOD*6);
+
+        //******************************************************
+        // TEST 3: 
+        //******************************************************
+        tb_test_num = tb_test_num +1;
+        tb_test_case = "lw diff addr";
         //lw value at [F8]
         dctb.dmemaddr = 'hF8;
         cctb.dload = 32'h1337;
-        #(PERIOD);
-        #(PERIOD);
-        #(PERIOD);
-        #(PERIOD);
-        #(PERIOD);
-        #(PERIOD);
+        #(PERIOD*6);
+
         cctb.dload = 32'hDEAD;
-        #(PERIOD);
-        #(PERIOD);
-        #(PERIOD);
-        #(PERIOD);
-        #(PERIOD);
-        #(PERIOD);
+        #(PERIOD*6);
+
+        //******************************************************
+        // TEST 4: 
+        //******************************************************
+        tb_test_num = tb_test_num +1;
+        tb_test_case = "writing";
         //----------sw words-------//
         dcif.dmemREN =1'b0;
         dcif.dmemWEN =1'b1;
         //sw value 7331 at [80]
         dctb.dmemaddr = 32'h80;
         dctb.dmemstore = 32'h7331;
-        #(PERIOD);
-        #(PERIOD);
-        #(PERIOD);
-        #(PERIOD);
-        #(PERIOD);
-        #(PERIOD);
+        #(PERIOD*6);
+       
+        //******************************************************
+        // TEST 5: 
+        //******************************************************
+        tb_test_num = tb_test_num +1;
+        tb_test_case = "writing";
         //sw 2700 at [84]
         cctb.dload= 32'h7331;
         dctb.dmemaddr = 32'h84;
         dctb.dmemstore = 32'h2700;
-        #(PERIOD);
-        #(PERIOD);
-        #(PERIOD);
-        #(PERIOD);
-        #(PERIOD);
-        #(PERIOD);
-        #(PERIOD);
+        #(PERIOD*7);
 
+        //******************************************************
+        // TEST 6: 
+        //******************************************************
+        tb_test_num = tb_test_num +1;
+        tb_test_case = "more writing";
         //sw 1331 at [88]
         dctb.dmemaddr = 32'h88;
         dctb.dmemstore = 32'h1331;
-        #(PERIOD);
-        #(PERIOD);
-        #(PERIOD);
-        #(PERIOD);
-        #(PERIOD);
-        #(PERIOD);
+        #(PERIOD*6);
+
+        //******************************************************
+        // TEST 7: 
+        //******************************************************
+        tb_test_num = tb_test_num +1;
+        tb_test_case = "halt";
         //sw DEADBEEF at [8C]
         dctb.dmemaddr = 32'h8C;
         dctb.dmemstore = 32'hDEADBEEF;
-        #(PERIOD);
-        #(PERIOD);
-        #(PERIOD);
-        #(PERIOD);
-        #(PERIOD);
-        #(PERIOD*5);
-       
-        #(PERIOD);
-        #(PERIOD);
-        #(PERIOD);
-        #(PERIOD);
-        #(PERIOD);
-        #(PERIOD);
-        #(PERIOD);
-        #(PERIOD);
-        #(PERIOD);
+        #(PERIOD*19);
+        
         dctb.halt = 1;
         dctb.dmemWEN=0;
         dctb.dmemREN=0;
         dctb.dmemaddr = 32'b0;
         dctb.dmemstore = 32'h0;
         cctb.dload = 32'h0;
-        #(PERIOD);
-        #(PERIOD);
-        #(PERIOD);
-        #(PERIOD);
-        #(PERIOD);
-        #(PERIOD);
-        #(PERIOD);
-        #(PERIOD);
-        #(PERIOD);
-        #(PERIOD);
-        #(PERIOD);
-        #(PERIOD);
-        #(PERIOD);
-        #(PERIOD);
-        #(PERIOD);
-        #(PERIOD);
+        #(PERIOD*16);
 
         $finish;
     end
