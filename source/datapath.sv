@@ -97,7 +97,7 @@ module datapath (
   assign aluopinwrback = aluop_t'(mwif.instr_out[5:0]);
 
   //1.pc
-   assign pcif.PCen = dpif.ihit & huif.PCWrite;
+   assign pcif.PCen = dpif.ihit & huif.PCWrite & (~dpif.halt);
 
   //1. fdif
   assign fdif.instr_in = huif.fdif_flush ? 'b0: dpif.imemload; //huif added

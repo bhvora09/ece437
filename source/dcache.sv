@@ -19,8 +19,7 @@ logic  [7:0] LRU = 0;
 word_t dload1,dload2,dstore10,dstore11,dstore20,dstore21;
 logic [26:0] tag1,tag2;
 logic [2:0] index;
-logic dirty1=0, dirty2=0;
-logic hit1=0,hit2=0;
+
 int i;
 typedef enum logic [2:0]{
   TAG = 3'b000,
@@ -74,7 +73,6 @@ always_comb begin
     temptable1 = table1;
     temptable2 = table2;
     dcif.flushed =1'b0;
-    cdif.dstore = 32'b0;
     next_state = state;
     case (state) 
       TAG: begin
@@ -207,15 +205,19 @@ always_comb begin
         if(dcif.halt)begin
           if((table1[i].dirty == 1) & (cdif.dwait==0))
             next_state = HALTWB1;
-          else if ((table2[i].dirty == 1 )& (cdif.dwait==0))
+          else if ((table2[i].dirty == 1) & (cdif.dwait==0))
             next_state = HALTWB1;
+          else if(cdif.dwait)
+            next_state = HALT;
           else if(i<8) begin
             while(i<8) begin
-              if((!(table1[i].dirty == 1)) & (cdif.dwait==0) & (!(table2[i].dirty == 1 )& (cdif.dwait==0))) begin
+              if((table1[i].dirty == 0) & (table2[i].dirty == 0 )& (cdif.dwait==0)) begin
                 temptable1[i] = 'b0;
                 temptable2[i] = 'b0;
                 i=i+1;
               end
+              else 
+                break;
             end
             next_state = HALT;
           end
@@ -223,7 +225,6 @@ always_comb begin
             temptable1 = 'b0;
             temptable2 = 'b0;
             dcif.flushed = 1'b1;
-            next_state = TAG;
           end            
         end
       end
@@ -242,6 +243,7 @@ always_comb begin
         end
         else if (cdif.dwait)
           next_state = HALTWB1;
+          cdif.dWEN = 1'b1;
       end
       HALTWB2: begin
         if ((table1[i].dirty == 1) & (cdif.dwait==0)) begin
@@ -260,6 +262,7 @@ always_comb begin
         end
         else if (cdif.dwait)
           next_state = HALTWB1;
+          cdif.dWEN = 1'b1;
       end
     endcase
     end
