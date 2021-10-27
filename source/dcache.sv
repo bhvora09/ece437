@@ -19,7 +19,7 @@ logic  [7:0] LRU = 0;
 word_t dload1,dload2,dstore10,dstore11,dstore20,dstore21;
 logic [26:0] tag1,tag2;
 logic [2:0] index;
-
+int a,b;
 int i;
 typedef enum logic [2:0]{
   TAG = 3'b000,
@@ -211,17 +211,23 @@ always_comb begin
             next_state = HALT;
           else if(i<8) begin
             while(i<8) begin
-              if((table1[i].dirty == 0) & (table2[i].dirty == 0 )& (cdif.dwait==0)) begin
+              if((table1[i].dirty == 0) & (table2[i].dirty == 0) & (cdif.dwait==0)) begin
                 temptable1[i] = 'b0;
                 temptable2[i] = 'b0;
                 i=i+1;
               end
-              else 
+              else if(i<8) begin
+                next_state = HALT;
+                break; end
+              else if(i==8) begin
+                temptable1 = 'b0;
+                temptable2 = 'b0;
+                dcif.flushed = 1'b1;
                 break;
-            end
-            next_state = HALT;
+              end       
           end
-          else begin
+          end
+          else if(i==8) begin
             temptable1 = 'b0;
             temptable2 = 'b0;
             dcif.flushed = 1'b1;
