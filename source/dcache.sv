@@ -78,7 +78,10 @@ always_comb begin
     next_state = state;
     case (state) 
       TAG: begin
-        if(dcif.dmemREN & (table1[daddr.idx].tag ==daddr.tag) & (table1[daddr.idx].valid)) begin
+        if (dcif.halt) begin
+          next_state = HALT;
+          i=0;end
+        else if(dcif.dmemREN & (table1[daddr.idx].tag ==daddr.tag) & (table1[daddr.idx].valid)) begin
           dcif.dhit =1'b1;
           dcif.dmemload = dload1;
           next_state = TAG; 
@@ -127,9 +130,6 @@ always_comb begin
           next_state=AL1;
         else if ((dcif.dmemWEN | dcif.dmemREN) & !(LRU[daddr.idx]) & !(table2[daddr.idx].dirty))
           next_state=AL1;
-        else if (dcif.halt) begin
-          next_state = HALT;
-          i=0;end
         else next_state =TAG;
       end
       WB1: begin
@@ -223,6 +223,7 @@ always_comb begin
             temptable1 = 'b0;
             temptable2 = 'b0;
             dcif.flushed = 1'b1;
+            next_state = TAG;
           end            
         end
       end
