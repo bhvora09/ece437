@@ -105,7 +105,7 @@ module datapath (
   assign fdif.pc_in = huif.fdif_flush ? 'b0 : pcif.pc; //huif added
   assign fdif.ihit = dpif.ihit;
   assign fdif.dhit = dpif.dhit;
-  assign fdif.stall = huif.fdif_stall | ((emif.dREN_out| emif.dWEN_out) & ~dpif.dhit);
+  assign fdif.stall = huif.fdif_stall | ((emif.dREN_out| emif.dWEN_out) & ~dpif.dhit) & ~(pcif.PCen);
 
   
   //1/4.dp
@@ -367,6 +367,5 @@ module datapath (
       halt <= 1'b0;
     else
       halt <= halt | mwif.halt_out;
-      if(halt == 1) halt <= halt;
   end
 endmodule

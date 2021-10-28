@@ -81,6 +81,8 @@ always_comb begin
     //hit_count_next = hit_count;
     case (state) 
       TAG: begin
+        cdif.daddr=32'b0;
+        cdif.dstore=32'b0;
         if (dcif.halt) begin
           next_state = HALT;
           i=0;
@@ -97,33 +99,43 @@ always_comb begin
           next_state = TAG; 
           LRU[daddr.idx] =1'b1; 
         end
-        else if (dcif.dmemWEN & (table1[daddr.idx].tag ==daddr.tag) & !(table1[daddr.idx].dirty) & LRU[daddr.idx] ) begin
-          if(daddr.blkoff==0) begin
-            temptable1[daddr.idx].data[0] = dcif.dmemstore;
-            temptable1[daddr.idx].dirty =1'b1;
-            dcif.dhit=1'b1;
-            next_state = TAG;
+        else if (dcif.dmemWEN & (table1[daddr.idx].tag ==daddr.tag) )begin
+          if(!(table1[daddr.idx].dirty))begin //& LRU[daddr.idx] ) begin
+            if(daddr.blkoff==0) begin
+              temptable1[daddr.idx].data[0] = dcif.dmemstore;
+              temptable1[daddr.idx].valid = 1'b1;
+              temptable1[daddr.idx].dirty =1'b1;
+              dcif.dhit=1'b1;
+              next_state = TAG;end
+            else if(daddr.blkoff==1) begin
+              temptable1[daddr.idx].data[1] = dcif.dmemstore;
+              temptable1[daddr.idx].valid = 1'b1;
+              temptable1[daddr.idx].dirty =1'b1;
+              dcif.dhit=1'b1;
+              next_state = TAG;
           end
-          else if(daddr.blkoff==1) begin
-            temptable1[daddr.idx].data[1] = dcif.dmemstore;
-            temptable1[daddr.idx].dirty =1'b1;
-            dcif.dhit=1'b1;
-            next_state = TAG;
           end
-        end
-        else if(dcif.dmemWEN & (table2[daddr.idx].tag==daddr.tag) &  & (!(table2[daddr.idx].dirty))& (!LRU[daddr.idx]) ) begin
-          if (daddr.blkoff==0) begin
-            temptable2[daddr.idx].data[0] = dcif.dmemstore;
-            temptable2[daddr.idx].dirty =1'b1;
-            dcif.dhit=1'b1;
-            next_state = TAG;
+          else 
+              next_state = WB1;
           end
-          else if (daddr.blkoff==1) begin
-            temptable2[daddr.idx].data[1] = dcif.dmemstore;
-            temptable2[daddr.idx].dirty =1'b1;
-            dcif.dhit=1'b1;
-            next_state = TAG;
+        else if(dcif.dmemWEN & (table2[daddr.idx].tag==daddr.tag)) begin
+          if (!(table2[daddr.idx].dirty)) begin//& (!LRU[daddr.idx]) ) begin
+            if (daddr.blkoff==0) begin
+              temptable2[daddr.idx].data[0] = dcif.dmemstore;
+              temptable1[daddr.idx].valid = 1'b1;
+              temptable2[daddr.idx].dirty =1'b1;
+              dcif.dhit=1'b1;
+              next_state = TAG;
+            end
+            else if (daddr.blkoff==1) begin
+              temptable2[daddr.idx].data[1] = dcif.dmemstore;
+              temptable1[daddr.idx].valid = 1'b1;
+              temptable2[daddr.idx].dirty =1'b1;
+              dcif.dhit=1'b1;
+              next_state = TAG;
+            end
           end
+          else next_state = WB1;
         end
         else if((dcif.dmemWEN | dcif.dmemREN) & (LRU[daddr.idx]) & table1[daddr.idx].dirty)
           next_state= WB1;
@@ -139,7 +151,17 @@ always_comb begin
         end
       end
       WB1: begin
-        if((LRU[daddr.idx]) & table1[daddr.idx].dirty & (cdif.dwait==0)) begin
+        if((table1[daddr.idx].tag ==daddr.tag) & table1[daddr.idx].dirty & (cdif.dwait==0)) begin
+          cdif.dstore = dstore10;
+          cdif.daddr = {tag1,index,1'b0,2'b00};
+          cdif.dWEN = 1'b1;
+          next_state = WB2; end
+        else if( (table2[daddr.idx].tag==daddr.tag) & table2[daddr.idx].dirty & (cdif.dwait==0)) begin
+          cdif.dstore = dstore20;
+          cdif.daddr = {tag2,index,1'b0,2'b00};
+          cdif.dWEN = 1'b1;
+          next_state =  WB2; end
+        else if((LRU[daddr.idx]) & table1[daddr.idx].dirty & (cdif.dwait==0)) begin
           cdif.dstore = dstore10;
           cdif.daddr = {tag1,index,1'b0,2'b00};
           cdif.dWEN = 1'b1;
@@ -154,16 +176,32 @@ always_comb begin
           cdif.dWEN = 1'b1; end
       end
       WB2:begin
-        if((LRU[daddr.idx]) & table1[daddr.idx].dirty & (cdif.dwait==0)) begin
+        if((table1[daddr.idx].tag ==daddr.tag) & table1[daddr.idx].dirty & (cdif.dwait==0)) begin
           cdif.dstore = dstore11;
           cdif.daddr = {tag1,index,1'b1,2'b00};
           cdif.dWEN = 1'b1;
+          temptable1[daddr.idx].valid = 1'b0;
+          temptable1[daddr.idx].dirty = 1'b0;
+          next_state = AL1; end
+        else if((table2[daddr.idx].tag==daddr.tag) & table2[daddr.idx].dirty & (cdif.dwait==0)) begin
+          cdif.dstore = dstore21;
+          cdif.daddr = {tag2,index,1'b1,2'b00};
+          cdif.dWEN = 1'b1;
+          temptable1[daddr.idx].valid = 1'b0;
+          temptable2[daddr.idx].dirty = 1'b0;
+          next_state = AL1; end
+        else if((LRU[daddr.idx]) & table1[daddr.idx].dirty & (cdif.dwait==0)) begin
+          cdif.dstore = dstore11;
+          cdif.daddr = {tag1,index,1'b1,2'b00};
+          cdif.dWEN = 1'b1;
+          temptable1[daddr.idx].valid = 1'b0;
           temptable1[daddr.idx].dirty = 1'b0;
           next_state = AL1; end
         else if(!(LRU[daddr.idx]) & table2[daddr.idx].dirty & (cdif.dwait==0)) begin
           cdif.dstore = dstore21;
           cdif.daddr = {tag2,index,1'b1,2'b00};
           cdif.dWEN = 1'b1;
+          temptable1[daddr.idx].valid = 1'b0;
           temptable2[daddr.idx].dirty = 1'b0;
           next_state = AL1; end
         else if (cdif.dwait) begin
@@ -171,7 +209,27 @@ always_comb begin
           cdif.dWEN = 1'b1; end
       end
       AL1:begin
-        if((LRU[daddr.idx]) & !(table1[daddr.idx].dirty) & (cdif.dwait==0))begin
+        if((table1[daddr.idx].tag ==daddr.tag) & !(table1[daddr.idx].dirty) & (cdif.dwait==0))begin
+          cdif.dREN = 1'b1;
+          temptable1[daddr.idx].tag = daddr.tag;
+          temptable1[daddr.idx].data[0] = cdif.dload;
+          next_state = AL2;
+          if(daddr.blkoff == 0)
+            cdif.daddr = daddr;
+          else
+            cdif.daddr = daddr - 3'b100;
+        end
+        else if((table2[daddr.idx].tag==daddr.tag) & !(table2[daddr.idx].dirty) & (cdif.dwait==0))begin
+          cdif.dREN = 1'b1;
+          temptable2[daddr.idx].tag = daddr.tag;
+          temptable2[daddr.idx].data[0] = cdif.dload;
+          next_state = AL2;
+          if(daddr.blkoff == 0)
+            cdif.daddr = daddr;
+          else
+            cdif.daddr = daddr - 3'b100;
+        end
+        else if((LRU[daddr.idx]) & !(table1[daddr.idx].dirty) & (cdif.dwait==0))begin
           cdif.dREN = 1'b1;
           temptable1[daddr.idx].tag = daddr.tag;
           temptable1[daddr.idx].data[0] = cdif.dload;
@@ -196,7 +254,29 @@ always_comb begin
           cdif.dREN =1'b1; end
       end
       AL2:begin
-        if((LRU[daddr.idx]) & !(table1[daddr.idx].dirty) & (cdif.dwait==0))begin
+        if((table1[daddr.idx].tag ==daddr.tag) & !(table1[daddr.idx].dirty) & (cdif.dwait==0))begin
+          cdif.dREN = 1'b1;
+          temptable1[daddr.idx].tag = daddr.tag;
+          temptable1[daddr.idx].data[1] = cdif.dload;
+          temptable1[daddr.idx].valid = 1'b1;
+          next_state = TAG;
+          if(daddr.blkoff == 0)
+            cdif.daddr = daddr+ 3'b100;
+          else
+            cdif.daddr = daddr ;
+        end
+        else if((table2[daddr.idx].tag==daddr.tag)  & !(table2[daddr.idx].dirty) & (cdif.dwait==0))begin
+          cdif.dREN = 1'b1;
+          temptable2[daddr.idx].tag = daddr.tag;
+          temptable2[daddr.idx].data[1] = cdif.dload;
+          temptable2[daddr.idx].valid = 1'b1;
+          next_state = TAG;
+          if(daddr.blkoff == 0)
+            cdif.daddr = daddr + 3'b100;
+          else
+            cdif.daddr = daddr ;
+        end
+        else if((LRU[daddr.idx]) & !(table1[daddr.idx].dirty) & (cdif.dwait==0))begin
           cdif.dREN = 1'b1;
           temptable1[daddr.idx].tag = daddr.tag;
           temptable1[daddr.idx].data[1] = cdif.dload;
@@ -282,6 +362,7 @@ always_comb begin
           cdif.dstore = table1[i].data[1];
           cdif.daddr = {table1[i].tag,3'(i),1'b1,2'b00};
           cdif.dWEN = 1'b1;
+          temptable1[daddr.idx].valid = 1'b0;
           temptable1[i].dirty = 1'b0;
           next_state = HALT;
         end
@@ -289,11 +370,12 @@ always_comb begin
           cdif.dstore = table2[i].data[1];
           cdif.daddr = {table2[i].tag,3'(i),1'b1,2'b00};
           cdif.dWEN = 1'b1;
+          temptable1[daddr.idx].valid = 1'b0;
           temptable2[i].dirty = 1'b0;
           next_state = HALT;
         end
         else if (cdif.dwait) begin
-          next_state = HALTWB1;
+          next_state = HALTWB2;
           cdif.dWEN = 1'b1;
         end
       end

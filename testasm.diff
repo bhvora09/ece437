@@ -1,0 +1,26 @@
+processing file asmFiles/hit_diff.asm (1 of 2)
+processing file asmFiles/hit_same.asm (2 of 2)
+processing file asmFiles/associativity.asm (1 of 21)
+processing file asmFiles/branch.asm (2 of 21)
+processing file asmFiles/count_days.asm (3 of 21)
+--- memsim.hex	2021-10-28 17:06:38.295063424 -0400
++++ memcpu.hex	2021-10-28 17:06:38.238061361 -0400
+@@ -50,6 +50,7 @@
+ :0400310027BDFFFCEC
+ :04003200AFBC00005F
+ :0400330003E00008DE
+-:043FFD0000000015AB
+-:043FFE0000001EE6BB
++:043FFC0000000015AC
++:043FFD0000001EE6BC
++:043FFE00000000F0CF
+ :00000001FF
+processing file asmFiles/fib.asm (4 of 21)
+processing file asmFiles/halt.asm (5 of 21)
+processing file asmFiles/hit_diff.asm (6 of 21)
+processing file asmFiles/hit_same.asm (7 of 21)
+processing file asmFiles/jump.asm (8 of 21)
+processing file asmFiles/mergesort.asm (9 of 21)
+processing file asmFiles/mult.asm (1 of 2)
+processing file asmFiles/mult_procedure.asm (2 of 2)
+processing file asmFiles/search.asm (1 of 1)
