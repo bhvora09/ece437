@@ -109,7 +109,7 @@ module datapath (
 
   
   //1/4.dp
-  assign dpif.imemREN=1'b1;
+  assign dpif.imemREN=1'b1 & (~dpif.halt);
   assign dpif.imemaddr=pcif.pc;
   assign dpif.dmemWEN=emif.dWEN_out;
   assign dpif.dmemREN=emif.dREN_out;
@@ -366,6 +366,7 @@ module datapath (
     if(!nRST)
       halt <= 1'b0;
     else
-      halt = halt | mwif.halt_out;
+      halt <= halt | mwif.halt_out;
+      if(halt == 1) halt <= halt;
   end
 endmodule
