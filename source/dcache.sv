@@ -21,17 +21,19 @@ logic [26:0] tag1,tag2;
 logic [2:0] index;
 int a,b;
 int i;
-//word_t hit_count,hit_count_next;
+word_t hit_count,hit_count_next;
 
-typedef enum logic [2:0]{
-  TAG = 3'b000,
-  WB1 = 3'b001,
-  WB2 = 3'b010,
-  AL1 = 3'b011,
-  AL2 = 3'b100,
-  HALT = 3'b101,
-  HALTWB1 = 3'b110,
-  HALTWB2 = 3'b111
+typedef enum logic [3:0]{
+  TAG = 4'b000,
+  WB1 = 4'b001,
+  WB2 = 4'b010,
+  AL1 = 4'b011,
+  AL2 = 4'b100,
+  HALT = 4'b101,
+  HALTWB1 = 4'b110,
+  HALTWB2 = 4'b111,
+  FLUSH = 4'b1000,
+  HIT = 4'b1001
 } s;
 s state;
 s next_state;
@@ -58,13 +60,13 @@ always_ff @(posedge CLK or negedge nRST) begin
     table1 <= 0;
     table2 <= 0;
     state <= TAG;
-    //hit_count <= 0;
+    hit_count <= 0;
   end
   else begin
     table1 <= temptable1;
     table2 <= temptable2;
     state<=next_state;
-    //hit_count <= hit_count_next;
+    hit_count <= hit_count_next;
   end
 end
 
@@ -78,7 +80,7 @@ always_comb begin
     temptable2 = table2;
     dcif.flushed =1'b0;
     next_state = state;
-    //hit_count_next = hit_count;
+    hit_count_next = hit_count;
     case (state) 
       TAG: begin
         cdif.daddr=32'b0;
@@ -137,14 +139,18 @@ always_comb begin
           end
           else next_state = WB1;
         end
-        else if((dcif.dmemWEN | dcif.dmemREN) & (LRU[daddr.idx]) & table1[daddr.idx].dirty)
+        else if((dcif.dmemWEN | dcif.dmemREN) & (LRU[daddr.idx]) & table1[daddr.idx].dirty) begin
           next_state= WB1;
-        else if ((dcif.dmemWEN | dcif.dmemREN) & !(LRU[daddr.idx]) & table2[daddr.idx].dirty)
+          hit_count_next = hit_count -1; end
+        else if ((dcif.dmemWEN | dcif.dmemREN) & !(LRU[daddr.idx]) & table2[daddr.idx].dirty) begin
           next_state=WB1;
-        else if ((dcif.dmemWEN | dcif.dmemREN) & (LRU[daddr.idx]) & !(table1[daddr.idx].dirty))
+          hit_count_next = hit_count -1; end
+        else if ((dcif.dmemWEN | dcif.dmemREN) & (LRU[daddr.idx]) & !(table1[daddr.idx].dirty)) begin
           next_state=AL1;
-        else if ((dcif.dmemWEN | dcif.dmemREN) & !(LRU[daddr.idx]) & !(table2[daddr.idx].dirty))
+          hit_count_next = hit_count -1; end
+        else if ((dcif.dmemWEN | dcif.dmemREN) & !(LRU[daddr.idx]) & !(table2[daddr.idx].dirty)) begin
           next_state=AL1;
+          hit_count_next = hit_count -1; end
         else begin 
           next_state =TAG;
           //hit_count_next = hit_count -1;
@@ -304,41 +310,28 @@ always_comb begin
       end
       HALT:begin
         if(dcif.halt)begin
-          if(((table1[i].dirty == 1) & (cdif.dwait==0)) | ((table2[i].dirty == 1) & (cdif.dwait==0)))
+          if(i<8) begin
+            if(((table1[i].dirty == 1) & (cdif.dwait==0)) | ((table2[i].dirty == 1) & (cdif.dwait==0)))
             next_state = HALTWB1;
-          else if(cdif.dwait)
-            next_state = HALT;
-          else if(i<8) begin
+
             while(i<8) begin
               if((table1[i].dirty == 0) & (table2[i].dirty == 0) & (cdif.dwait==0)) begin
                 temptable1[i] = 'b0;
                 temptable2[i] = 'b0;
                 i=i+1;
               end
-              else if(i<8) begin
+              else if(i<8 & (cdif.dwait==0)) begin
                 next_state = HALTWB1;
-                break; end
-              else if(i==8) begin
-                //cdif.dWEN = 1'b1;
-                //cdif.daddr= 32'h3100;
-                //cdif.dstore = hit_count;
-                temptable1 = 'b0;
-                temptable2 = 'b0;
-                dcif.flushed = 1'b1;
-                break;
+                break; 
               end
             end
           end     
-          else if(i==8) begin
-            /*cdif.dWEN = 1'b1;
-            cdif.daddr= 32'h3100;
-            cdif.dstore = hit_count;*/
-            temptable1 = 'b0;
-            temptable2 = 'b0;
-            dcif.flushed = 1'b1;
+          if(i==8 & (cdif.dwait==0)) begin
+            next_state = HIT;end
+          else if(cdif.dwait)
+            next_state = HALT; 
           end            
         end
-      end
       HALTWB1: begin
         if ((table1[i].dirty == 1) & (cdif.dwait==0)) begin
           cdif.dstore = table1[i].data[0];
@@ -356,6 +349,7 @@ always_comb begin
           next_state = HALTWB1;
           cdif.dWEN = 1'b1;
         end
+
       end
       HALTWB2: begin
         if ((table1[i].dirty == 1) & (cdif.dwait==0)) begin
@@ -379,10 +373,26 @@ always_comb begin
           cdif.dWEN = 1'b1;
         end
       end
+      HIT: begin
+        cdif.dWEN = 1'b1;
+        cdif.daddr= 32'h3100;
+        cdif.dstore = hit_count;
+        if(cdif.dwait==0) begin
+            next_state = FLUSH;end
+        else if(cdif.dwait)
+          next_state = HIT;
+          end
+      FLUSH: begin
+        if(cdif.daddr == 32'h3100 & (cdif.dwait==0)) begin
+            temptable1 = 'b0;
+            temptable2 = 'b0;
+            dcif.flushed = 1'b1; end
+        else if(cdif.dwait)
+          next_state = FLUSH;
+      end
     endcase
-    /*if(dcif.dhit == 1'b1)
+    if(dcif.dhit == 1'b1)
       hit_count_next = hit_count+1;
-    end*/
   end
 
 endmodule

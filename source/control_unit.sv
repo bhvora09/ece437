@@ -93,7 +93,7 @@ always_comb begin
         cuif.ALUSrc='b0;
         cuif.ALUctr=ALU_SUB;
         cuif.MemWr='b0;
-        cuif.ExtOp='b0;
+        cuif.ExtOp='b1;
          end
     BNE:  begin
         //if(aluif.flagZero)
@@ -106,7 +106,7 @@ always_comb begin
         cuif.ALUSrc='b0;
         cuif.ALUctr=ALU_SUB;
         cuif.MemWr='b0;
-        cuif.ExtOp='b0;
+        cuif.ExtOp='b1;
     end
     ADDI: begin
         //cuif.PCsrc= 'b00;
