@@ -97,7 +97,7 @@ module datapath (
   assign aluopinwrback = aluop_t'(mwif.instr_out[5:0]);
 
   //1.pc
-   assign pcif.PCen = dpif.ihit & huif.PCWrite & (~dpif.halt) & (~fdif.stall);
+   assign pcif.PCen =((emif.dREN_out| emif.dWEN_out) & ~dpif.dhit) ? 1'b0:(dpif.ihit  & (~fdif.stall));// & huif.PCWrite & (~dpif.halt));
 
   //1. fdif
   assign fdif.instr_in = huif.fdif_flush ? 'b0: dpif.imemload; //huif added
@@ -105,7 +105,7 @@ module datapath (
   assign fdif.pc_in = huif.fdif_flush ? 'b0 : pcif.pc; //huif added
   assign fdif.ihit = dpif.ihit;
   assign fdif.dhit = dpif.dhit;
-  assign fdif.stall = huif.fdif_stall | ((emif.dREN_out| emif.dWEN_out) & ~dpif.dhit);
+  assign fdif.stall = huif.fdif_stall | ((emif.dREN_out| emif.dWEN_out) & ~dpif.dhit) | emif.stall | deif.stall ;
 
   
   //1/4.dp
@@ -156,7 +156,7 @@ module datapath (
   assign deif.pc_in =huif.deif_flush ? 'b0: fdif.pc_out;
   assign deif.ihit = dpif.ihit;
   assign deif.dhit = dpif.dhit;
-  assign deif.stall = huif.deif_stall | ((emif.dREN_out | emif.dWEN_out) & ~dpif.dhit);
+  assign deif.stall = huif.deif_stall | ((emif.dREN_out | emif.dWEN_out) & ~dpif.dhit) | emif.stall;
 
   //3.ALU
   assign aluif.portA = fuif.Asel? fuif.DataA : deif.rdat1_out;

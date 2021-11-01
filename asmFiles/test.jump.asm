@@ -5,7 +5,7 @@
 
 start:
   org   0x0000
-  ori  $2, $0, 0xAB
+  ori  $2, $0, 0xFF0
   J     test1 
   lui   $7,0xdead //runs if it is equal
   sw    $7, 0($2)
