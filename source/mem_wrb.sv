@@ -60,30 +60,30 @@ always_ff@(posedge CLK or negedge nRST) begin
     end
     
     // else 
-    else if(mwif.stall)  begin
-        mwif.jal_s_out<=mwif.jal_s_out;
-        mwif.lui_out<=mwif.lui_out;
-        mwif.MemtoReg_out <= mwif.MemtoReg_out;
-        mwif.RegWr_out<= mwif.RegWr_out;
-        mwif.halt_out <= mwif.halt_out;
+    // else if(mwif.stall)  begin
+    //     mwif.jal_s_out<=mwif.jal_s_out;
+    //     mwif.lui_out<=mwif.lui_out;
+    //     mwif.MemtoReg_out <= mwif.MemtoReg_out;
+    //     mwif.RegWr_out<= mwif.RegWr_out;
+    //     mwif.halt_out <= mwif.halt_out;
 
-        mwif.pcplusfour_out<=mwif.pcplusfour_out;
-        mwif.pc_out<=mwif.pc_out;
-        mwif.instr_out <= mwif.instr_out;
-        mwif.wdat_out <= mwif.wdat_out;
-        mwif.alu_portOut_out <= mwif.alu_portOut_out;
-        mwif.rdat2_out <= mwif.rdat2_out;
+    //     mwif.pcplusfour_out<=mwif.pcplusfour_out;
+    //     mwif.pc_out<=mwif.pc_out;
+    //     mwif.instr_out <= mwif.instr_out;
+    //     mwif.wdat_out <= mwif.wdat_out;
+    //     mwif.alu_portOut_out <= mwif.alu_portOut_out;
+    //     mwif.rdat2_out <= mwif.rdat2_out;
     
-        mwif.imm_addr_out <=mwif.imm_addr_out;
-        mwif.wsel_out <=mwif.wsel_out;
-        mwif.shift_amt_out <= mwif.shift_amt_out;
-        mwif.reg_rs_out <=mwif.reg_rs_out;
-        mwif.reg_rt_out<=mwif.reg_rt_out;
-        mwif.reg_rd_out <=mwif.reg_rd_out;
+    //     mwif.imm_addr_out <=mwif.imm_addr_out;
+    //     mwif.wsel_out <=mwif.wsel_out;
+    //     mwif.shift_amt_out <= mwif.shift_amt_out;
+    //     mwif.reg_rs_out <=mwif.reg_rs_out;
+    //     mwif.reg_rt_out<=mwif.reg_rt_out;
+    //     mwif.reg_rd_out <=mwif.reg_rd_out;
 
-        mwif.opcode_out <= mwif.opcode_out;
-        mwif.funct_out <=mwif.funct_out;
-    end
+    //     mwif.opcode_out <= mwif.opcode_out;
+    //     mwif.funct_out <=mwif.funct_out;
+    // end
     // begin
     
     //end
