@@ -41,46 +41,43 @@ module idecode_iexec(
             idieif.opcode_out <=opcode_t'('b0);
             idieif.pc_out <= 'b0;
             end
+        //change 10 - added flush here
+        else if((idieif.flush | idieif.stall) & idieif.ihit) begin
+            idieif.dREN_out <='b0;
+            idieif.dWEN_out <= 'b0;
+            idieif.instr_out <='b0;
+            idieif.Ext_addr_out<='b0;
+            idieif.pcplusfour_out<='b0;
+            idieif.rdat1_out <='b0;
+            idieif.rdat2_out <='b0;
+            idieif.jal_s_out <='b0;
+            idieif.jr_s_out <= 'b0;
+            idieif.jump_s_out <= 'b0;
+            idieif.bne_s_out<='b0;
+            idieif.beq_s_out<='b0;
+            idieif.lui_out <='b0;
+            idieif.RegDst_out <='b0;
+            idieif.ALUSrc_out <='b0;
+            idieif.ALUctr_out <='b0;
+            idieif.RegWr_out<='b0;
+            idieif.MemWr_out<='b0;
+            idieif.MemtoReg_out<='b0;
+            idieif.halt_out<='b0;
+            idieif.imm_addr_out <='b0;
+            idieif.reg_rs_out <= 'b0;
+            idieif.reg_rt_out <='b0;
+            idieif.reg_rd_out<='b0;
+            idieif.shift_amt_out <='b0;
+            idieif.j_addr_out <= 'b0;
 
-        else if(idieif.stall) begin
-            idieif.instr_out <= idieif.instr_out;
-            idieif.Ext_addr_out<=idieif.Ext_addr_out;
-            idieif.pcplusfour_out<=idieif.pcplusfour_out;
-            idieif.rdat1_out <=idieif.rdat1_out;
-            idieif.rdat2_out <=idieif.rdat2_out;
-
-            idieif.dWEN_out <=idieif.dWEN_out;
-            idieif.dREN_out <=idieif.dREN_out;
-            idieif.jal_s_out <=idieif.jal_s_out;
-            idieif.jr_s_out <= idieif.jr_s_out;
-            idieif.jump_s_out <= idieif.jump_s_out;
-            idieif.bne_s_out<=idieif.bne_s_out;
-            idieif.beq_s_out<=idieif.beq_s_out;
-            idieif.lui_out <= idieif.lui_out;
-
-            idieif.RegDst_out <= idieif.RegDst_out;
-            idieif.ALUSrc_out <= idieif.ALUSrc_out;
-            idieif.ALUctr_out <= idieif.ALUctr_out;
-            idieif.RegWr_out<=idieif.RegWr_out;
-            idieif.MemWr_out<=idieif.MemWr_out;
-            idieif.MemtoReg_out<=idieif.MemtoReg_out;
-            idieif.halt_out<=idieif.halt_out;
-            
-            idieif.imm_addr_out <= idieif.imm_addr_out;
-            
-            idieif.reg_rs_out <= idieif.reg_rs_out;
-            idieif.reg_rt_out <=idieif.reg_rt_out;
-            idieif.reg_rd_out<=idieif.reg_rd_out;
-            idieif.shift_amt_out <= idieif.shift_amt_out;
-
-            idieif.j_addr_out <= idieif.j_addr_out;
-
-            idieif.funct_out <=idieif.funct_out;
-            idieif.opcode_out <= idieif.opcode_out;
-            idieif.pc_out <= idieif.pc_out;
-        end
-
-        else if(idieif.ihit | idieif.dhit )  begin //let it pass only if ihit has come
+            idieif.funct_out <=funct_t'('b0);
+            idieif.opcode_out <=opcode_t'('b0);
+            idieif.pc_out <= 'b0;
+            end
+       
+        //change 11 
+        //else if(idieif.ihit | idieif.dhit )  begin //let it pass only if ihit has come
+        else if(idieif.ihit)  begin 
             idieif.instr_out <= idieif.instr_in;
             idieif.Ext_addr_out<=idieif.Ext_addr_in;
             idieif.pcplusfour_out<=idieif.pcplusfour_in;
@@ -119,6 +116,43 @@ module idecode_iexec(
             //idieif.dhit_out <= idieif.dhit_in;
             //idieif.ihit_out <= idieif.ihit_in;
             //idieif.dhit_out <= idieif.dhit_in;    
+        end
+        else if(idieif.stall) begin
+            idieif.instr_out <= idieif.instr_out;
+            idieif.Ext_addr_out<=idieif.Ext_addr_out;
+            idieif.pcplusfour_out<=idieif.pcplusfour_out;
+            idieif.rdat1_out <=idieif.rdat1_out;
+            idieif.rdat2_out <=idieif.rdat2_out;
+
+            idieif.dWEN_out <=idieif.dWEN_out;
+            idieif.dREN_out <=idieif.dREN_out;
+            idieif.jal_s_out <=idieif.jal_s_out;
+            idieif.jr_s_out <= idieif.jr_s_out;
+            idieif.jump_s_out <= idieif.jump_s_out;
+            idieif.bne_s_out<=idieif.bne_s_out;
+            idieif.beq_s_out<=idieif.beq_s_out;
+            idieif.lui_out <= idieif.lui_out;
+
+            idieif.RegDst_out <= idieif.RegDst_out;
+            idieif.ALUSrc_out <= idieif.ALUSrc_out;
+            idieif.ALUctr_out <= idieif.ALUctr_out;
+            idieif.RegWr_out<=idieif.RegWr_out;
+            idieif.MemWr_out<=idieif.MemWr_out;
+            idieif.MemtoReg_out<=idieif.MemtoReg_out;
+            idieif.halt_out<=idieif.halt_out;
+            
+            idieif.imm_addr_out <= idieif.imm_addr_out;
+            
+            idieif.reg_rs_out <= idieif.reg_rs_out;
+            idieif.reg_rt_out <=idieif.reg_rt_out;
+            idieif.reg_rd_out<=idieif.reg_rd_out;
+            idieif.shift_amt_out <= idieif.shift_amt_out;
+
+            idieif.j_addr_out <= idieif.j_addr_out;
+
+            idieif.funct_out <=idieif.funct_out;
+            idieif.opcode_out <= idieif.opcode_out;
+            idieif.pc_out <= idieif.pc_out;
         end
      end
 endmodule

@@ -2,6 +2,7 @@
 `define IFETCH_IDECODE_IF_VH
 
 // all types
+//change - 7 added flush input
 `include "cpu_types_pkg.vh"
 
 interface ifetch_idecode_if;
@@ -11,7 +12,7 @@ interface ifetch_idecode_if;
     //in
     word_t instr_in;
     word_t pc_in, pcplusfour_in;
-    logic ihit, dhit,stall;
+    logic ihit, dhit,stall,flush;
 
     //out
     word_t instr_out;
@@ -19,7 +20,7 @@ interface ifetch_idecode_if;
     //logic ihit_out, dhit_out;
     
     modport fd_if (
-        input instr_in,ihit, dhit,
+        input instr_in,ihit, dhit, flush,
             pc_in, pcplusfour_in, stall,
             //ihit_in, dhit_in,
         output instr_out, 
@@ -31,7 +32,7 @@ interface ifetch_idecode_if;
         input instr_out, 
             pc_out, pcplusfour_out,
             //ihit_out, dhit_out,
-        output instr_in,ihit, dhit,stall,
+        output instr_in,ihit, dhit,stall,flush,
             pc_in, pcplusfour_in
             //ihit_in, dhit_in
     );

@@ -13,7 +13,8 @@ always_ff @(posedge CLK or negedge nRST)
 begin
     if (!nRST)
         pcif.pc<='b0;
-    else if(pcif.PCen)
+    //added stall input
+    else if(pcif.PCen & ~pcif.stall)
         pcif.pc<=pcif.pc_next;
 end
 endmodule

@@ -61,17 +61,17 @@ always_ff @(posedge CLK or negedge nRST) begin
     table2 <= 0;
     state <= TAG;
     hit_count <= 0;
-    i<=0;
+    //i<=0;
   end
   else begin
     table1 <= temptable1;
     table2 <= temptable2;
     state<=next_state;
     hit_count <= hit_count_next;
-    if(dcif.halt & ~(dcif.flushed) & i<8) begin
-      if((table1[i].dirty == 0) & (table2[i].dirty == 0))
-        i<=i+1;
-    end
+    // if(dcif.halt & ~(dcif.flushed) & i<8) begin
+    //   if((table1[i].dirty == 0) & (table2[i].dirty == 0))
+    //     i<=i+1;
+    // end
   end
 end
 
@@ -92,6 +92,7 @@ always_comb begin
       cdif.dstore=32'b0;
       if (dcif.halt) begin
         next_state = HALT;
+        i=0;
         end
       else if(dcif.dmemREN & (table1[daddr.idx].tag ==daddr.tag) & (table1[daddr.idx].valid)) begin
         dcif.dhit =1'b1;
@@ -330,24 +331,29 @@ always_comb begin
         end
       end
     HALT:begin
-      if(dcif.halt)begin
-        if(i<8) begin
-          // if((table1[i].dirty == 1)  | (table2[i].dirty == 1))
-          // next_state = HALTWB1;
-          if((table1[i].dirty == 0) & (table2[i].dirty == 0)) begin
-            temptable1[i] = 'b0;
-            temptable2[i] = 'b0;
-            end
-          else begin
+        if(dcif.halt)begin
+          if(i<8) begin
+            if(((table1[i].dirty == 1) & (cdif.dwait==0)) | ((table2[i].dirty == 1) & (cdif.dwait==0)))
             next_state = HALTWB1;
-            break; 
+
+            while(i<8) begin
+              if((table1[i].dirty == 0) & (table2[i].dirty == 0) & (cdif.dwait==0)) begin
+                temptable1[i] = 'b0;
+                temptable2[i] = 'b0;
+                i=i+1;
+              end
+              else if(i<8 & (cdif.dwait==0)) begin
+                next_state = HALTWB1;
+                break; 
+              end
             end
           end     
-        else if(i==8) begin
-          next_state = HIT;
-          end 
-        end            
-      end
+          if(i==8 & (cdif.dwait==0)) begin
+            next_state = HIT;end
+          else if(cdif.dwait)
+            next_state = HALT; 
+          end            
+        end
     HALTWB1: begin
       if ((table1[i].dirty == 1) & (cdif.dwait==0)) begin
         cdif.dstore = table1[i].data[0];

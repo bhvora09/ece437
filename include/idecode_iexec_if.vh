@@ -17,14 +17,15 @@ interface idecode_iexec_if;
     logic [25:0] j_addr_in;
     funct_t funct_in;
     opcode_t opcode_in;
+    logic flush;
     //opcode_t opcode_out;
     //funct_t funct_out;
     logic [3:0] ALUctr_in;
     
     //logic ihit_in, 
    // logic dhit;
-    
-
+    //change - 11 
+    //added flush
     //out
     word_t instr_out,Ext_addr_out,pcplusfour_out,rdat1_out, rdat2_out,pc_out;
     logic dWEN_out, dREN_out, bne_s_out, beq_s_out, jal_s_out, jr_s_out, jump_s_out,lui_out;
@@ -45,7 +46,7 @@ interface idecode_iexec_if;
                 reg_rs_in,reg_rt_in,reg_rd_in,shift_amt_in,
                 j_addr_in,
                 funct_in,
-                opcode_in,stall,
+                opcode_in,stall,flush,
                 //ihit_in,
                 //dhit_in,
                 //stall_for_data,
@@ -78,7 +79,7 @@ interface idecode_iexec_if;
                 reg_rs_in, reg_rt_in,reg_rd_in,shift_amt_in,
                 j_addr_in,
                 funct_in,
-                opcode_in,stall
+                opcode_in,stall,flush
                 //ihit_in,
                 //dhit_in,
                 
