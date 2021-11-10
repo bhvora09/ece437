@@ -316,30 +316,30 @@ add wave -noupdate /system_tb/DUT/CPU/DP/opinfetch
 add wave -noupdate /system_tb/DUT/CPU/DP/aluopinfetch
 add wave -noupdate /system_tb/DUT/CPU/DP/opinmem
 add wave -noupdate /system_tb/DUT/CPU/DP/aluopinmem
-add wave -noupdate -expand -group hits /system_tb/DUT/CPU/dcif/ihit
-add wave -noupdate -expand -group hits /system_tb/DUT/CPU/dcif/dhit
-add wave -noupdate -expand -group dcache /system_tb/DUT/CPU/CM/DCACHE/CLK
-add wave -noupdate -expand -group dcache /system_tb/DUT/CPU/CM/DCACHE/nRST
-add wave -noupdate -expand -group dcache /system_tb/DUT/CPU/CM/DCACHE/table1
-add wave -noupdate -expand -group dcache /system_tb/DUT/CPU/CM/DCACHE/temptable1
-add wave -noupdate -expand -group dcache /system_tb/DUT/CPU/CM/DCACHE/table2
-add wave -noupdate -expand -group dcache /system_tb/DUT/CPU/CM/DCACHE/temptable2
-add wave -noupdate -expand -group dcache /system_tb/DUT/CPU/CM/DCACHE/LRU
-add wave -noupdate -expand -group dcache /system_tb/DUT/CPU/CM/DCACHE/dload1
-add wave -noupdate -expand -group dcache /system_tb/DUT/CPU/CM/DCACHE/dload2
-add wave -noupdate -expand -group dcache /system_tb/DUT/CPU/CM/DCACHE/dstore10
-add wave -noupdate -expand -group dcache /system_tb/DUT/CPU/CM/DCACHE/dstore11
-add wave -noupdate -expand -group dcache /system_tb/DUT/CPU/CM/DCACHE/dstore20
-add wave -noupdate -expand -group dcache /system_tb/DUT/CPU/CM/DCACHE/dstore21
-add wave -noupdate -expand -group dcache /system_tb/DUT/CPU/CM/DCACHE/tag1
-add wave -noupdate -expand -group dcache /system_tb/DUT/CPU/CM/DCACHE/tag2
-add wave -noupdate -expand -group dcache /system_tb/DUT/CPU/CM/DCACHE/index
-add wave -noupdate -expand -group dcache /system_tb/DUT/CPU/CM/DCACHE/i
-add wave -noupdate -expand -group dcache /system_tb/DUT/CPU/CM/DCACHE/state
-add wave -noupdate -expand -group dcache /system_tb/DUT/CPU/CM/DCACHE/next_state
-add wave -noupdate -expand -group dcache /system_tb/DUT/CPU/CM/DCACHE/hit_count_next
-add wave -noupdate -expand -group dcache /system_tb/DUT/CPU/CM/DCACHE/hit_count
-add wave -noupdate -expand -group dcache /system_tb/DUT/CPU/CM/DCACHE/daddr
+add wave -noupdate -group hits /system_tb/DUT/CPU/dcif/ihit
+add wave -noupdate -group hits /system_tb/DUT/CPU/dcif/dhit
+add wave -noupdate -group dcache /system_tb/DUT/CPU/CM/DCACHE/CLK
+add wave -noupdate -group dcache /system_tb/DUT/CPU/CM/DCACHE/nRST
+add wave -noupdate -group dcache /system_tb/DUT/CPU/CM/DCACHE/table1
+add wave -noupdate -group dcache /system_tb/DUT/CPU/CM/DCACHE/temptable1
+add wave -noupdate -group dcache /system_tb/DUT/CPU/CM/DCACHE/table2
+add wave -noupdate -group dcache /system_tb/DUT/CPU/CM/DCACHE/temptable2
+add wave -noupdate -group dcache /system_tb/DUT/CPU/CM/DCACHE/LRU
+add wave -noupdate -group dcache /system_tb/DUT/CPU/CM/DCACHE/dload1
+add wave -noupdate -group dcache /system_tb/DUT/CPU/CM/DCACHE/dload2
+add wave -noupdate -group dcache /system_tb/DUT/CPU/CM/DCACHE/dstore10
+add wave -noupdate -group dcache /system_tb/DUT/CPU/CM/DCACHE/dstore11
+add wave -noupdate -group dcache /system_tb/DUT/CPU/CM/DCACHE/dstore20
+add wave -noupdate -group dcache /system_tb/DUT/CPU/CM/DCACHE/dstore21
+add wave -noupdate -group dcache /system_tb/DUT/CPU/CM/DCACHE/tag1
+add wave -noupdate -group dcache /system_tb/DUT/CPU/CM/DCACHE/tag2
+add wave -noupdate -group dcache /system_tb/DUT/CPU/CM/DCACHE/index
+add wave -noupdate -group dcache /system_tb/DUT/CPU/CM/DCACHE/i
+add wave -noupdate -group dcache /system_tb/DUT/CPU/CM/DCACHE/state
+add wave -noupdate -group dcache /system_tb/DUT/CPU/CM/DCACHE/next_state
+add wave -noupdate -group dcache /system_tb/DUT/CPU/CM/DCACHE/hit_count_next
+add wave -noupdate -group dcache /system_tb/DUT/CPU/CM/DCACHE/hit_count
+add wave -noupdate -group dcache /system_tb/DUT/CPU/CM/DCACHE/daddr
 add wave -noupdate -group icache /system_tb/DUT/CPU/CM/ICACHE/CLK
 add wave -noupdate -group icache /system_tb/DUT/CPU/CM/ICACHE/nRST
 add wave -noupdate -group icache /system_tb/DUT/CPU/CM/ICACHE/hit
@@ -353,7 +353,7 @@ add wave -noupdate -group icache /system_tb/DUT/CPU/CM/ICACHE/iwait
 add wave -noupdate -group icache /system_tb/DUT/CPU/CM/ICACHE/s
 add wave -noupdate -group icache /system_tb/DUT/CPU/CM/ICACHE/nS
 TreeUpdate [SetDefaultTree]
-WaveRestoreCursors {{Cursor 1} {798493 ps} 0}
+WaveRestoreCursors {{Cursor 1} {2158213 ps} 0}
 quietly wave cursor active 1
 configure wave -namecolwidth 334
 configure wave -valuecolwidth 100
@@ -369,4 +369,4 @@ configure wave -griddelta 40
 configure wave -timeline 0
 configure wave -timelineunits ns
 update
-WaveRestoreZoom {0 ps} {2692676 ps}
+WaveRestoreZoom {0 ps} {5385352 ps}
