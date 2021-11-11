@@ -1,0 +1,15 @@
+processing file asmFiles/test.jump.asm (1 of 1)
+processing file asmFiles/mult_procedure.asm (1 of 1)
+processing file asmFiles/count_days.asm (1 of 1)
+--- memsim.hex	2021-10-31 21:53:36.161141092 -0400
++++ memcpu.hex	2021-10-31 21:53:36.101138944 -0400
+@@ -51,6 +51,7 @@
+ :04003200AFBC00005F
+ :0400330003E00008DE
+ :040C40000000000BA5
+-:043FFD0000000015AB
+-:043FFE0000001EE6BB
++:043FFC0000000015AC
++:043FFD0000001EE6BC
++:043FFE00000000F0CF
+ :00000001FF
