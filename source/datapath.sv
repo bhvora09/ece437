@@ -41,6 +41,7 @@ module datapath (
   logic [31:0] extended_address;
   logic [4:0] rd;
   logic halt;
+  logic deif_flush;
   //logic [31:0] instr;
   //logic  stall;
 
@@ -97,16 +98,19 @@ module datapath (
   assign aluopinwrback = aluop_t'(mwif.instr_out[5:0]);
 
   //1.pc
-   assign pcif.PCen =((emif.dREN_out| emif.dWEN_out) & ~dpif.dhit) ? 1'b0:(dpif.ihit  & (~fdif.stall));// & huif.PCWrite & (~dpif.halt));
+  assign pcif.PCen =((emif.dREN_out| emif.dWEN_out) & ~dpif.dhit) ? 1'b0:(dpif.ihit  & (~fdif.stall));// & huif.PCWrite & (~dpif.halt));
 
+  //change -2 
+  //assign fdif_flush = huif.fdif_flush | (fdif.stall & (~deif.stall));
   //1. fdif
   assign fdif.instr_in = huif.fdif_flush ? 'b0: dpif.imemload; //huif added
   assign fdif.pcplusfour_in = huif.fdif_flush ? 'b0: (pcif.pc + 4); //huif added
   assign fdif.pc_in = huif.fdif_flush ? 'b0 : pcif.pc; //huif added
   assign fdif.ihit = dpif.ihit;
   assign fdif.dhit = dpif.dhit;
-  assign fdif.stall = huif.fdif_stall | ((emif.dREN_out| emif.dWEN_out) & ~dpif.dhit) | emif.stall | deif.stall ;
-
+  //change-1
+  //assign fdif.stall = huif.fdif_stall | ((emif.dREN_out| emif.dWEN_out) & ~dpif.dhit) | emif.stall | deif.stall ;
+  assign fdif.stall = huif.fdif_stall | ((emif.dREN_out| emif.dWEN_out) & ~dpif.dhit) | emif.stall | deif.stall | ~dpif.ihit;
   
   //1/4.dp
   assign dpif.imemREN=1'b1 & (~dpif.halt);
@@ -124,36 +128,36 @@ module datapath (
   assign rfif.rsel2 = cuif.reg_rt;
   assign rfif.WEN = mwif.RegWr_out; //&& (dpif.ihit || dpif.dhit);  //add
   assign rfif.wsel = mwif.wsel_out; 
-
+  assign deif_flush = fdif.stall & (~deif.stall);
   //2.deif
-  assign deif.dREN_in = huif.deif_flush ? 'b0: cuif.dREN;
-  assign deif.dWEN_in = huif.deif_flush ? 'b0: cuif.dWEN;
-  assign deif.instr_in = huif.deif_flush ? 'b0: fdif.instr_out;
-  assign deif.pcplusfour_in= huif.deif_flush ? 'b0: fdif.pcplusfour_out;
-  assign deif.rdat1_in =  huif.deif_flush ? 'b0: rfif.rdat1;
-  assign deif.rdat2_in =  huif.deif_flush ? 'b0: rfif.rdat2;
-  assign deif.jal_s_in =huif.deif_flush ? 'b0: cuif.jal_s;
-  assign deif.jr_s_in = huif.deif_flush ? 'b0: cuif.jr_s;
-  assign deif.jump_s_in= huif.deif_flush ? 'b0: cuif.jump_s;
-  assign deif.bne_s_in = huif.deif_flush ? 'b0:  cuif.bne_s;
-  assign deif.beq_s_in = huif.deif_flush ? 'b0: cuif.beq_s;
-  assign deif.lui_in = huif.deif_flush ? 'b0: cuif.lui;
-  assign deif.RegDst_in = huif.deif_flush ? 'b0: cuif.RegDst;
-  assign deif.ALUctr_in = huif.deif_flush ? 'b0: cuif.ALUctr;
-  assign deif.ALUSrc_in = huif.deif_flush ? 'b0: cuif.ALUSrc;
-  assign deif.RegWr_in = huif.deif_flush ? 'b0: cuif.RegWr;
-  assign deif.MemWr_in = huif.deif_flush ? 'b0: cuif.MemWr;
-  assign deif.MemtoReg_in = huif.deif_flush ? 'b0: cuif.MemtoReg;
-  assign deif.halt_in = huif.deif_flush ? 'b0: cuif.halt;
-  assign deif.imm_addr_in=huif.deif_flush ? 'b0: cuif.imm_addr;
-  assign deif.reg_rs_in = huif.deif_flush ? 'b0: cuif.reg_rs;
-  assign deif.reg_rt_in = huif.deif_flush ? 'b0: cuif.reg_rt;
-  assign deif.reg_rd_in=huif.deif_flush ? 'b0: cuif.reg_rd;
-  assign deif.shift_amt_in = huif.deif_flush ? 'b0: cuif.shift_amt;
-  assign deif.j_addr_in = huif.deif_flush ? 'b0: cuif.j_addr;
-  assign deif.funct_in = huif.deif_flush ? funct_t'('b0): cuif.funct;
-  assign deif.opcode_in = huif.deif_flush ? opcode_t'('b0): cuif.opcode;
-  assign deif.pc_in =huif.deif_flush ? 'b0: fdif.pc_out;
+  assign deif.dREN_in = (huif.deif_flush | deif_flush )? 'b0: cuif.dREN;
+  assign deif.dWEN_in = (huif.deif_flush | deif_flush) ? 'b0: cuif.dWEN;
+  assign deif.instr_in = (huif.deif_flush | deif_flush) ? 'b0: fdif.instr_out;
+  assign deif.pcplusfour_in= (huif.deif_flush | deif_flush)  ? 'b0: fdif.pcplusfour_out;
+  assign deif.rdat1_in =  (huif.deif_flush | deif_flush) ? 'b0: rfif.rdat1;
+  assign deif.rdat2_in =  (huif.deif_flush | deif_flush ) ? 'b0: rfif.rdat2;
+  assign deif.jal_s_in =(huif.deif_flush | deif_flush) ? 'b0: cuif.jal_s;
+  assign deif.jr_s_in = (huif.deif_flush | deif_flush)  ? 'b0: cuif.jr_s;
+  assign deif.jump_s_in= (huif.deif_flush | deif_flush )? 'b0: cuif.jump_s;
+  assign deif.bne_s_in = (huif.deif_flush | deif_flush) ? 'b0:  cuif.bne_s;
+  assign deif.beq_s_in = (huif.deif_flush | deif_flush) ? 'b0: cuif.beq_s;
+  assign deif.lui_in = (huif.deif_flush | deif_flush) ? 'b0: cuif.lui;
+  assign deif.RegDst_in = (huif.deif_flush | deif_flush )? 'b0: cuif.RegDst;
+  assign deif.ALUctr_in = (huif.deif_flush | deif_flush) ? 'b0: cuif.ALUctr;
+  assign deif.ALUSrc_in = (huif.deif_flush | deif_flush) ? 'b0: cuif.ALUSrc;
+  assign deif.RegWr_in = (huif.deif_flush | deif_flush )? 'b0: cuif.RegWr;
+  assign deif.MemWr_in = (huif.deif_flush | deif_flush )? 'b0: cuif.MemWr;
+  assign deif.MemtoReg_in = (huif.deif_flush | deif_flush )? 'b0: cuif.MemtoReg;
+  assign deif.halt_in = (huif.deif_flush | deif_flush )? 'b0: cuif.halt;
+  assign deif.imm_addr_in=(huif.deif_flush | deif_flush )? 'b0: cuif.imm_addr;
+  assign deif.reg_rs_in = (huif.deif_flush | deif_flush) ? 'b0: cuif.reg_rs;
+  assign deif.reg_rt_in = (huif.deif_flush | deif_flush )? 'b0: cuif.reg_rt;
+  assign deif.reg_rd_in=(huif.deif_flush | deif_flush) ? 'b0: cuif.reg_rd;
+  assign deif.shift_amt_in = (huif.deif_flush | deif_flush) ? 'b0: cuif.shift_amt;
+  assign deif.j_addr_in = (huif.deif_flush | deif_flush) ? 'b0: cuif.j_addr;
+  assign deif.funct_in = (huif.deif_flush | deif_flush) ? funct_t'('b0): cuif.funct;
+  assign deif.opcode_in = (huif.deif_flush | deif_flush) ? opcode_t'('b0): cuif.opcode;
+  assign deif.pc_in =(huif.deif_flush | deif_flush )? 'b0: fdif.pc_out;
   assign deif.ihit = dpif.ihit;
   assign deif.dhit = dpif.dhit;
   assign deif.stall = huif.deif_stall | ((emif.dREN_out | emif.dWEN_out) & ~dpif.dhit) | emif.stall;
@@ -172,25 +176,25 @@ module datapath (
   assign emif.jump_s_in= huif.emif_flush ? 'b0: deif.jump_s_out;
   assign emif.lui_in =huif.emif_flush ? 'b0:  deif.lui_out;
   assign emif.pcplusfour_in=huif.emif_flush ? 'b0: deif.pcplusfour_out;
-  assign emif.pc_in =huif.emif_flush ? 'b0: deif.pc_out;
-  assign emif.instr_in = huif.emif_flush ? 'b0: deif.instr_out;
-  assign emif.RegWr_in = huif.emif_flush ? 'b0: deif.RegWr_out;
-  assign emif.MemWr_in =huif.emif_flush ? 'b0:  deif.MemWr_out;
-  assign emif.MemtoReg_in = huif.emif_flush ? 'b0: deif.MemtoReg_out;
-  assign emif.halt_in = huif.emif_flush ? 'b0: deif.halt_out;
-  assign emif.imm_addr_in=huif.emif_flush ? 'b0: deif.imm_addr_out;
-  assign emif.j_addr_in = huif.emif_flush ? 'b0: deif.j_addr_out;   //add 
-  assign emif.shift_amt_in = huif.emif_flush ? 'b0: deif.shift_amt_out;
-  assign emif.reg_rs_in =huif.emif_flush ? 'b0: deif.reg_rs_out;
-  assign emif.reg_rt_in =huif.emif_flush ? 'b0: deif.reg_rt_out;
-  assign emif.reg_rd_in = emif.wsel_in;
-  assign emif.opcode_in =huif.emif_flush ? opcode_t'('b0):  deif.opcode_out;
-  assign emif.funct_in = huif.emif_flush ? funct_t'('b0): deif.funct_out; //funct in execute
-  assign emif.flagZero_in = huif.emif_flush ? 'b0: aluif.flagZero;
-  assign emif.rdat2_in = huif.emif_flush ? 'b0: deif.rdat2_out;
+  assign emif.pc_in     =huif.emif_flush ? 'b0: deif.pc_out;
+  assign emif.instr_in    = huif.emif_flush ? 'b0: deif.instr_out;
+  assign emif.RegWr_in    = huif.emif_flush ? 'b0: deif.RegWr_out;
+  assign emif.MemWr_in      =huif.emif_flush ? 'b0:  deif.MemWr_out;
+  assign emif.MemtoReg_in   = huif.emif_flush ? 'b0: deif.MemtoReg_out;
+  assign emif.halt_in       = huif.emif_flush ? 'b0: deif.halt_out;
+  assign emif.imm_addr_in     =huif.emif_flush ? 'b0: deif.imm_addr_out;
+  assign emif.j_addr_in     = huif.emif_flush ? 'b0: deif.j_addr_out;   //add 
+  assign emif.shift_amt_in    = huif.emif_flush ? 'b0: deif.shift_amt_out;
+  assign emif.reg_rs_in       =huif.emif_flush ? 'b0: deif.reg_rs_out;
+  assign emif.reg_rt_in       =huif.emif_flush ? 'b0: deif.reg_rt_out;
+  assign emif.reg_rd_in       = huif.emif_flush ? 'b0: emif.wsel_in;
+  assign emif.opcode_in        =huif.emif_flush ? opcode_t'('b0):  deif.opcode_out;
+  assign emif.funct_in        = huif.emif_flush ? funct_t'('b0): deif.funct_out; //funct in execute
+  assign emif.flagZero_in     = huif.emif_flush ? 'b0: aluif.flagZero;
+  assign emif.rdat2_in        = huif.emif_flush ? 'b0: deif.rdat2_out;
   assign emif.alu_portOut_in = huif.emif_flush ? 'b0: (deif.lui_out ? {deif.imm_addr_out,16'h0000} : aluif.portOut);
-  assign emif.Ext_addr_in = huif.emif_flush ? 'b0: deif.Ext_addr_out;
-  assign emif.rdat1_in = huif.emif_flush ? 'b0: deif.rdat1_out;
+  assign emif.Ext_addr_in    = huif.emif_flush ? 'b0: deif.Ext_addr_out;
+  assign emif.rdat1_in       = huif.emif_flush ? 'b0: deif.rdat1_out;
   assign emif.ihit = dpif.ihit;
   assign emif.dhit = dpif.dhit;
   assign emif.stall =((emif.dREN_out | emif.dWEN_out) & ~dpif.dhit);
