@@ -173,7 +173,7 @@ program test(
 
     reset_dut;
     
-    //both i caches want to read
+    //both i caches want to read //1
     tb_test_num = tb_test_num+1;
     cif0.iREN = '1;
     cif0.iaddr = 'h0004;
@@ -195,7 +195,7 @@ program test(
 
     #(PERIOD*4);
 
-    //both d caches want to read invalid and not dirty
+    //both d caches want to read invalid and not dirty //2
     tb_test_num = tb_test_num+1;
     cif0.iREN = '0;
     cif0.iaddr = 'h0004;
@@ -218,7 +218,7 @@ program test(
     #(PERIOD*8);
     cif0.dREN = '0;
     #(PERIOD*7); 
-    // both wants to write to valid and dirty
+    // both wants to write to valid and dirty //3
     tb_test_num = tb_test_num+1;
     cif0.iREN = '0;
     cif0.iaddr = 'hFF00;
@@ -238,22 +238,133 @@ program test(
     cif1.cctrans = 0;
     cif1.ccwrite = 0;
     
-    #(PERIOD*6);
-    #(PERIOD*6);
+    #(PERIOD*2);
     cif0.cctrans = 1;
+    cif0.dWEN = '0;
     cif0.ccwrite = 0;
     cif1.cctrans = 1;
     cif1.ccwrite = 1;
     #(PERIOD);
     cif0.daddr = 'hABC9;
-    #(PERIOD*6);
-    //0-read 1 - write 
+    #(PERIOD*2);
+    //0-read 1 - write //4
     tb_test_num = tb_test_num+1;
 
     cif0.iREN = '0;
     cif0.iaddr = 'hFF00;
+    cif0.dREN = '1;
+    cif0.dWEN = '0;
+    cif0.daddr ='hABCD;
+    cif0.dstore = 'h1234;sim:/bus_controller_tb/PROG/tb_test_num
+
+    cif1.iREN = 'b0;
+    cif1.iaddr = 'hFF00;
+    cif1.dREN = '0;
+    cif1.dWEN = '1;
+    cif1.daddr ='hABCD;
+    cif1.dstore = 'hA1B2;
+    cif1.cctrans = 0;
+    cif1.ccwrite = 0;
+    
+    #(PERIOD*6);
     cif0.dREN = '0;
-    cif0.dWEN = '1;
+    #(PERIOD*6);
+
+    //0 - read, valid and not dirty -snooping - 1- valid and not dirty //5
+    tb_test_num = tb_test_num+1;sim:/bus_controller_tb/PROG/tb_test_num
+
+    cif0.dWEN = '0;
+    cif0.daddr ='hABCD;
+    cif0.dstore = 'h1234;
+    cif0.cctrans = 1;
+    cif0.ccwrite = 0;
+
+    cif1.iREN = 'b0;
+    cif1.iaddr = 'hFF00;
+    cif1.dREN = '0;
+    cif1.dWEN = '0;
+    cif1.daddr ='hABCD;
+    cif1.dstore = 'hA1B2;
+    cif1.cctrans = 1;
+    cif1.ccwrite = 0;
+    
+    #(PERIOD*2);
+
+    ////0 - read, valid and not dirty -snooping - 1- valid and dirty //6
+    tb_test_num = tb_test_num+1;
+    cif0.iREN = '0;
+    cif0.iaddr = 'hFF00;
+    cif0.dREN = '1;
+    cif0.dWEN = '0;
+    cif0.daddr ='hABCD;
+    cif0.dstore = 'h1234;
+    cif0.cctrans = 1;
+    cif0.ccwrite = 0;
+
+    cif1.iREN = 'b0;
+    cif1.iaddr = 'hFF00;
+    cif1.dREN = '0;
+    cif1.dWEN = '0;
+    cif1.daddr ='hABCD;
+    cif1.dstore = 'hA1B2;
+    cif1.cctrans = 1;
+    cif1.ccwrite = 1;
+    
+    #(PERIOD*2);
+  
+
+    //0 - read, valid and not dirty -snooping - 1- invalid and not dirty //7
+    tb_test_num = tb_test_num+1;
+    cif0.iREN = '0;
+    cif0.iaddr = 'hFF00;
+    cif0.dREN = '1;
+    cif0.dWEN = '0;
+    cif0.daddr ='hABCD;
+    cif0.dstore = 'h1234;
+    cif0.cctrans = 1;
+    cif0.ccwrite = 0;
+
+    cif1.iREN = 'b0;
+    cif1.iaddr = 'hFF00;
+    cif1.dREN = '0;
+    cif1.dWEN = '0;
+    cif1.daddr ='hABCD;
+    cif1.dstore = 'hA1B2;
+    cif1.cctrans = 1;
+    cif1.ccwrite = 0;
+    
+    #(PERIOD*2);
+
+
+    //0- read, valid and dirty - //8
+    tb_test_num = tb_test_num+1;
+    cif0.iREN = '0;
+    cif0.iaddr = 'hFF00;
+    cif0.dREN = '1;
+    cif0.dWEN = '0;
+    cif0.daddr ='hABCD;
+    cif0.dstore = 'h1234;
+    cif0.cctrans = 1;
+    cif0.ccwrite = 1;
+
+    cif1.iREN = 'b0;
+    cif1.iaddr = 'hFF00;
+    cif1.dREN = '0;
+    cif1.dWEN = '0;
+    cif1.daddr ='hABCD;
+    cif1.dstore = 'hA1B2;
+    cif1.cctrans = 0;
+    cif1.ccwrite = 0;
+    
+    #(PERIOD*2);
+
+
+    //0- read, invalid and not dirty //9
+    tb_test_num = tb_test_num+1;
+    cif0.iREN = '0;
+    cif0.iaddr = 'hFF00;
+    cif0.dREN = '1;
+    cif0.dWEN = '0;
     cif0.daddr ='hABCD;
     cif0.dstore = 'h1234;
     cif0.cctrans = 0;
@@ -262,156 +373,15 @@ program test(
     cif1.iREN = 'b0;
     cif1.iaddr = 'hFF00;
     cif1.dREN = '0;
-    cif1.dWEN = '1;
-    cif1.daddr ='hABCD;
-    cif1.dstore = 'hA1B2;
-    cif1.cctrans = 0;
-    cif1.ccwrite = 0;
-    
-    #(PERIOD*6);
-    #(PERIOD*6);
-
-    //0 - read, valid and not dirty -snooping - 1- valid and not dirty
-    tb_test_num = tb_test_num+1;
-    cif0.iREN = '0;
-    cif0.iaddr = 'hFF00;
-    cif0.dREN = '1;
-    cif0.dWEN = '0;
-    cif0.daddr ='hABCD;
-    cif0.dstore = 'h1234;
-    cif0.cctrans = 1;
-    cif0.ccwrite = 0;
-
-    cif1.iREN = 'b0;
-    cif1.iaddr = 'hFF00;
-    cif1.dREN = '0;
-    cif1.dWEN = '0;
-    cif1.daddr ='hABCD;
-    cif1.dstore = 'hA1B2;
-    cif1.cctrans = 1;
-    cif1.ccwrite = 0;
-    
-    #(PERIOD*6);
-    #(PERIOD*6);
-
-    ////0 - read, valid and not dirty -snooping - 1- valid and dirty
-    tb_test_num = tb_test_num+1;
-    cif0.iREN = '0;
-    cif0.iaddr = 'hFF00;
-    cif0.dREN = '1;
-    cif0.dWEN = '0;
-    cif0.daddr ='hABCD;
-    cif0.dstore = 'h1234;
-    cif0.cctrans = 1;
-    cif0.ccwrite = 0;
-
-    cif1.iREN = 'b0;
-    cif1.iaddr = 'hFF00;
-    cif1.dREN = '0;
-    cif1.dWEN = '0;
-    cif1.daddr ='hABCD;
-    cif1.dstore = 'hA1B2;
-    cif1.cctrans = 1;
-    cif1.ccwrite = 1;
-    
-    #(PERIOD*6);
-  
-    #(PERIOD*6);
-
-    //0 - read, valid and not dirty -snooping - 1- invalid and not dirty
-    tb_test_num = tb_test_num+1;
-    cif0.iREN = '0;
-    cif0.iaddr = 'hFF00;
-    cif0.dREN = '1;
-    cif0.dWEN = '0;
-    cif0.daddr ='hABCD;
-    cif0.dstore = 'h1234;
-    cif0.cctrans = 1;
-    cif0.ccwrite = 0;
-
-    cif1.iREN = 'b0;
-    cif1.iaddr = 'hFF00;
-    cif1.dREN = '0;
-    cif1.dWEN = '0;
-    cif1.daddr ='hABCD;
-    cif1.dstore = 'hA1B2;
-    cif1.cctrans = 1;
-    cif1.ccwrite = 0;
-    
-    #(PERIOD*6);
-    #(PERIOD*6);
-
-    //0- read, valid and dirty - invalidate other caches when 0 writes
-    tb_test_num = tb_test_num+1;
-    cif0.iREN = '0;
-    cif0.iaddr = 'hFF00;
-    cif0.dREN = '1;
-    cif0.dWEN = '0;
-    cif0.daddr ='hABCD;
-    cif0.dstore = 'h1234;
-    cif0.cctrans = 1;
-    cif0.ccwrite = 1;
-
-    cif1.iREN = 'b0;
-    cif1.iaddr = 'hFF00;
-    cif1.dREN = '0;
     cif1.dWEN = '0;
     cif1.daddr ='hABCD;
     cif1.dstore = 'hA1B2;
     cif1.cctrans = 0;
     cif1.ccwrite = 0;
     
-    #(PERIOD*6);
-    #(PERIOD*6);
-
-    //1- check read invalidatity of prev addr- check for this case
-    tb_test_num = tb_test_num+1;
-    cif0.iREN = '0;
-    cif0.iaddr = 'hFF00;
-    cif0.dREN = '0;
-    cif0.dWEN = '0;
-    cif0.daddr ='hABCD;
-    cif0.dstore = 'h1234;
-    cif0.cctrans = 1;
-    cif0.ccwrite = 1;
-
-    cif1.iREN = 'b0;
-    cif1.iaddr = 'hFF00;
-    cif1.dREN = '1;
-    cif1.dWEN = '0;
-    cif1.daddr ='hABCD;
-    cif1.dstore = 'hA1B2;
-    cif1.cctrans = 0;
-    cif1.ccwrite = 0;
-    
-    #(PERIOD*6);
-    #(PERIOD*6);
-
-
-    //0- read, invalid and not dirty 
-    tb_test_num = tb_test_num+1;
-    cif0.iREN = '0;
-    cif0.iaddr = 'hFF00;
-    cif0.dREN = '1;
-    cif0.dWEN = '0;
-    cif0.daddr ='hABCD;
-    cif0.dstore = 'h1234;
-    cif0.cctrans = 1;
-    cif0.ccwrite = 0;
-
-    cif1.iREN = 'b0;
-    cif1.iaddr = 'hFF00;
-    cif1.dREN = '0;
-    cif1.dWEN = '0;
-    cif1.daddr ='hABCD;
-    cif1.dstore = 'hA1B2;
-    cif1.cctrans = 0;
-    cif1.ccwrite = 0;
-    
-    #(PERIOD*6);
     #(PERIOD*6);
    
-    //0 - write, valid and not dirty -snooping - 1(M)-valid and dirty- invalidate others
+    //0 - write, valid and not dirty -snooping - 1(M)-valid and dirty- invalidate others //10
     tb_test_num = tb_test_num+1;
     cif0.iREN = '0;
     cif0.iaddr = 'hFF00;
@@ -432,9 +402,11 @@ program test(
     cif1.ccwrite = 1;
     
     #(PERIOD*6);
+    cif1.cctrans = 0;
+    cif1.ccwrite = 0;
     #(PERIOD*6);
 
-    //0 - write, valid and not dirty -snooping - 1 invalid and not dirty
+    //0 - write, valid and not dirty -snooping - 1 invalid and not dirty //11
     tb_test_num = tb_test_num+1;
     cif0.iREN = '0;
     cif0.iaddr = 'hFF00;
@@ -457,7 +429,7 @@ program test(
     #(PERIOD*6);
     #(PERIOD*6);
 
-    //0- write, valid and dirty   1- invalid
+    //0- write, valid and dirty   1- invalid //12
     tb_test_num = tb_test_num+1;
     cif0.iREN = '0;
     cif0.iaddr = 'hFF00;
@@ -477,10 +449,10 @@ program test(
     cif1.cctrans = 0;
     cif1.ccwrite = 0;
     
-    #(PERIOD*6);
-    #(PERIOD*6);
+    #(PERIOD*2);
+    
 
-  //0- write, valid and dirty -    1- shared 
+  //0- write, valid and dirty -    1- shared  //13
     tb_test_num = tb_test_num+1;
     cif0.iREN = '0;
     cif0.iaddr = 'hFF00;
@@ -504,7 +476,7 @@ program test(
     #(PERIOD*6);
 
 
-    //0- write invalid and not dirty 
+    //0- write invalid and not dirty  //14 - other cache is valid
     tb_test_num = tb_test_num+1;
     cif0.iREN = '0;
     cif0.iaddr = 'hFF00;
