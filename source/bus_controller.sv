@@ -27,6 +27,11 @@ module bus_controller(
             trans1 <= 0;
             write0 <= 0;
             write1 <= 0;
+            busrd0 <=0;
+            busrd1 <=0;
+            //busrdx
+            buswr0 <=0;
+            buswr1 <=0;
         end
         else begin
             s <= nS;
@@ -34,27 +39,35 @@ module bus_controller(
             trans1 <= trans_from1;
             write0 <= write_from0;
             write1 <= write_from1;
+            busrd0 <= busread0;
+            busrd1 <= busread1;
+            buswr0 <= buswrite0;
+            buswr1 <= buswrite1;
         end
 
     end
-    
 
     always_comb begin : STATE_LOG
         nS = s;
         casez (s)
             IDLE: begin
-                //data read request
-                //if((ccif.dREN[1] & trans1 & ~write1)| (ccif.dREN[0] & trans0 & ~write0)) nS= IDLE;
-                if((ccif.dREN[0] & ~trans0)|(ccif.dREN[1] & ~trans1)) nS = SNOOP;  //checked
-                else if((ccif.dREN[0] & trans0 & write0)|(ccif.dREN[1] & trans1 & write1)) nS = WB1;
+                //data read request on dren miss
+                //I state
+                if((busrd0 & ~trans0 & ~write0)|(busrd1 & ~trans1 & ~write1)) nS = SNOOP;  //checked
+                //S or M state
+                else if((busrd0 & trans0) | (busrd0 & trans0)) nS= IDLE;
+                //else if((busrd0 & trans0 & write0)|(busrd1 & trans1 & write1)) nS = WB1;
                 
-                //data write request
-                //else if((ccif.dWEN[0] & ~trans0)| (ccif.dWEN[1] & ~trans1)) nS= SNOOP;
-                else if((ccif.dWEN[0] & trans0 & write0)|(ccif.dWEN[1] & trans1 & write1)) nS = WB1;
-                else if((ccif.dWEN[0] & trans0 & ~write1) | (ccif.dWEN[1] & trans1 & ~write0)) nS= IDLE;
+                //data write request on dwen miss
+                //I state
+                else if((buswr0 & ~trans0 & ~write0)| (buswr1 & ~trans1 & ~write1)) nS= SNOOP;
+                //S state
+                else if((buswr0 & trans0 & ~write0) | (buswr1 & trans1 & ~write1)) nS= SNOOP;
+                //M state
+                else if((buswr0 & trans0 & write0) | (buswr1 & trans1 & write1)) nS = IDLE;
                 
 
-                //instr read
+                //instr read request on icache misses
                 else if(ccif.iREN[0]) nS = IREAD1;
                 else if(ccif.iREN[1]) nS= IREAD2;
 
@@ -62,28 +75,45 @@ module bus_controller(
                 
             end
             SNOOP: begin
-                if((ccif.dREN[0]) & ~trans0) begin
-                    nS = CHECK1;
+                //dren and I state
+                if((busrd0 & ~trans0 & ~write0)|(busrd1 & ~trans1 & ~write1)) nS = CHECK1;
+                //dwen and I state
+                else if((buswr0 & ~trans0 & ~write0)| (buswr1 & ~trans1 & ~write1)) nS= CHECK1;    
                 end
-                else if((ccif.dREN[1]) & ~trans1) begin
-                    nS = CHECK1;
-                    
-                end
-            end
+
             CHECK1: begin
-                if(~trans0 & ~write0 & ccif.dREN[0]) begin
-                    if((write1 & trans1 & ccif.dREN[0]) | (write0 & trans0 & ccif.dREN[1])) nS = WB1;
-                    else if((write1 & ~trans1 & ccif.dREN[0])|(write0 & ~trans0 & ccif.dREN[1])) nS = RD1;
-                    else if((~write1 & trans1  & ccif.dREN[0])|(~write0 & trans0  & ccif.dREN[1])) nS = RD1;
-                    else nS = RD1;
+                //dren and c1- I state
+                if(~trans0 & ~write0 & busrd0) begin
+                    //c2 - M state
+                    if((write1 & trans1)) nS = WB1;
+                    //c2 - S/I state
+                    else if(~write1) nS = RD1;
+                    else nS = CHECK1;
                     end
-                else if(~write1 & ~trans1 & ccif.dREN[1]) begin
-                    if(write0 & trans0 & ccif.dREN[1]) nS = WB1;
-                    else if(write0 & ~trans0 & ccif.dREN[1]) nS = RD1;
-                    else if(~write0 & trans0 & ccif.dREN[1]) nS = RD1;
-                    else nS = RD1;
+                else if(~trans1 & ~write1 & busrd1) begin
+                    //c2 - M state
+                    if((write0 & trans0)) nS = WB1;
+                    //c2 - S/I state
+                    else if(~write0) nS = RD1;
+                    else nS = CHECK1;
                     end
-            end
+                
+                //dwen and c1-I/S state
+                else if(~write0 & buswr0) begin
+                    //c2 - M state
+                    if((write1 & trans1)) nS = WB1;
+                    //c2 - S/I state
+                    else if(~write1) nS = RD1;
+                    else nS = CHECK1;
+                    end
+                else if(~write1 & buswr1) begin
+                    //c2 - M state
+                    if((write0 & trans0)) nS = WB1;
+                    //c2 - S/I state
+                    else if(~write0) nS = RD1;
+                    else nS = CHECK1;
+                    end
+                end
             WB1: begin
                 if(ccif.ramstate == ACCESS) nS = CHECK2;
                 else nS = WB1;
@@ -141,6 +171,10 @@ module bus_controller(
         ccif.ramREN = 0;
         ccif.ramWEN = 0;
         // ccif.ramstore = 0;
+        busread0 = busrd0;
+        busread1 = busrd1;
+        buswrite0= buswr0;
+        buswrite1= buswr1;
 
         casez (s)
             IDLE: begin
@@ -151,50 +185,77 @@ module bus_controller(
                 trans_from1 = ccif.cctrans[1];
                 write_from0 = ccif.ccwrite[0];
                 write_from1 = ccif.ccwrite[1];
+                busread0 = ccif.dREN[0];
+                busread1 = ccif.dREN[1];
+                buswrite0 = ccif.dWEN[0];
+                buswrite1 =  ccif.dWEN[1];
+
                 // end
             end
             SNOOP: begin
-                if(ccif.dREN[0]) begin
+                //dren and i state  
+                if(busrd0) begin
                     ccif.ccwait[1] = 1;
                     ccif.ccwait[0] = 0;
                     ccif.ccsnoopaddr[1] = ccif.daddr[0];
                     end
-                else if(ccif.dREN[1]) begin
+                else if(busrd1) begin
                     ccif.ccwait[0] = 1;
                     ccif.ccwait[1] = 0;
                     ccif.ccsnoopaddr[0] = ccif.daddr[1]; 
                     end
+                
+                //dwen and i state
+                else if(buswr0) begin
+                    ccif.ccwait[1] = 1;
+                    ccif.ccwait[0] = 0;
+                    ccif.ccsnoopaddr[1] = ccif.daddr[0];
+                    end
+                else if(buswr1) begin
+                    ccif.ccwait[0] = 1;
+                    ccif.ccwait[1] = 0;
+                    ccif.ccsnoopaddr[0] = ccif.daddr[1]; 
+                    end
+                end
 
-            end
             CHECK1: begin
-                if(ccif.dREN[0]) begin
+                //dREN and c1- I state
+                if(busrd0) begin
                     ccif.ccwait[1] = 1;
                     ccif.ccwait[0] = 0;
                     ccif.ccsnoopaddr[1] = ccif.daddr[0];
                     trans_from1 = ccif.cctrans[1];
                     write_from1 = ccif.ccwrite[1]; 
                     end
-                else if(ccif.dREN[1]) begin
+                //dREN and c2- I state
+                else if(busrd1) begin
                     ccif.ccwait[0] = 1;
                     ccif.ccwait[1] = 0;
                     ccif.ccsnoopaddr[0] = ccif.daddr[1]; 
                     trans_from0 =  ccif.cctrans[0];
                     write_from0 = ccif.ccwrite[0];
                     end
+                //dWEN and c1- I/S state
+                else if(buswr0) begin
+                    ccif.ccwait[1] = 1;
+                    ccif.ccwait[0] = 0;
+                    ccif.ccsnoopaddr[1] = ccif.daddr[0];
+                    trans_from1 = ccif.cctrans[1];
+                    write_from1 = ccif.ccwrite[1]; 
+                    end
+                //dWEN and c2- I/S state
+                else if(buswr1) begin
+                    ccif.ccwait[0] = 1;
+                    ccif.ccwait[1] = 0;
+                    ccif.ccsnoopaddr[0] = ccif.daddr[1]; 
+                    trans_from0 =  ccif.cctrans[0];
+                    write_from0 = ccif.ccwrite[0];
+                    end
+                end
 
-            end
             WB1: begin
-                //dren from idle
-                if((trans0 & write0) & ccif.dREN[0])begin
-                    ccif.ramWEN = 1;
-                    ccif.ramaddr = ccif.daddr[0];
-                    ccif.ramstore = ccif.dstore[0];
-                    ccif.iwait[0]=1;
-                    ccif.iwait[1]=1;
-                    ccif.dwait[0]=(ccif.ramstate != ACCESS);
-                    ccif.dwait[1]=1;  
-                    end
-                else if((trans1 & write1) & ccif.dREN[1])begin
+                //dren - c1-I c2-M 
+                if(write1 & trans1 & busrd0) begin   
                     ccif.ccwait[1]=1;
                     ccif.ramWEN = 1;
                     ccif.ramaddr = ccif.daddr[1];
@@ -204,19 +265,7 @@ module bus_controller(
                     ccif.dwait[0]=1;
                     ccif.dwait[1]=(ccif.ramstate != ACCESS);  
                     end
-                
-                //dren from check1
-                else if(write1 & trans1 & ccif.dREN[0]) begin   
-                    ccif.ccwait[1]=1;
-                    ccif.ramWEN = 1;
-                    ccif.ramaddr = ccif.daddr[1];
-                    ccif.ramstore = ccif.dstore[1];
-                    ccif.iwait[0]=1;
-                    ccif.iwait[1]=1;
-                    ccif.dwait[0]=1;
-                    ccif.dwait[1]=(ccif.ramstate != ACCESS);  
-                    end
-                else if(write0 & trans0 & ccif.dREN[1]) begin   
+                else if(write0 & trans0 & busrd1) begin   
                     ccif.ccwait[0]=1;
                     ccif.ramWEN = 1;
                     ccif.ramaddr = ccif.daddr[0];
@@ -227,77 +276,64 @@ module bus_controller(
                     ccif.dwait[1]=1; 
                     end
                 
-                //dwen from idle
-                else if(write0 & trans0 & ccif.dWEN[0]) begin   
-                    ccif.ramWEN = 1;
-                    ccif.ramaddr = ccif.daddr[0];
-                    ccif.ramstore = ccif.dstore[0];
-                    ccif.iwait[0]=1;
-                    ccif.iwait[1]=1;
-                    ccif.dwait[0]=(ccif.ramstate != ACCESS);
-                    ccif.dwait[1]=1;  
-                    end
-                else if(write1 & trans1 & ccif.dWEN[1]) begin   
+                //dwen - C1-I c2-M
+                else if(write1 & trans1 & buswr0) begin   
+                    ccif.ccwait[1]=1;
                     ccif.ramWEN = 1;
                     ccif.ramaddr = ccif.daddr[1];
                     ccif.ramstore = ccif.dstore[1];
                     ccif.iwait[0]=1;
                     ccif.iwait[1]=1;
                     ccif.dwait[0]=1;
-                    ccif.dwait[1]=(ccif.ramstate != ACCESS); 
+                    ccif.dwait[1]=(ccif.ramstate != ACCESS);  
+                    end
+                else if(write0 & trans0 & buswr1) begin           
+                    ccif.ccwait[0]=1;
+                    ccif.ramWEN = 1;
+                    ccif.ramaddr = ccif.daddr[0];
+                    ccif.ramstore = ccif.dstore[0];
+                    ccif.iwait[0]=1;
+                    ccif.iwait[1]=1;
+                    ccif.dwait[0]=(ccif.ramstate != ACCESS);
+                    ccif.dwait[1]=1; 
                     end
                 end
             CHECK2: begin
-                //dren from idle
-                if((trans0 & write0) & ccif.dREN[0])begin
-                    if(ccif.daddr[0][2]==0)
-                        ccif.ccsnoopaddr[0] = ccif.daddr[0] +4;
-                    else 
-                        ccif.ccsnoopaddr[0] = ccif.daddr[0] - 4; end
-                else if((trans1 & write1) & ccif.dREN[1])begin
-                    if(ccif.daddr[1][2]==0)
-                        ccif.ccsnoopaddr[1] = ccif.daddr[1] +4;
-                    else 
-                        ccif.ccsnoopaddr[1] = ccif.daddr[0] - 4; end
-                
-                //dren from check1
-                else if(write1 & trans1 & ccif.dREN[0]) begin   
+                //dren - c1-I c2-M 
+                if(write1 & trans1 & busrd0) begin   
                     ccif.ccwait[1]=1;
                     if(ccif.daddr[1][2]==0)
-                        ccif.ccsnoopaddr[1] = ccif.daddr[1] +4;
+                        ccif.ccsnoopaddr[1] = ccif.daddr[0] +4;
                     else 
-                        ccif.ccsnoopaddr[1] = ccif.daddr[0] - 4; end
-                else if(write0 & trans0 & ccif.dREN[1]) begin   
+                        ccif.ccsnoopaddr[1] = ccif.daddr[0] - 4; 
+                        end
+                else if(write0 & trans0 & busrd1) begin   
                     ccif.ccwait[0]=1;
-                   if(ccif.daddr[0][2]==0)
-                        ccif.ccsnoopaddr[0] = ccif.daddr[0] +4;
-                    else 
-                        ccif.ccsnoopaddr[0] = ccif.daddr[0] - 4; end
-
-                 //dwen from idle
-                else if(write0 & trans0 & ccif.dWEN[0]) begin   
                     if(ccif.daddr[0][2]==0)
                         ccif.ccsnoopaddr[0] = ccif.daddr[0] +4;
                     else 
-                        ccif.ccsnoopaddr[0] = ccif.daddr[0] - 4; end
-                else if(write1 & trans1 & ccif.dWEN[1]) begin   
+                        ccif.ccsnoopaddr[0] = ccif.daddr[0] - 4; 
+                    end
+                
+                //dwen - c1-I c2-M 
+                if(write1 & trans1 & busrd0) begin   
+                    ccif.ccwait[1]=1;
                     if(ccif.daddr[1][2]==0)
-                        ccif.ccsnoopaddr[1] = ccif.daddr[1] +4;
+                        ccif.ccsnoopaddr[1] = ccif.daddr[0] + 4;
                     else 
-                        ccif.ccsnoopaddr[1] = ccif.daddr[0] - 4; end
+                        ccif.ccsnoopaddr[1] = ccif.daddr[0] - 4; 
+                        end
+                else if(write0 & trans0 & busrd1) begin   
+                    ccif.ccwait[0]=1;
+                    if(ccif.daddr[0][2]==0)
+                        ccif.ccsnoopaddr[0] = ccif.daddr[0] +4;
+                    else 
+                        ccif.ccsnoopaddr[0] = ccif.daddr[0] - 4; 
+                    end            
             end
             WB2: begin
-                //dren from idle
-                if(trans0 & write0 & ccif.dREN[0])begin
-                    ccif.ramWEN = 1;
-                    ccif.ramaddr = ccif.daddr[0];
-                    ccif.ramstore = ccif.dstore[0];
-                    ccif.iwait[0]=1;
-                    ccif.iwait[1]=1;
-                    ccif.dwait[0]=(ccif.ramstate != ACCESS);
-                    ccif.dwait[1]=1;  
-                    ccif.ccinv[0]=1;    end
-                else if(trans1 & write1 & ccif.dREN[1])begin
+            //dren - c1-I c2-M 
+                if(write1 & trans1 & busrd0) begin   
                     ccif.ccwait[1]=1;
                     ccif.ramWEN = 1;
                     ccif.ramaddr = ccif.daddr[1];
@@ -306,20 +342,9 @@ module bus_controller(
                     ccif.iwait[1]=1;
                     ccif.dwait[0]=1;
                     ccif.dwait[1]=(ccif.ramstate != ACCESS);
-                    ccif.ccinv[1]=1; end
-                
-                //dren from check1
-                else if(write1 & trans1 & ccif.dREN[0]) begin   
-                    ccif.ccwait[1]=1;
-                    ccif.ramWEN = 1;
-                    ccif.ramaddr = ccif.daddr[1];
-                    ccif.ramstore = ccif.dstore[1];
-                    ccif.iwait[0]=1;
-                    ccif.iwait[1]=1;
-                    ccif.dwait[0]=1;
-                    ccif.dwait[1]=(ccif.ramstate != ACCESS);
-                    ccif.ccinv[1] = 1; end
-                else if(write0 & trans0 & ccif.dREN[1]) begin   
+                    ccif.ccinv[1] =1;  
+                    end
+                else if(write0 & trans0 & busrd1) begin   
                     ccif.ccwait[0]=1;
                     ccif.ramWEN = 1;
                     ccif.ramaddr = ccif.daddr[0];
@@ -328,10 +353,23 @@ module bus_controller(
                     ccif.iwait[1]=1;
                     ccif.dwait[0]=(ccif.ramstate != ACCESS);
                     ccif.dwait[1]=1;
-                    ccif.ccinv[0]=1;  end
+                    ccif.ccinv[0] =1; 
+                    end
                 
-                //dwen from idle
-                else if(write0 & trans0 & ccif.dWEN[0]) begin   
+                //dwen - C1-I/S c2-M
+                else if(write1 & trans1 & buswr0) begin   
+                    ccif.ccwait[1]=1;
+                    ccif.ramWEN = 1;
+                    ccif.ramaddr = ccif.daddr[1];
+                    ccif.ramstore = ccif.dstore[1];
+                    ccif.iwait[0]=1;
+                    ccif.iwait[1]=1;
+                    ccif.dwait[0]=1;
+                    ccif.dwait[1]=(ccif.ramstate != ACCESS);
+                    ccif.ccinv[1] =1;  
+                    end
+                else if(write0 & trans0 & buswr1) begin           
+                    ccif.ccwait[0]=1;
                     ccif.ramWEN = 1;
                     ccif.ramaddr = ccif.daddr[0];
                     ccif.ramstore = ccif.dstore[0];
@@ -339,68 +377,59 @@ module bus_controller(
                     ccif.iwait[1]=1;
                     ccif.dwait[0]=(ccif.ramstate != ACCESS);
                     ccif.dwait[1]=1;
-                    ccif.ccinv[0]=1;  end
-                else if(write1 & trans1 & ccif.dWEN[1]) begin   
-                    ccif.ramWEN = 1;
-                    ccif.ramaddr = ccif.daddr[1];
-                    ccif.ramstore = ccif.dstore[1]; 
-                    ccif.iwait[0]=1;
-                    ccif.iwait[1]=1;
-                    ccif.dwait[0]=1;
-                    ccif.dwait[1]=(ccif.ramstate != ACCESS);
-                    ccif.ccinv[1] = 1;end
+                    ccif.ccinv[1] =1; 
+                    end
+                end
+            INV: begin
+                trans_from0 = ccif.cctrans[0];
+                trans_from1 = ccif.cctrans[1];
+                write_from0 = ccif.ccwrite[0];
+                write_from1 = ccif.ccwrite[1];
                 end
             RD1: begin
-                //dren/dwen from idle same cache
-                if(trans0 & write0 & (ccif.dREN[0] | ccif.dWEN[0]))begin
+                //dren adn C2 - I/S
+                if(~write1 & busrd0) begin 
                     ccif.ramREN = 1;
                     ccif.ramaddr = ccif.daddr[0];
                     ccif.iwait[0]=1;
                     ccif.iwait[1]=1;
                     ccif.dwait[0]=(ccif.ramstate != ACCESS);
                     ccif.dwait[1]=1;
-                    ccif.ccinv[1] = 1;
+                    //ccif.ccinv[1] = 1;
                     ccif.dload[0]=ccif.ramload;   
                     end
-                else if((trans1 & write1) &(ccif.dREN[1] | ccif.dWEN[1]))begin
+                else if(~write0 & busrd1) begin
                     ccif.ramREN = 1;
                     ccif.ramaddr = ccif.daddr[1];
                     ccif.iwait[0]=1;
                     ccif.iwait[1]=1;
                     ccif.dwait[0]=1;
                     ccif.dwait[1]=(ccif.ramstate != ACCESS);
-                    ccif.dload[1]=ccif.ramload;  
+                    ccif.dload[1]=ccif.ramload;
                     end
-                
-                 //dren from check1
-                else if(~write1 & ~trans1 & ccif.dREN[0]) begin   
-                    // ccif.ccwait[1]=1;
+                //dwen and c2 - I/S
+                else if(~write1 & buswr0) begin 
                     ccif.ramREN = 1;
                     ccif.ramaddr = ccif.daddr[0];
-                    ccif.dload[0]=ccif.ramload;  
-                    ccif.ccsnoopaddr = ccif.daddr[0];
                     ccif.iwait[0]=1;
                     ccif.iwait[1]=1;
                     ccif.dwait[0]=(ccif.ramstate != ACCESS);
-                    ccif.dwait[1]=1; end
-                else if(~write0 & ~trans0 & ccif.dREN[1]) begin   
-                    // ccif.ccwait[0]=1;
+                    ccif.dwait[1]=1;
+                    //ccif.ccinv[1] = 1;
+                    ccif.dload[0]=ccif.ramload;   
+                    end
+                else if(~write0 & buswr1) begin
                     ccif.ramREN = 1;
                     ccif.ramaddr = ccif.daddr[1];
-                    ccif.dload[1]=ccif.ramload; 
-                    ccif.ccsnoopaddr = ccif.daddr[1]; 
                     ccif.iwait[0]=1;
                     ccif.iwait[1]=1;
                     ccif.dwait[0]=1;
-                    ccif.dwait[1]=(ccif.ramstate != ACCESS);end
-                // else if((write1 & ~trans1 & ccif.dREN[0]) begin
-                    
-                // end
-                
-                // else if(write0 & ~trans0 & ccif.dREN[1])
+                    ccif.dwait[1]=(ccif.ramstate != ACCESS);
+                    ccif.dload[1]=ccif.ramload;
+                    end
             end
             RD2: begin
-                if(~write1 & ~trans1 & ccif.dREN[0]) begin  
+                if(~write1 & busrd0) begin  
                     ccif.ramREN = 1;
                     ccif.iwait[0]=1;
                     ccif.iwait[1]=1;
@@ -412,7 +441,7 @@ module bus_controller(
                         ccif.ramaddr = ccif.daddr[0] + 4;
                     ccif.dload[0] = ccif.ramload;
                 end
-                else if(~write0 & ~trans0 & ccif.dREN[1]) begin  
+                else if(~write0 & busrd1) begin
                     ccif.ramREN = 1;
                     ccif.iwait[0]=1;
                     ccif.iwait[1]=1;
@@ -424,6 +453,31 @@ module bus_controller(
                         ccif.ramaddr = ccif.daddr[1] + 4;
                     ccif.dload[0] = ccif.ramload;
                 end
+                else if(~write1 & buswr0) begin  
+                    ccif.ramREN = 1;
+                    ccif.iwait[0]=1;
+                    ccif.iwait[1]=1;
+                    ccif.dwait[0]=(ccif.ramstate != ACCESS);
+                    ccif.dwait[1]=1;
+                    if(ccif.daddr[0][2])
+                        ccif.ramaddr = ccif.daddr[0] - 4;
+                    else 
+                        ccif.ramaddr = ccif.daddr[0] + 4;
+                    ccif.dload[0] = ccif.ramload;
+                end
+                else if(~write0 & buswr1) begin
+                    ccif.ramREN = 1;
+                    ccif.iwait[0]=1;
+                    ccif.iwait[1]=1;
+                    ccif.dwait[0]=1;
+                    ccif.dwait[1]=(ccif.ramstate != ACCESS);
+                    if(ccif.daddr[1][2])
+                        ccif.ramaddr = ccif.daddr[1] - 4;
+                    else 
+                        ccif.ramaddr = ccif.daddr[1] + 4;
+                    ccif.dload[0] = ccif.ramload;
+                end
+                if(busrd0 & ~trans0) ccif.ccinv[0]=1
             end
             IREAD1:begin
                 ccif.ramREN =1;
