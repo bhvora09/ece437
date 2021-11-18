@@ -188,7 +188,7 @@ always_comb begin
         next_state=AL1;
         hit_count_next = hit_count -1; 
       end
-      else if(~(saddr ==0) & (table1[saddr.idx].tag == saddr.tag) | (table2[saddr.idx] == saddr.tag])) begin
+      else if((saddr !='b0) & (table1[saddr.idx].tag == saddr.tag) | (table2[saddr.idx] == saddr.tag)) begin
         next_state = SNOOP;
       end
       else begin 
@@ -504,24 +504,24 @@ always_comb begin
     SNOOP: begin
       if(ccif.ccinv ==1)begin
         if((table1[saddr.idx].tag == saddr.tag)) begin
-          table1.[saddr.idx].valid = 0;
-          table1.[saddr.idx].dirty = 0;
+          temptable1[saddr.idx].valid = 0;
+          temptable1[saddr.idx].dirty = 0;
         end
         else if((table2[saddr.idx].tag == saddr.tag)) begin
-          table2.[saddr.idx].valid = 0;
-          table2.[saddr.idx].dirty = 0;
+          temptable2[saddr.idx].valid = 0;
+          temptable2[saddr.idx].dirty = 0;
         end
         next_state = TAG;
       end
       else if(table1[saddr.idx].dirty | table2[saddr.idx].dirty) begin
         next_state = SWB1;
-        ndaddr = {saddr.tag,saddr.index,1'b0,2'b00};
+        ndaddr = {saddr.tag,saddr.idx,1'b0,2'b00};end
       else begin
         next_state = TAG;
       end
 
-      end
     end
+    
     SWB1: begin
       if((table1[saddr.idx].tag ==saddr.tag) & table1[saddr.idx].dirty) begin
         cdif.dstore = table1[saddr.idx].data[0];
@@ -565,7 +565,7 @@ always_comb begin
       end
     end
   endcase
-  if((~(saddr ==0) & (table1[saddr.idx].tag == saddr.tag) | (table2[saddr.idx] == saddr.tag])) & (next_state != SNOOP) & (next_state != SWB1) (next_state != SWB2))begin
+  if(((saddr !='b0) & (table1[saddr.idx].tag == saddr.tag)) | ((table2[saddr.idx] == saddr.tag) & (next_state != SNOOP) & (next_state != SWB1) & (next_state != SWB2)))begin
       next_state = SNOOP;
   end
 

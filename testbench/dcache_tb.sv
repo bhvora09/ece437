@@ -128,7 +128,7 @@ program test(
     datapath_cache_if dcif0, 
     datapath_cache_if dcif1, 
     caches_if cif0, 
-    caches_if cif1,
+    caches_if cif1
 );
 
     import cpu_types_pkg::*;
@@ -198,8 +198,8 @@ program test(
 
         //P0
         dcif0.dmemaddr = 'hF0;
-        dcif0.dmemWEN = 1'b1;
-        dcif0.dmemstore = 1'hBEEF;
+        dcif0.dmemWEN = 'b1;
+        dcif0.dmemstore = 'hBEEF;
 
         #(6*PERIOD);
 
@@ -211,7 +211,7 @@ program test(
 
         //P1
         dcif1.dmemaddr = 'hF0;
-        dcif1.dmemREN = 1'b1;
+        dcif1.dmemREN = 'b1;
 
         #(6*PERIOD);
         
@@ -236,7 +236,7 @@ program test(
         //P1
         dcif1.dmemaddr = 'hA40;
         dcif1.dmemWEN = 1'b1;
-        dcif1.dmemstore = 1'h7337;
+        dcif1.dmemstore = 'h7337;
 
         #(6*PERIOD);
 
@@ -249,7 +249,7 @@ program test(
         //P1
         dcif1.dmemaddr = 'hA40;
         dcif1.dmemWEN = 1'b1;
-        dcif1.dmemstore = 1'hC007;
+        dcif1.dmemstore = 'hC007;
 
         #(6*PERIOD);
 
@@ -263,7 +263,7 @@ program test(
         //P1
         dcif1.dmemaddr = 'hA40;
         dcif1.dmemWEN = 1'b1;
-        dcif1.dmemstore = 1'hC007;
+        dcif1.dmemstore = 'hC007;
 
         #(6*PERIOD);
 
