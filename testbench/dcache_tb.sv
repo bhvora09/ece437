@@ -1,8 +1,9 @@
 `include "cache_control_if.vh"
+`include "datapath_cache_if.vh"
 `include "caches_if.vh"
 `include "cpu_ram_if.vh"
 `include "cpu_types_pkg.vh"
-//`include "system_if.vh"
+`include "system_if.vh"
 
 `timescale 1 ns / 1 ns
 
@@ -11,7 +12,7 @@ module dcache_tb;
     datapath_cache_if dcif1();
     caches_if cif0();
     caches_if cif1();
-    cache_control_if #(CPUS(2)) ccif(cif0, cif1);
+    cache_control_if #(.CPUS(2)) ccif(cif0, cif1);
     cpu_ram_if ramif();
     //system_if sysif();
 
@@ -170,15 +171,14 @@ program test(
         tb_test_case = "init and rst";
         tb_test_num = 0;
         init;
-        nRST = 1;
+        nRST = 0;
         #(PERIOD);
         //******************************************************
         // TEST 1: 
         //******************************************************
         tb_test_num = 1;
         tb_test_case = "I->S and I->S";
-        nRST = 0;
-        
+        nRST = 1;        
         //P0
         dcif0.dmemaddr = 'hF0;
         dcif0.dmemREN = 1'b1;
