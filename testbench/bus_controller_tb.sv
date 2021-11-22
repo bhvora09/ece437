@@ -255,7 +255,7 @@ program test(
     cif0.dREN = '1;
     cif0.dWEN = '0;
     cif0.daddr ='hABCD;
-    cif0.dstore = 'h1234;sim:/bus_controller_tb/PROG/tb_test_num
+    cif0.dstore = 'h1234;//sim:/bus_controller_tb/PROG/tb_test_num
 
     cif1.iREN = 'b0;
     cif1.iaddr = 'hFF00;
@@ -271,7 +271,7 @@ program test(
     #(PERIOD*6);
 
     //0 - read, valid and not dirty -snooping - 1- valid and not dirty //5
-    tb_test_num = tb_test_num+1;sim:/bus_controller_tb/PROG/tb_test_num
+    tb_test_num = tb_test_num+1;//sim:/bus_controller_tb/PROG/tb_test_num
 
     cif0.dWEN = '0;
     cif0.daddr ='hABCD;

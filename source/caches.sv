@@ -35,10 +35,6 @@ module caches (
   assign cif.dWEN = dcif.dmemWEN;
   assign cif.dstore = dcif.dmemstore;
   assign cif.iaddr = dcif.imemaddr;
-<<<<<<< HEAD
   assign cif.daddr = dcif.dmemaddr;*/
-=======
-  assign cif.daddr = dcif.dmemaddr;
->>>>>>> 456a6a46de76982722efd2e635bb3f64bb1adcdd
 
 endmodule
