@@ -354,6 +354,7 @@ always_comb begin
           ndaddr = daddr ;
       end
     end
+
     AL2:begin
       if((table1[daddr.idx].tag ==daddr.tag) & !(table1[daddr.idx].dirty) & (cdif.dwait==0))begin
         cdif.dREN = 1'b1;
@@ -530,6 +531,7 @@ always_comb begin
           write = table2[saddr.idx].dirty;
           end
       end
+      
       //invalidate if tag matches and ccinv =1
       if(ccif.ccinv ==1)begin
         if((table1[saddr.idx].tag == saddr.tag)) begin
@@ -546,6 +548,7 @@ always_comb begin
         end
         next_state = TAG;
       end
+
       //if dirty go to writeback to memory
       else if(table1[saddr.idx].dirty | table2[saddr.idx].dirty) begin
         next_state = SWB1;
