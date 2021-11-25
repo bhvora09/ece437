@@ -184,6 +184,7 @@ program test(
         dcif0.dmemREN = 1'b1;
 
         //P1
+        // cif0.ccwait =1'b1;
         dcif1.dmemaddr = 'hF0;
         dcif1.dmemREN = 1'b1;
 

@@ -204,7 +204,7 @@ always_comb begin
         next_state=AL1;
         // hit_count_next = hit_count -1; 
       end
-      else if((saddr !='b0) & (table1[saddr.idx].tag == saddr.tag) | (table2[saddr.idx] == saddr.tag)) begin
+      else if((saddr !='b0) & ((table1[saddr.idx].tag == saddr.tag) | (table2[saddr.idx] == saddr.tag))) begin
         next_state = SNOOP;
       end
       else begin 
@@ -415,7 +415,7 @@ always_comb begin
       end     
       if(i==8 & (cdif.dwait==0)) begin
         //next_state = HIT;
-        next_state = TAG;
+        next_state = HALT;
         dcif.flushed = 1'b1;
         // ndaddr= 32'h3100;
       end
@@ -520,6 +520,16 @@ always_comb begin
     //     next_state = FLUSH;
     // end
     SNOOP: begin//add - check for ccwait
+      if(ccif.ccwait) begin
+        if(table1[saddr.idx].tag ==saddr.tag) begin
+          trans = table1[saddr.idx].valid;
+          write = table1[saddr.idx].dirty;
+          end
+        else if(table2[saddr.idx].tag ==saddr.tag) begin
+          trans = table2[saddr.idx].valid;
+          write = table2[saddr.idx].dirty;
+          end
+      end
       //invalidate if tag matches and ccinv =1
       if(ccif.ccinv ==1)begin
         if((table1[saddr.idx].tag == saddr.tag)) begin
@@ -592,11 +602,11 @@ always_comb begin
   //add - ccwait logic
   //if snoopaddr !=0 tag matching and ccwait =1
   if(cdif.ccwait) begin
-    if(((saddr !='b0) & (table1[saddr.idx].tag == saddr.tag)) | ((table2[saddr.idx] == saddr.tag) & (next_state != SNOOP) & (next_state != SWB1) & (next_state != SWB2)))begin
+    if((saddr !='b0) & ((table1[saddr.idx].tag == saddr.tag) | (table2[saddr.idx] == saddr.tag)) & (next_state != SNOOP) & (next_state != SWB1) & (next_state != SWB2))begin
       next_state = SNOOP;
     end
   //if snoopaddr != 0, tag  not matching cctrans and ccwrite =0
-    else if((saddr !='b0) & (table1[saddr.idx].tag != saddr.tag)| (table2[saddr.idx] != saddr.tag)  & (next_state != SNOOP) & (next_state != SWB1) & (next_state != SWB2)) begin
+    else if((saddr !='b0) & ((table1[saddr.idx].tag != saddr.tag)| (table2[saddr.idx] != saddr.tag))  & (next_state != SNOOP) & (next_state != SWB1) & (next_state != SWB2)) begin
       next_state = TAG;
       trans = 'b0;
       write = 'b0;
@@ -604,6 +614,6 @@ always_comb begin
   end
   // if(dcif.dhit == 1'b1)
   //   hit_count_next = hit_count+1;
-  // end
+  end
 
 endmodule

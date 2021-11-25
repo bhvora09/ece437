@@ -62,7 +62,7 @@ module datapath (
   alu ALU(aluif);
   control_unit CU(cuif);
   //memory_request_unit MRU(CLK,nRST,mruif);
-  program_counter PC(CLK,nRST,pcif);
+  program_counter #(.PC_INIT(PC_INIT)) PC(CLK,nRST,pcif);
   register_file RF(CLK,nRST,rfif);
   ifetch_idecode FETCHDECODE(CLK, nRST, fdif);
   idecode_iexec DECODEXEC(CLK, nRST, deif);
