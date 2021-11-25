@@ -9,14 +9,15 @@
         halt
 
     org   0x0200
-        ori $2, $0, 0x1FC0
+        ori $2, $0, 0x2FC0
         lw $3, 0($2)
         #lw $3, 0($2)
         halt
 
-    #org 0x80
-        #cfw 0xC007
-
     org 0x1FC0
         cfw 0xBEEF
+    
+    org 0x2FC0
+        cfw 0xC007
+
 
