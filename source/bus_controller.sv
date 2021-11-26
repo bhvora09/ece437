@@ -11,7 +11,7 @@ module bus_controller(
     parameter CPUS = 2;
 
 
-    typedef enum logic [3:0] {IDLE, CHECK1, WB1, WB2, RD1, RD2,INV, IREAD1, IREAD2, CHECK2, SNOOP} states;
+    typedef enum logic [3:0] {IDLE, CHECK1, WB1, WB2, RD1, RD2,INV, IREAD1, IREAD2, CHECK2, SNOOP, HALTWB1, HALTWB2} states;
     
     states s;
     states nS;
@@ -51,8 +51,8 @@ module bus_controller(
     end
 
     assign ccif.dwait[0] = (ccif.dREN[0] || ccif.dWEN[0]) && (ccif.ramstate!=ACCESS);
-    assign ccif.iwait[0] = (ccif.iREN[0]) && (ccif.dREN[0] || ccif.dWEN[0] || (ccif.ramstate!=ACCESS)) ;
     assign ccif.dwait[1] = (ccif.dREN[1] || ccif.dWEN[1] ) && (ccif.dREN[0]  || ccif.dWEN[0] || ccif.ramstate!=ACCESS);
+     assign ccif.iwait[0] = (ccif.iREN[0]) && (ccif.dREN[0] || ccif.dWEN[0] || ccif.dREN[1] || ccif.dWEN[1] ||(ccif.ramstate!=ACCESS)) ;
     assign ccif.iwait[1] = (ccif.iREN[1] ) && (ccif.iREN[0] || ccif.dREN[1] || ccif.dWEN[1] || ccif.dREN[0]  || ccif.dWEN[0] || (ccif.ramstate!=ACCESS)) ;
 
 
@@ -103,14 +103,14 @@ module bus_controller(
                     buswrite1 = 0;
                 end
                 else if(ccif.dWEN[0] & ccif.cctrans[0] & ~ccif.ccwrite[0]) begin
-                    nS= SNOOP;
+                    nS= HALTWB1;
                     busread0 = 0;
                     busread1 = 0;
                     buswrite0 = ccif.dWEN[0];
                     buswrite1 =  0;
                 end
                 else if(ccif.dWEN[0] & ccif.cctrans[0] & ccif.ccwrite[0]) begin
-                    nS = IDLE;
+                    nS = HALTWB1;
                     busread0 =0;
                     busread1 = 0;
                     buswrite0 = ccif.dWEN[0];
@@ -125,14 +125,14 @@ module bus_controller(
                     buswrite1 =  ccif.dWEN[1];
                 end
                 else if(ccif.dWEN[1] & ccif.cctrans[1] & ~ccif.ccwrite[1]) begin
-                    nS= SNOOP;
+                    nS= WB1;
                     busread0 = 0;
                     busread1 = 0;
                     buswrite0 = 0;
                     buswrite1 =  ccif.dWEN[1];
                 end
                 else if(ccif.dWEN[1] & ccif.cctrans[1] & ccif.ccwrite[1]) begin
-                    nS = IDLE;
+                    nS = HALTWB1;
                     busread0 = 0;
                     busread1 =0;
                     buswrite0 = 0;
@@ -162,7 +162,7 @@ module bus_controller(
                 if((busrd0 & ~trans0 & ~write0)|(busrd1 & ~trans1 & ~write1)) nS = CHECK1;
                 //dwen and I state
                 else if((buswr0 & ~trans0 & ~write0)| (buswr1 & ~trans1 & ~write1)) nS= CHECK1;
-                else if((buswr0 & trans0 & ~write0)| (buswr1 & trans1 & ~write1)) nS= CHECK1;     
+                //else if((buswr0 & trans0 & ~write0)| (buswr1 & trans1 & ~write1)) nS= CHECK1;     
                 end
 
             CHECK1: begin
@@ -225,7 +225,14 @@ module bus_controller(
             IREAD2:begin
                 if(ccif.ramstate!=ACCESS) nS = IREAD2;
                 else nS= IDLE;
-                
+            end
+            HALTWB1: begin
+                if(ccif.ramstate != ACCESS) nS = HALTWB1;
+                else nS = HALTWB2;   
+            end
+            HALTWB2: begin
+                if(ccif.ramstate != ACCESS) nS = HALTWB2;
+                else nS = IDLE;   
             end
         endcase
         
@@ -578,6 +585,59 @@ module bus_controller(
                 // ccif.iwait[1]=(ccif.ramstate != ACCESS);
                 // ccif.dwait[0]=1;
                 // ccif.dwait[1]=1;
+                end
+            HALTWB1: begin
+                if(~write0 & trans0 & buswr0) begin   
+                    ccif.ramWEN = 1;
+                    ccif.ramaddr = ccif.daddr[0];
+                    ccif.ramstore = ccif.dstore[0];
+                    end
+                else if(~write1 & trans1 & buswr1) begin   
+                    ccif.ramWEN = 1;
+                    ccif.ramaddr = ccif.daddr[0];
+                    ccif.ramstore = ccif.dstore[0];
+                    end
+                
+                //dwen - C1-M or c2-M
+                else if(write0 & trans0 & buswr0) begin   
+                    ccif.ramWEN = 1;
+                    ccif.ramaddr = ccif.daddr[0];
+                    ccif.ramstore = ccif.dstore[0]; 
+                    end
+                else if(write1 & trans1 & buswr1) begin
+                    ccif.ramWEN = 1;
+                    ccif.ramaddr = ccif.daddr[1];
+                    ccif.ramstore = ccif.dstore[1];
+                    end
+                end
+            HALTWB2: begin
+            //dren - c1-I c2-M 
+                if(~write0 & trans0 & buswr0) begin   
+                    ccif.ramWEN = 1;
+                    ccif.ramaddr = ccif.daddr[0];
+                    ccif.ramstore = ccif.dstore[0];
+                    ccif.ccinv[0] =1;  
+                    end
+                else if(~write1 & trans1 & buswr1) begin  
+                    ccif.ramWEN = 1;
+                    ccif.ramaddr = ccif.daddr[1];
+                    ccif.ramstore = ccif.dstore[1];
+                    ccif.ccinv[1] =1; 
+                    end
+                
+                //dwen - C1-I/S c2-M
+                if(write0 & trans0 & buswr0) begin   
+                    ccif.ramWEN = 1;
+                    ccif.ramaddr = ccif.daddr[0];
+                    ccif.ramstore = ccif.dstore[0];
+                    ccif.ccinv[0] =1;  
+                    end
+                else if(write1 & trans1 & buswr1) begin  
+                    ccif.ramWEN = 1;
+                    ccif.ramaddr = ccif.daddr[1];
+                    ccif.ramstore = ccif.dstore[1];
+                    ccif.ccinv[1] =1; 
+                    end
                 end
 
             endcase

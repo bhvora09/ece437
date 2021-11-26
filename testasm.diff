@@ -1,6 +1,6 @@
 processing file asmFiles/cc2.asm (1 of 1)
---- memsim.hex	2021-11-26 01:48:58.608423910 -0500
-+++ memcpu.hex	2021-11-26 01:48:58.533421219 -0500
+--- memsim.hex	2021-11-26 16:43:16.789796121 -0500
++++ memcpu.hex	2021-11-26 16:43:16.719793608 -0500
 @@ -7,6 +7,6 @@
  :040081008C430000AC
  :0400820020630004F3
@@ -9,4 +9,4 @@ processing file asmFiles/cc2.asm (1 of 1)
 +:0407F0000000BEEF58
  :040BF0000000C0073A
  :00000001FF
-processing file asmFiles/cc1.asm (1 of 1)
+processing file asmFiles/cc2.asm (1 of 1)

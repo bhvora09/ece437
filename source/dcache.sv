@@ -405,8 +405,16 @@ always_comb begin
     end
     HALT:begin
       if(i<8) begin
-        if(((table1[i].dirty == 1) & (cdif.dwait==0)) | ((table2[i].dirty == 1) & (cdif.dwait==0)))
+        if((table1[i].dirty == 1) & (cdif.dwait==0)) begin
           next_state = HALTWB1;
+          trans = table1[i].valid;
+          write = table1[i].dirty;
+        end
+        else if((table2[i].dirty == 1) & (cdif.dwait==0)) begin
+          next_state = HALTWB1;
+          trans = table2[i].valid;
+          write = table2[i].dirty;
+        end
         else
           ni = i+1;
         if((table1[i].dirty == 0) & (table2[i].dirty == 0) & (cdif.dwait==0)) begin
@@ -436,15 +444,15 @@ always_comb begin
     HALTWB1: begin
       if ((table1[i].dirty == 1) & (cdif.dwait==0)) begin
         cdif.dstore = table1[i].data[0];
-        // trans = 1;
-        // write = 1;
+        trans = table1[i].valid;
+        write = table1[i].dirty;
         cdif.dWEN = 1'b1;
         next_state = HALTWB2;
       end
       else if((table2[i].dirty == 1) & (cdif.dwait==0)) begin
         cdif.dstore = table2[i].data[0];
-        // trans = 1;
-        // write = 1;
+        trans = table2[i].valid;
+        write = table2[i].dirty;
         cdif.dWEN = 1'b1;
         next_state = HALTWB2;
       end
@@ -475,8 +483,8 @@ always_comb begin
     HALTWB2: begin
       if ((table1[i].dirty == 1) & (cdif.dwait==0)) begin
         cdif.dstore = table1[i].data[1];
-        trans = 0;
-        write = 0;
+        trans = table1[i].valid;
+        write = table1[i].dirty;
         cdif.dWEN = 1'b1;
         temptable1[daddr.idx].valid = 1'b0;
         temptable1[i].dirty = 1'b0;
@@ -484,8 +492,8 @@ always_comb begin
       end
       else if ((table2[i].dirty == 1 )& (cdif.dwait==0)) begin
         cdif.dstore = table2[i].data[1];
-        trans = 0;
-        write = 0;
+        trans = table2[i].valid;
+        write = table2[i].dirty;
         cdif.dWEN = 1'b1;
         temptable2[daddr.idx].valid = 1'b0;
         temptable2[i].dirty = 1'b0;
