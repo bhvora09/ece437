@@ -220,7 +220,6 @@ module bus_controller(
             end
             IREAD1:begin
                 if(ccif.ramstate!=ACCESS) nS = IREAD1;
-                else if(ccif.iREN[1]) nS=IREAD2;
                 else nS= IDLE;
             end
             IREAD2:begin

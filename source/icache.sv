@@ -51,7 +51,9 @@ always_comb begin : NSTATES
     nS = s;
     casez(s) 
         IDLE: begin
-            if(hit==0) nS = ALLOCATE;
+            //change -1 
+            //if(hit==0) nS = ALLOCATE;
+            if(hit==0 & dcif.imemREN) nS = ALLOCATE;
             else nS = IDLE;
         end
 
