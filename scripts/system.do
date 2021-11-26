@@ -23,15 +23,15 @@ add wave -noupdate -group DP0 /system_tb/DUT/CPU/DP0/aluopindecode
 add wave -noupdate -group DP0 /system_tb/DUT/CPU/DP0/aluopinexec
 add wave -noupdate -group DP0 /system_tb/DUT/CPU/DP0/aluopinmem
 add wave -noupdate -group DP0 /system_tb/DUT/CPU/DP0/aluopinwrback
-add wave -noupdate -expand -group fdif0 /system_tb/DUT/CPU/DP0/fdif/instr_in
-add wave -noupdate -expand -group fdif0 /system_tb/DUT/CPU/DP0/fdif/pc_in
-add wave -noupdate -expand -group fdif0 /system_tb/DUT/CPU/DP0/fdif/pcplusfour_in
-add wave -noupdate -expand -group fdif0 /system_tb/DUT/CPU/DP0/fdif/ihit
-add wave -noupdate -expand -group fdif0 /system_tb/DUT/CPU/DP0/fdif/dhit
-add wave -noupdate -expand -group fdif0 /system_tb/DUT/CPU/DP0/fdif/stall
-add wave -noupdate -expand -group fdif0 /system_tb/DUT/CPU/DP0/fdif/instr_out
-add wave -noupdate -expand -group fdif0 /system_tb/DUT/CPU/DP0/fdif/pc_out
-add wave -noupdate -expand -group fdif0 /system_tb/DUT/CPU/DP0/fdif/pcplusfour_out
+add wave -noupdate -group fdif0 /system_tb/DUT/CPU/DP0/fdif/instr_in
+add wave -noupdate -group fdif0 /system_tb/DUT/CPU/DP0/fdif/pc_in
+add wave -noupdate -group fdif0 /system_tb/DUT/CPU/DP0/fdif/pcplusfour_in
+add wave -noupdate -group fdif0 /system_tb/DUT/CPU/DP0/fdif/ihit
+add wave -noupdate -group fdif0 /system_tb/DUT/CPU/DP0/fdif/dhit
+add wave -noupdate -group fdif0 /system_tb/DUT/CPU/DP0/fdif/stall
+add wave -noupdate -group fdif0 /system_tb/DUT/CPU/DP0/fdif/instr_out
+add wave -noupdate -group fdif0 /system_tb/DUT/CPU/DP0/fdif/pc_out
+add wave -noupdate -group fdif0 /system_tb/DUT/CPU/DP0/fdif/pcplusfour_out
 add wave -noupdate -group deif0 /system_tb/DUT/CPU/DP0/deif/instr_in
 add wave -noupdate -group deif0 /system_tb/DUT/CPU/DP0/deif/Ext_addr_in
 add wave -noupdate -group deif0 /system_tb/DUT/CPU/DP0/deif/pcplusfour_in
@@ -227,6 +227,18 @@ add wave -noupdate -group dcif0 /system_tb/DUT/CPU/dcif0/flushed
 add wave -noupdate -group dcif0 /system_tb/DUT/CPU/dcif0/dmemload
 add wave -noupdate -group dcif0 /system_tb/DUT/CPU/dcif0/dmemstore
 add wave -noupdate -group dcif0 /system_tb/DUT/CPU/dcif0/dmemaddr
+add wave -noupdate -group icache0 /system_tb/DUT/CPU/CM0/ICACHE/CLK
+add wave -noupdate -group icache0 /system_tb/DUT/CPU/CM0/ICACHE/nRST
+add wave -noupdate -group icache0 /system_tb/DUT/CPU/CM0/ICACHE/hit
+add wave -noupdate -group icache0 /system_tb/DUT/CPU/CM0/ICACHE/data
+add wave -noupdate -group icache0 /system_tb/DUT/CPU/CM0/ICACHE/addr
+add wave -noupdate -group icache0 /system_tb/DUT/CPU/CM0/ICACHE/frames
+add wave -noupdate -group icache0 /system_tb/DUT/CPU/CM0/ICACHE/n_frames
+add wave -noupdate -group icache0 /system_tb/DUT/CPU/CM0/ICACHE/frame
+add wave -noupdate -group icache0 /system_tb/DUT/CPU/CM0/ICACHE/valid
+add wave -noupdate -group icache0 /system_tb/DUT/CPU/CM0/ICACHE/iwait
+add wave -noupdate -group icache0 /system_tb/DUT/CPU/CM0/ICACHE/s
+add wave -noupdate -group icache0 /system_tb/DUT/CPU/CM0/ICACHE/nS
 add wave -noupdate -group dcache0 /system_tb/DUT/CPU/CM0/DCACHE/CLK
 add wave -noupdate -group dcache0 /system_tb/DUT/CPU/CM0/DCACHE/nRST
 add wave -noupdate -group dcache0 /system_tb/DUT/CPU/CM0/DCACHE/table1
@@ -279,15 +291,15 @@ add wave -noupdate -group DP1 /system_tb/DUT/CPU/DP1/aluopindecode
 add wave -noupdate -group DP1 /system_tb/DUT/CPU/DP1/aluopinexec
 add wave -noupdate -group DP1 /system_tb/DUT/CPU/DP1/aluopinmem
 add wave -noupdate -group DP1 /system_tb/DUT/CPU/DP1/aluopinwrback
-add wave -noupdate -expand -group fdif1 /system_tb/DUT/CPU/DP1/fdif/instr_in
-add wave -noupdate -expand -group fdif1 /system_tb/DUT/CPU/DP1/fdif/pc_in
-add wave -noupdate -expand -group fdif1 /system_tb/DUT/CPU/DP1/fdif/pcplusfour_in
-add wave -noupdate -expand -group fdif1 /system_tb/DUT/CPU/DP1/fdif/ihit
-add wave -noupdate -expand -group fdif1 /system_tb/DUT/CPU/DP1/fdif/dhit
-add wave -noupdate -expand -group fdif1 /system_tb/DUT/CPU/DP1/fdif/stall
-add wave -noupdate -expand -group fdif1 /system_tb/DUT/CPU/DP1/fdif/instr_out
-add wave -noupdate -expand -group fdif1 /system_tb/DUT/CPU/DP1/fdif/pc_out
-add wave -noupdate -expand -group fdif1 /system_tb/DUT/CPU/DP1/fdif/pcplusfour_out
+add wave -noupdate -group fdif1 /system_tb/DUT/CPU/DP1/fdif/instr_in
+add wave -noupdate -group fdif1 /system_tb/DUT/CPU/DP1/fdif/pc_in
+add wave -noupdate -group fdif1 /system_tb/DUT/CPU/DP1/fdif/pcplusfour_in
+add wave -noupdate -group fdif1 /system_tb/DUT/CPU/DP1/fdif/ihit
+add wave -noupdate -group fdif1 /system_tb/DUT/CPU/DP1/fdif/dhit
+add wave -noupdate -group fdif1 /system_tb/DUT/CPU/DP1/fdif/stall
+add wave -noupdate -group fdif1 /system_tb/DUT/CPU/DP1/fdif/instr_out
+add wave -noupdate -group fdif1 /system_tb/DUT/CPU/DP1/fdif/pc_out
+add wave -noupdate -group fdif1 /system_tb/DUT/CPU/DP1/fdif/pcplusfour_out
 add wave -noupdate -group deif1 /system_tb/DUT/CPU/DP1/deif/instr_in
 add wave -noupdate -group deif1 /system_tb/DUT/CPU/DP1/deif/Ext_addr_in
 add wave -noupdate -group deif1 /system_tb/DUT/CPU/DP1/deif/pcplusfour_in
@@ -489,8 +501,8 @@ add wave -noupdate -group icache1 /system_tb/DUT/CPU/CM1/ICACHE/hit
 add wave -noupdate -group icache1 /system_tb/DUT/CPU/CM1/ICACHE/data
 add wave -noupdate -group icache1 /system_tb/DUT/CPU/CM1/ICACHE/addr
 add wave -noupdate -group icache1 /system_tb/DUT/CPU/CM1/ICACHE/frames
-add wave -noupdate -group icache1 /system_tb/DUT/CPU/CM1/ICACHE/n_frames
-add wave -noupdate -group icache1 /system_tb/DUT/CPU/CM1/ICACHE/frame
+add wave -noupdate -group icache1 -expand /system_tb/DUT/CPU/CM1/ICACHE/n_frames
+add wave -noupdate -group icache1 -expand /system_tb/DUT/CPU/CM1/ICACHE/frame
 add wave -noupdate -group icache1 /system_tb/DUT/CPU/CM1/ICACHE/valid
 add wave -noupdate -group icache1 /system_tb/DUT/CPU/CM1/ICACHE/iwait
 add wave -noupdate -group icache1 /system_tb/DUT/CPU/CM1/ICACHE/s
@@ -585,7 +597,7 @@ add wave -noupdate -group syif /system_tb/syif/addr
 add wave -noupdate -group syif /system_tb/syif/store
 add wave -noupdate -group syif /system_tb/syif/load
 TreeUpdate [SetDefaultTree]
-WaveRestoreCursors {{Cursor 1} {1156040 ps} 0}
+WaveRestoreCursors {{Cursor 1} {741914 ps} 0}
 quietly wave cursor active 1
 configure wave -namecolwidth 300
 configure wave -valuecolwidth 202
@@ -601,4 +613,4 @@ configure wave -griddelta 40
 configure wave -timeline 0
 configure wave -timelineunits ns
 update
-WaveRestoreZoom {847955 ps} {1366755 ps}
+WaveRestoreZoom {389100 ps} {907900 ps}
