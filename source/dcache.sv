@@ -624,7 +624,7 @@ always_comb begin
       write = table2[saddr.idx].dirty;
     end
     //if snoopaddr != 0, tag  not matching cctrans and ccwrite =0
-    else if((saddr !='b0) & ((table1[saddr.idx].tag != saddr.tag)| (table2[saddr.idx] != saddr.tag))  & (next_state != SNOOP) & (next_state != SWB1) & (next_state != SWB2)) begin
+    else if((saddr !='b0) & ((table1[saddr.idx].tag != saddr.tag)| (table2[saddr.idx].tag != saddr.tag))  & (next_state != SNOOP) & (next_state != SWB1) & (next_state != SWB2)) begin
       next_state = TAG;
       trans = 'b0;
       write = 'b0;

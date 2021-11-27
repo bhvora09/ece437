@@ -8,7 +8,13 @@
     halt
 
     org   0x0200
-    ori $2, $0, 0x80
+    ori $2, $0, 0x2FC0
     addi $3, $3, 4
     sw $3, 0($2)
     halt
+
+    org 0x1FC0
+    cfw 0xBEEF
+
+    org 0x2FC0
+    cfw 0xC007
