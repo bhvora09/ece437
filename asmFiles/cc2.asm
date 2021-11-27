@@ -3,23 +3,23 @@
 # m to m
 # ------------------------------------------------------------------
     org   0x0000
-    ori $2, $0, 0x1FC0
-    lw $3, 0($2) # i to s
-    addi $3, $3, 4
-    sw $3, 0($2)   #s to m 
-    sw $3, 0($2)   #m to m
-    halt
+        ori $2, $0, 0x1FC0
+        lw $3, 0($2) # i to s
+        addi $3, $3, 4
+        sw $3, 0($2)   #s to m 
+        sw $3, 0($2)   #m to m
+        halt
 
     org   0x0200
-    ori $2, $0, 0x2FC0
-    lw $3, 0($2)
-    addi $3, $3, 4
-    sw $3, 0($2) # s to m 
-    sw $3, 0($2) #m to m
-    halt
+        ori $2, $0, 0x2FC0
+        lw $3, 0($2)
+        addi $3, $3, 4
+        sw $3, 0($2) # s to m 
+        sw $3, 0($2) #m to m
+        halt
 
     org 0x1FC0
-    cfw 0xBEEF
+        cfw 0xBEEF
 
     org 0x2FC0
-    cfw 0xC007
+        cfw 0xC007
