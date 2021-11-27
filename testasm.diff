@@ -1,10 +1,13 @@
 processing file asmFiles/cc3.asm (1 of 1)
---- memsim.hex	2021-11-26 22:36:22.985847824 -0500
-+++ memcpu.hex	2021-11-26 22:36:22.907845027 -0500
-@@ -7,5 +7,5 @@
+--- memsim.hex	2021-11-27 17:46:39.279687066 -0500
++++ memcpu.hex	2021-11-27 17:46:39.215684772 -0500
+@@ -7,5 +7,4 @@
  :04008200AC4300008B
  :04008300FFFFFFFF7D
  :0407F0000000000401
 -:040BF00000000004FD
-+:040BF0000000C0073A
  :00000001FF
+processing file asmFiles/cc3.asm (1 of 1)
+processing file asmFiles/cc1.asm (1 of 3)
+processing file asmFiles/cc2.asm (2 of 3)
+processing file asmFiles/cc3.asm (3 of 3)

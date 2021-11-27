@@ -125,7 +125,7 @@ module bus_controller(
                     buswrite1 =  ccif.dWEN[1];
                 end
                 else if(ccif.dWEN[1] & ccif.cctrans[1] & ~ccif.ccwrite[1]) begin
-                    nS= WB1;
+                    nS= HALTWB1;
                     busread0 = 0;
                     busread1 = 0;
                     buswrite0 = 0;
@@ -400,9 +400,9 @@ module bus_controller(
                 if(write1 & trans1 & busrd0) begin   
                     ccif.ccwait[1]=1;
                     if(ccif.daddr[1][2]==0)
-                        ccif.ccsnoopaddr[1] = ccif.daddr[0] +4;
+                        ccif.ccsnoopaddr[1] = ccif.daddr[1] +4;
                     else 
-                        ccif.ccsnoopaddr[1] = ccif.daddr[0] - 4; 
+                        ccif.ccsnoopaddr[1] = ccif.daddr[1] - 4; 
                     end
                 else if(write0 & trans0 & busrd1) begin   
                     ccif.ccwait[0]=1;
@@ -416,9 +416,9 @@ module bus_controller(
                 else if(write1 & trans1 & busrd0) begin   
                     ccif.ccwait[1]=1;
                     if(ccif.daddr[1][2]==0)
-                        ccif.ccsnoopaddr[1] = ccif.daddr[0] + 4;
+                        ccif.ccsnoopaddr[1] = ccif.daddr[1] + 4;
                     else 
-                        ccif.ccsnoopaddr[1] = ccif.daddr[0] - 4; 
+                        ccif.ccsnoopaddr[1] = ccif.daddr[1] - 4; 
                     end
                 else if(write0 & trans0 & busrd1) begin   
                     ccif.ccwait[0]=1;
@@ -603,7 +603,7 @@ module bus_controller(
                     end
                 else if(~write1 & trans1 & buswr1) begin   
                     ccif.ramWEN = 1;
-                    ccif.ramaddr = ccif.daddr[0];
+                    ccif.ramaddr = ccif.daddr[1];
                     ccif.ramstore = ccif.dstore[0];
                     end
                 

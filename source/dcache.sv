@@ -464,9 +464,13 @@ always_comb begin
       if(next_state == HALTWB1) begin
         if ((table1[i].dirty == 1)) begin
           ndaddr = {table1[i].tag,3'(i),1'b0,2'b00};
+          trans = table1[i].valid;
+          write = table1[i].dirty;
         end
         else if((table2[i].dirty == 1)) begin
           ndaddr = {table2[i].tag,3'(i),1'b0,2'b00};
+          trans = table2[i].valid;
+          write = table2[i].dirty;
         end
       end
 
@@ -506,9 +510,13 @@ always_comb begin
       if(next_state == HALTWB2) begin
         if ((table1[i].dirty == 1) & (cdif.dwait==0)) begin
           ndaddr = {table1[i].tag,3'(i),1'b1,2'b00};
+          trans = table1[i].valid;
+          write = table1[i].dirty;
         end
         else if ((table2[i].dirty == 1 )& (cdif.dwait==0)) begin
           ndaddr = {table2[i].tag,3'(i),1'b1,2'b00};
+          trans = table2[i].valid;
+          write = table2[i].dirty;
         end
       end
     end
