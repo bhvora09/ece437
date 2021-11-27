@@ -596,6 +596,7 @@ module bus_controller(
                 // ccif.dwait[1]=1;
                 end
             HALTWB1: begin
+                ccif.ramREN = 0;
                 if(~write0 & trans0 & buswr0) begin   
                     ccif.ramWEN = 1;
                     ccif.ramaddr = ccif.daddr[0];
@@ -620,18 +621,19 @@ module bus_controller(
                     end
                 end
             HALTWB2: begin
-            //dren - c1-I c2-M 
+                ccif.ramREN = 0;
+                //dren - c1-I c2-M 
                 if(~write0 & trans0 & buswr0) begin   
                     ccif.ramWEN = 1;
                     ccif.ramaddr = ccif.daddr[0];
                     ccif.ramstore = ccif.dstore[0];
-                    ccif.ccinv[0] =1;  
+                    //ccif.ccinv[0] =1;  
                     end
                 else if(~write1 & trans1 & buswr1) begin  
                     ccif.ramWEN = 1;
                     ccif.ramaddr = ccif.daddr[1];
                     ccif.ramstore = ccif.dstore[1];
-                    ccif.ccinv[1] =1; 
+                    //ccif.ccinv[1] =1; 
                     end
                 
                 //dwen - C1-I/S c2-M
@@ -639,13 +641,13 @@ module bus_controller(
                     ccif.ramWEN = 1;
                     ccif.ramaddr = ccif.daddr[0];
                     ccif.ramstore = ccif.dstore[0];
-                    ccif.ccinv[0] =1;  
+                    //ccif.ccinv[0] =1;  
                     end
                 else if(write1 & trans1 & buswr1) begin  
                     ccif.ramWEN = 1;
                     ccif.ramaddr = ccif.daddr[1];
                     ccif.ramstore = ccif.dstore[1];
-                    ccif.ccinv[1] =1; 
+                    //ccif.ccinv[1] =1; 
                     end
                 end
 
