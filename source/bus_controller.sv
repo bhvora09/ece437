@@ -286,11 +286,16 @@ module bus_controller(
                     ccif.ccwait[1] = 1;
                     ccif.ccwait[0] = 0;
                     ccif.ccsnoopaddr[1] = ccif.daddr[0];
+                    trans_from1 = ccif.cctrans[1];
+                    write_from1 = ccif.ccwrite[1];
                     end
                 else if(busrd1) begin
                     ccif.ccwait[0] = 1;
                     ccif.ccwait[1] = 0;
-                    ccif.ccsnoopaddr[0] = ccif.daddr[1]; 
+                    ccif.ccsnoopaddr[0] = ccif.daddr[1];
+                    trans_from0 =  ccif.cctrans[0];
+                    write_from0 = ccif.ccwrite[0];
+
                     end
                 
                 //dwen and i state
@@ -298,11 +303,15 @@ module bus_controller(
                     ccif.ccwait[1] = 1;
                     ccif.ccwait[0] = 0;
                     ccif.ccsnoopaddr[1] = ccif.daddr[0];
+                    trans_from1 = ccif.cctrans[1];
+                    write_from1 = ccif.ccwrite[1];
                     end
                 else if(buswr1) begin
                     ccif.ccwait[0] = 1;
                     ccif.ccwait[1] = 0;
-                    ccif.ccsnoopaddr[0] = ccif.daddr[1]; 
+                    ccif.ccsnoopaddr[0] = ccif.daddr[1];
+                    trans_from0 =  ccif.cctrans[0];
+                    write_from0 = ccif.ccwrite[0]; 
                     end
                 end
 

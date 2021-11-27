@@ -613,10 +613,17 @@ always_comb begin
   //add - ccwait logic
   //if snoopaddr !=0 tag matching and ccwait =1
   if(cdif.ccwait) begin
-    if((saddr !='b0) & ((table1[saddr.idx].tag == saddr.tag) | (table2[saddr.idx] == saddr.tag)) & (next_state != SNOOP) & (next_state != SWB1) & (next_state != SWB2))begin
+    if((saddr !='b0) & (table1[saddr.idx].tag == saddr.tag) & (next_state != SNOOP) & (next_state != SWB1) & (next_state != SWB2))begin
       next_state = SNOOP;
+      trans = table1[saddr.idx].valid;
+      write = table1[saddr.idx].dirty;
     end
-  //if snoopaddr != 0, tag  not matching cctrans and ccwrite =0
+    else if((saddr !='b0) & (table2[saddr.idx].tag == saddr.tag) & (next_state != SNOOP) & (next_state != SWB1) & (next_state != SWB2))begin
+      next_state = SNOOP;
+      trans = table2[saddr.idx].valid;
+      write = table2[saddr.idx].dirty;
+    end
+    //if snoopaddr != 0, tag  not matching cctrans and ccwrite =0
     else if((saddr !='b0) & ((table1[saddr.idx].tag != saddr.tag)| (table2[saddr.idx] != saddr.tag))  & (next_state != SNOOP) & (next_state != SWB1) & (next_state != SWB2)) begin
       next_state = TAG;
       trans = 'b0;
