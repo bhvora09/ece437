@@ -69,6 +69,8 @@ assign dstore11 = table1[daddr.idx].data[1];
 assign dstore21 = table2[daddr.idx].data[1];
 assign index = daddr.idx;
 
+assign cdif.cctrans  = trans;
+assign cdif.ccwrite = write;
 // assign write = LRU[daddr.idx] ? table1[daddr.idx].valid : table2[daddr.idx].valid ;
 // assign trans = LRU[daddr.idx] ? table1[daddr.idx].dirty : table2[daddr.idx].dirty;
 
@@ -81,8 +83,8 @@ always_ff @(posedge CLK or negedge nRST) begin
     i <=0;
     LRU <= 0;
     cdif.daddr <= 0;
-    cdif.cctrans<=0;
-    cdif.ccwrite<=0;
+    // cdif.cctrans<=0;
+    // cdif.ccwrite<=0;
   end
   else begin
     table1 <= temptable1;
@@ -92,8 +94,8 @@ always_ff @(posedge CLK or negedge nRST) begin
     i<= ni;
     LRU <= nLRU;
     cdif.daddr <= ndaddr;
-    cdif.cctrans <= trans;
-    cdif.ccwrite <= write;  
+    // cdif.cctrans <= trans;
+    // cdif.ccwrite <= write;  
   end
 end
 
@@ -305,7 +307,7 @@ always_comb begin
       end
     end
     AL1:begin
-      if((table1[daddr.idx].tag ==daddr.tag) & !(table1[daddr.idx].dirty) & (cdif.dwait==0))begin
+      if((table1[daddr.idx].tag ==daddr.tag) & !(table1[daddr.idx].dirty) & (cdif.dwait==0) )begin
         cdif.dREN = 1'b1;
         temptable1[daddr.idx].tag = daddr.tag;
         temptable1[daddr.idx].data[0] = cdif.dload;
