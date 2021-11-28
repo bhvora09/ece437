@@ -461,6 +461,10 @@ always_comb begin
       else if (cdif.dwait) begin
         next_state = HALTWB1;
         cdif.dWEN = 1'b1;
+        if (table1[i].dirty == 1) 
+          cdif.dstore = table1[i].data[0];
+        else if (table2[i].dirty == 1)
+          cdif.dstore = table2[i].data[0];
       end
 
       if(next_state == HALTWB1) begin
@@ -508,6 +512,14 @@ always_comb begin
       else if (cdif.dwait) begin
         next_state = HALTWB2;
         cdif.dWEN = 1'b1;
+        if (table1[i].dirty == 1) begin
+          trans = table1[i].valid;
+          write = table1[i].dirty;
+          cdif.dstore = table1[i].data[1];end
+        else if (table2[i].dirty == 1) begin
+          cdif.dstore = table2[i].data[1];
+          trans = table2[i].valid;
+          write = table2[i].dirty; end
       end
       if(next_state == HALTWB2) begin
         if ((table1[i].dirty == 1) & (cdif.dwait==0)) begin
@@ -578,45 +590,69 @@ always_comb begin
     end
     
     SWB1: begin
-      if((table1[saddr.idx].tag ==saddr.tag) & table1[saddr.idx].dirty) begin
+      if((table1[saddr.idx].tag ==saddr.tag) & table1[saddr.idx].dirty & (cdif.dwait==0)) begin
         cdif.dstore = table1[saddr.idx].data[0];
-        // trans = 1;
-        // write = 1;
+        trans = table1[saddr.idx].valid;
+        write =  table1[saddr.idx].dirty;
         cdif.dWEN = 1'b1;
         next_state = SWB2;
-        ndaddr = {saddr.tag,saddr.idx,1'b1,2'b00};
+        ndaddr = {saddr.tag,saddr.idx,1'b0,2'b00};
       end
-      else if((table2[saddr.idx].tag==saddr.tag) & table2[saddr.idx].dirty) begin
+      else if((table2[saddr.idx].tag==saddr.tag) & table2[saddr.idx].dirty & (cdif.dwait==0)) begin
         cdif.dstore = table2[saddr.idx].data[0];
-        // trans = 1;
-        // write = 1;
+        trans = table2[saddr.idx].valid;
+        write =  table2[saddr.idx].dirty;
         cdif.dWEN = 1'b1;
         next_state =  SWB2; 
-        ndaddr = {saddr.tag,saddr.idx,1'b1,2'b00};
+        ndaddr = {saddr.tag,saddr.idx,1'b0,2'b00};
       end
-      else begin
+      else if(cdif.dwait)begin
+        cdif.dWEN=1;
         next_state = SWB1;
+        if((table1[saddr.idx].tag ==saddr.tag) & table1[saddr.idx].dirty) begin
+          cdif.dstore = table1[saddr.idx].data[0];
+          trans = table1[saddr.idx].valid;
+          write =  table1[saddr.idx].dirty;end
+        else if((table2[saddr.idx].tag==saddr.tag) & table2[saddr.idx].dirty) begin
+          cdif.dstore = table2[saddr.idx].data[0];
+          trans = table2[saddr.idx].valid;
+          write =  table2[saddr.idx].dirty;end
+        ndaddr = {saddr.tag,saddr.idx,1'b0,2'b00};
       end
     end
     SWB2: begin
-      if((table1[saddr.idx].tag ==saddr.tag) & table1[saddr.idx].dirty) begin
+      if((table1[saddr.idx].tag ==saddr.tag) & table1[saddr.idx].dirty &(cdif.dwait==0)) begin
         cdif.dstore = table1[saddr.idx].data[1];
-        // trans = 0;
-        write = 0;
+        trans = table1[saddr.idx].valid;
+        write = table1[saddr.idx].dirty;
         cdif.dWEN = 1'b1;
         next_state = TAG;
         temptable1[saddr.idx].dirty = 1'b0;
+        ndaddr = {saddr.tag,saddr.idx,1'b1,2'b00};
       end
-      else if((table2[saddr.idx].tag==saddr.tag) & table2[saddr.idx].dirty) begin
+      else if((table2[saddr.idx].tag==saddr.tag) & table2[saddr.idx].dirty & (cdif.dwait==0)) begin
         cdif.dstore = table2[saddr.idx].data[1];
-        // trans = 0;
-        write = 0;
+        trans = table2[saddr.idx].valid;
+        write = table2[saddr.idx].dirty;
         cdif.dWEN = 1'b1;
         next_state =  TAG; 
         temptable2[saddr.idx].dirty = 1'b0;
+        ndaddr = {saddr.tag,saddr.idx,1'b1,2'b00};
       end
-      else begin
+      else if (cdif.dwait)begin
+        cdif.dWEN=1;
         next_state = SWB2;
+        if((table1[saddr.idx].tag ==saddr.tag) & table1[saddr.idx].dirty)begin
+          cdif.dstore = table1[saddr.idx].data[1];
+          trans = table1[saddr.idx].valid;
+          write =  table1[saddr.idx].dirty;
+          ndaddr = {saddr.tag,saddr.idx,1'b1,2'b00};
+          end
+        else if((table2[saddr.idx].tag==saddr.tag) & table2[saddr.idx].dirty) begin
+          cdif.dstore = table2[saddr.idx].data[1];
+          trans = table2[saddr.idx].valid;
+          write =  table2[saddr.idx].dirty;
+          ndaddr = {saddr.tag,saddr.idx,1'b1,2'b00};end
       end
     end
   endcase
