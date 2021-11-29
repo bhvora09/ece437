@@ -221,75 +221,91 @@ always_comb begin
     end
 
     WB1: begin
-      if((table1[daddr.idx].tag ==daddr.tag) & table1[daddr.idx].dirty & (cdif.dwait==0)) begin
+      if((table1[daddr.idx].tag ==daddr.tag) & table1[daddr.idx].dirty & table1[daddr.idx].valid  & (cdif.dwait==0)) begin
         cdif.dstore = dstore10;
-        // trans = 1;
-        // write = 1;
+        trans = table1[daddr.idx].valid;
+        write = table1[daddr.idx].dirty;
         cdif.dWEN = 1'b1;
         next_state = WB2;
         ndaddr = {tag1,index,1'b1,2'b00};
       end
-      else if( (table2[daddr.idx].tag==daddr.tag) & table2[daddr.idx].dirty & (cdif.dwait==0)) begin
+      else if( (table2[daddr.idx].tag==daddr.tag) & table2[daddr.idx].dirty & table2[daddr.idx].valid &  (cdif.dwait==0)) begin
         cdif.dstore = dstore20;
-        // trans = 1;
-        // write = 1;
+        trans = table2[daddr.idx].valid;
+        write = table2[daddr.idx].dirty;
         cdif.dWEN = 1'b1;
         next_state =  WB2; 
         ndaddr = {tag2,index,1'b1,2'b00};
       end
-      else if((LRU[daddr.idx]) & table1[daddr.idx].dirty & (cdif.dwait==0)) begin
+      else if((LRU[daddr.idx]) & table1[daddr.idx].dirty & table1[daddr.idx].valid & (cdif.dwait==0)) begin
         cdif.dstore = dstore10;
-        // trans = 1;
-        // write = 1;
+        trans = table1[daddr.idx].valid;
+        write = table1[daddr.idx].dirty;
         cdif.dWEN = 1'b1;
         next_state = WB2;
         ndaddr = {tag1,index,1'b1,2'b00};
       end
-      else if(!(LRU[daddr.idx]) & table2[daddr.idx].dirty & (cdif.dwait==0)) begin
+      else if(!(LRU[daddr.idx]) & table2[daddr.idx].dirty & table2[daddr.idx].valid & (cdif.dwait==0)) begin
         cdif.dstore = dstore20;
-        // trans = 1;
-        // write = 1;
+        trans = table2[daddr.idx].valid;
+        write = table2[daddr.idx].dirty;
         cdif.dWEN = 1'b1;
         next_state =  WB2; 
         ndaddr = {tag2,index,1'b1,2'b00};
       end
       else if (cdif.dwait) begin
         next_state = WB1;
-        cdif.dWEN = 1'b1; 
+        cdif.dWEN = 1'b1;
+        if((table1[daddr.idx].tag ==daddr.tag) & table1[daddr.idx].dirty & table1[daddr.idx].valid ) begin
+          trans = table1[daddr.idx].valid;
+          write = table1[daddr.idx].dirty;
+        end
+        else if((table2[daddr.idx].tag==daddr.tag) & table2[daddr.idx].dirty & table2[daddr.idx].valid ) begin
+          trans = table2[daddr.idx].valid;
+          write = table2[daddr.idx].dirty;
+          end
+        else if((LRU[daddr.idx]) & table1[daddr.idx].dirty & table1[daddr.idx].valid ) begin
+          trans = table1[daddr.idx].valid;
+          write = table1[daddr.idx].dirty;
+        end
+        else if(!(LRU[daddr.idx]) & table2[daddr.idx].dirty & table2[daddr.idx].valid ) begin
+          trans = table2[daddr.idx].valid;
+          write = table2[daddr.idx].dirty;
+        end
       end
     end
     WB2:begin
-      if((table1[daddr.idx].tag ==daddr.tag) & table1[daddr.idx].dirty & (cdif.dwait==0)) begin
+      if((table1[daddr.idx].tag ==daddr.tag) & table1[daddr.idx].dirty & table1[daddr.idx].valid & (cdif.dwait==0)) begin
         cdif.dstore = dstore11;
         cdif.dWEN = 1'b1;
         temptable1[daddr.idx].valid = 1'b0;
         temptable1[daddr.idx].dirty = 1'b0;
-        trans = 0;
-        write = 0;
+        trans = table1[daddr.idx].valid;
+        write = table1[daddr.idx].dirty;
         next_state = AL1; 
       end
-      else if((table2[daddr.idx].tag==daddr.tag) & table2[daddr.idx].dirty & (cdif.dwait==0)) begin
+      else if((table2[daddr.idx].tag==daddr.tag) & table2[daddr.idx].dirty & table2[daddr.idx].valid & (cdif.dwait==0)) begin
         cdif.dstore = dstore21;
-        trans = 0;
-        write = 0;
+        trans = table2[daddr.idx].valid;
+        write = table2[daddr.idx].dirty;
         cdif.dWEN = 1'b1;
         temptable2[daddr.idx].valid = 1'b0;
         temptable2[daddr.idx].dirty = 1'b0;
         next_state = AL1; 
       end
-      else if((LRU[daddr.idx]) & table1[daddr.idx].dirty & (cdif.dwait==0)) begin
+      else if((LRU[daddr.idx]) & table1[daddr.idx].dirty & table1[daddr.idx].valid & (cdif.dwait==0)) begin
         cdif.dstore = dstore11;
-        trans = 0;
-        write = 0;
+        trans = table1[daddr.idx].valid;
+        write = table1[daddr.idx].dirty;
         cdif.dWEN = 1'b1;
         temptable1[daddr.idx].valid = 1'b0;
         temptable1[daddr.idx].dirty = 1'b0;
         next_state = AL1; 
       end
-      else if(!(LRU[daddr.idx]) & table2[daddr.idx].dirty & (cdif.dwait==0)) begin
+      else if(!(LRU[daddr.idx]) & table2[daddr.idx].dirty & table1[daddr.idx].valid & (cdif.dwait==0)) begin
         cdif.dstore = dstore21;
-        trans = 0;
-        write = 0;
+        trans = table2[daddr.idx].valid;
+        write = table2[daddr.idx].dirty;
         cdif.dWEN = 1'b1;
         temptable2[daddr.idx].valid = 1'b0;
         temptable2[daddr.idx].dirty = 1'b0;
@@ -297,7 +313,23 @@ always_comb begin
       end
       else if (cdif.dwait) begin
         next_state = WB2;
-        cdif.dWEN = 1'b1; 
+        cdif.dWEN = 1'b1;
+        if((table1[daddr.idx].tag ==daddr.tag) & table1[daddr.idx].dirty & table1[daddr.idx].valid ) begin
+          trans = table1[daddr.idx].valid;
+          write = table1[daddr.idx].dirty;
+        end
+        else if((table2[daddr.idx].tag==daddr.tag) & table2[daddr.idx].dirty & table2[daddr.idx].valid ) begin
+          trans = table2[daddr.idx].valid;
+          write = table2[daddr.idx].dirty;
+          end
+        else if((LRU[daddr.idx]) & table1[daddr.idx].dirty & table1[daddr.idx].valid ) begin
+          trans = table1[daddr.idx].valid;
+          write = table1[daddr.idx].dirty;
+        end
+        else if(!(LRU[daddr.idx]) & table2[daddr.idx].dirty & table2[daddr.idx].valid ) begin
+          trans = table2[daddr.idx].valid;
+          write = table2[daddr.idx].dirty;
+        end
       end
       if(next_state == AL1) begin
         if(daddr.blkoff == 0)
@@ -311,37 +343,53 @@ always_comb begin
         cdif.dREN = 1'b1;
         temptable1[daddr.idx].tag = daddr.tag;
         temptable1[daddr.idx].data[0] = cdif.dload;
-        // trans = 0;
-        // write = 0;
+        trans = table1[daddr.idx].valid;
+        write = table1[daddr.idx].dirty;
         next_state = AL2;
       end
       else if((table2[daddr.idx].tag==daddr.tag) & !(table2[daddr.idx].dirty) & (cdif.dwait==0))begin
         cdif.dREN = 1'b1;
         temptable2[daddr.idx].tag = daddr.tag;
         temptable2[daddr.idx].data[0] = cdif.dload;
-        // trans = 0;
-        // write = 0;
+        trans = table2[daddr.idx].valid;
+        write = table2[daddr.idx].dirty;
         next_state = AL2;
       end
       else if((LRU[daddr.idx]) & !(table1[daddr.idx].dirty) & (cdif.dwait==0))begin
         cdif.dREN = 1'b1;
         temptable1[daddr.idx].tag = daddr.tag;
         temptable1[daddr.idx].data[0] = cdif.dload;
-        // trans = 0;
-        // write = 0;
+        trans = table1[daddr.idx].valid;
+        write = table1[daddr.idx].dirty;
         next_state = AL2;
       end
       else if(!(LRU[daddr.idx]) & !(table2[daddr.idx].dirty) & (cdif.dwait==0))begin
         cdif.dREN = 1'b1;
         temptable2[daddr.idx].tag = daddr.tag;
         temptable2[daddr.idx].data[0] = cdif.dload;
-        // trans = 0;
-        // write = 0;
+        trans = table2[daddr.idx].valid;
+        write = table2[daddr.idx].dirty;
         next_state = AL2;
       end
       else if (cdif.dwait) begin
         next_state = AL1;
-        cdif.dREN =1'b1; 
+        cdif.dREN =1'b1;
+        if((table1[daddr.idx].tag ==daddr.tag) & !table1[daddr.idx].dirty ) begin
+          trans = table1[daddr.idx].valid;
+          write = table1[daddr.idx].dirty;
+        end
+        else if((table2[daddr.idx].tag==daddr.tag) & !(table2[daddr.idx].dirty) ) begin
+          trans = table2[daddr.idx].valid;
+          write = table2[daddr.idx].dirty;
+          end
+        else if((LRU[daddr.idx]) & !table1[daddr.idx].dirty) begin
+          trans = table1[daddr.idx].valid;
+          write = table1[daddr.idx].dirty;
+        end
+        else if(!(LRU[daddr.idx]) & !table2[daddr.idx].dirty ) begin
+          trans = table2[daddr.idx].valid;
+          write = table2[daddr.idx].dirty;
+        end 
       end
       if(next_state == AL1) begin
         if(daddr.blkoff == 0)
@@ -366,8 +414,8 @@ always_comb begin
         cdif.dREN = 1'b1;
         temptable1[daddr.idx].tag = daddr.tag;
         temptable1[daddr.idx].data[1] = cdif.dload;
-        trans = 1;
-        // write = 0;
+        trans = table1[daddr.idx].valid;
+        write = table1[daddr.idx].dirty;
         temptable1[daddr.idx].valid = 1'b1;
         next_state = TAG;
       end
@@ -375,8 +423,8 @@ always_comb begin
         cdif.dREN = 1'b1;
         temptable2[daddr.idx].tag = daddr.tag;
         temptable2[daddr.idx].data[1] = cdif.dload;
-        trans = 1;
-        // write = 0;
+        trans = table2[daddr.idx].valid;
+        write = table2[daddr.idx].dirty;
         temptable2[daddr.idx].valid = 1'b1;
         next_state = TAG;
       end
@@ -384,8 +432,8 @@ always_comb begin
         cdif.dREN = 1'b1;
         temptable1[daddr.idx].tag = daddr.tag;
         temptable1[daddr.idx].data[1] = cdif.dload;
-        trans = 1;
-        // write = 0;
+        trans = table1[daddr.idx].valid;
+        write = table1[daddr.idx].dirty;
         temptable1[daddr.idx].valid = 1'b1;
         next_state = TAG;
       end
@@ -393,14 +441,30 @@ always_comb begin
         cdif.dREN = 1'b1;
         temptable2[daddr.idx].tag = daddr.tag;
         temptable2[daddr.idx].data[1] = cdif.dload;
-        trans = 1;
-        // write = 0;
+        trans = table2[daddr.idx].valid;
+        write = table2[daddr.idx].dirty;
         temptable2[daddr.idx].valid = 1'b1;
         next_state = TAG;
       end
       else if (cdif.dwait) begin
         next_state = AL2;
-        cdif.dREN =1'b1; 
+        cdif.dREN =1'b1;
+        if((table1[daddr.idx].tag ==daddr.tag) & !table1[daddr.idx].dirty ) begin
+          trans = table1[daddr.idx].valid;
+          write = table1[daddr.idx].dirty;
+        end
+        else if((table2[daddr.idx].tag==daddr.tag) & !(table2[daddr.idx].dirty) ) begin
+          trans = table2[daddr.idx].valid;
+          write = table2[daddr.idx].dirty;
+          end
+        else if((LRU[daddr.idx]) & !table1[daddr.idx].dirty) begin
+          trans = table1[daddr.idx].valid;
+          write = table1[daddr.idx].dirty;
+        end
+        else if(!(LRU[daddr.idx]) & !table2[daddr.idx].dirty ) begin
+          trans = table2[daddr.idx].valid;
+          write = table2[daddr.idx].dirty;
+        end  
       end
       if (next_state == AL2) begin
         if(daddr.blkoff == 0)
