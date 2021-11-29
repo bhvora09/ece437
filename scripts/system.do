@@ -23,6 +23,9 @@ add wave -noupdate -group DP0 /system_tb/DUT/CPU/DP0/aluopindecode
 add wave -noupdate -group DP0 /system_tb/DUT/CPU/DP0/aluopinexec
 add wave -noupdate -group DP0 /system_tb/DUT/CPU/DP0/aluopinmem
 add wave -noupdate -group DP0 /system_tb/DUT/CPU/DP0/aluopinwrback
+add wave -noupdate -group pcif0 /system_tb/DUT/CPU/DP0/pcif/PCen
+add wave -noupdate -group pcif0 /system_tb/DUT/CPU/DP0/pcif/pc
+add wave -noupdate -group pcif0 /system_tb/DUT/CPU/DP0/pcif/pc_next
 add wave -noupdate -group fdif0 /system_tb/DUT/CPU/DP0/fdif/instr_in
 add wave -noupdate -group fdif0 /system_tb/DUT/CPU/DP0/fdif/pc_in
 add wave -noupdate -group fdif0 /system_tb/DUT/CPU/DP0/fdif/pcplusfour_in
@@ -534,58 +537,58 @@ add wave -noupdate -group dcache1 /system_tb/DUT/CPU/CM1/DCACHE/next_state
 add wave -noupdate -group dcache1 /system_tb/DUT/CPU/CM1/DCACHE/daddr
 add wave -noupdate -group dcache1 /system_tb/DUT/CPU/CM1/DCACHE/saddr
 add wave -noupdate -divider {Bus and Ram}
-add wave -noupdate -expand -group ccif /system_tb/DUT/CPU/ccif/iwait
-add wave -noupdate -expand -group ccif -expand /system_tb/DUT/CPU/ccif/dwait
-add wave -noupdate -expand -group ccif /system_tb/DUT/CPU/ccif/iREN
-add wave -noupdate -expand -group ccif /system_tb/DUT/CPU/ccif/dREN
-add wave -noupdate -expand -group ccif /system_tb/DUT/CPU/ccif/dWEN
-add wave -noupdate -expand -group ccif /system_tb/DUT/CPU/ccif/iload
-add wave -noupdate -expand -group ccif /system_tb/DUT/CPU/ccif/dload
-add wave -noupdate -expand -group ccif /system_tb/DUT/CPU/ccif/dstore
-add wave -noupdate -expand -group ccif /system_tb/DUT/CPU/ccif/iaddr
-add wave -noupdate -expand -group ccif /system_tb/DUT/CPU/ccif/daddr
-add wave -noupdate -expand -group ccif /system_tb/DUT/CPU/ccif/ccwait
-add wave -noupdate -expand -group ccif /system_tb/DUT/CPU/ccif/ccinv
-add wave -noupdate -expand -group ccif /system_tb/DUT/CPU/ccif/ccwrite
-add wave -noupdate -expand -group ccif /system_tb/DUT/CPU/ccif/cctrans
-add wave -noupdate -expand -group ccif /system_tb/DUT/CPU/ccif/ccsnoopaddr
-add wave -noupdate -expand -group ccif /system_tb/DUT/CPU/ccif/ramWEN
-add wave -noupdate -expand -group ccif /system_tb/DUT/CPU/ccif/ramREN
-add wave -noupdate -expand -group ccif /system_tb/DUT/CPU/ccif/ramstate
-add wave -noupdate -expand -group ccif /system_tb/DUT/CPU/ccif/ramaddr
-add wave -noupdate -expand -group ccif /system_tb/DUT/CPU/ccif/ramstore
-add wave -noupdate -expand -group ccif /system_tb/DUT/CPU/ccif/ramload
-add wave -noupdate -expand -group {Bus controller} /system_tb/DUT/CPU/CC/CLK
-add wave -noupdate -expand -group {Bus controller} /system_tb/DUT/CPU/CC/nRST
-add wave -noupdate -expand -group {Bus controller} /system_tb/DUT/CPU/CC/s
-add wave -noupdate -expand -group {Bus controller} /system_tb/DUT/CPU/CC/nS
-add wave -noupdate -expand -group {Bus controller} /system_tb/DUT/CPU/CC/trans0
-add wave -noupdate -expand -group {Bus controller} /system_tb/DUT/CPU/CC/trans_from0
-add wave -noupdate -expand -group {Bus controller} /system_tb/DUT/CPU/CC/trans1
-add wave -noupdate -expand -group {Bus controller} /system_tb/DUT/CPU/CC/trans_from1
-add wave -noupdate -expand -group {Bus controller} /system_tb/DUT/CPU/CC/write0
-add wave -noupdate -expand -group {Bus controller} /system_tb/DUT/CPU/CC/write_from0
-add wave -noupdate -expand -group {Bus controller} /system_tb/DUT/CPU/CC/write1
-add wave -noupdate -expand -group {Bus controller} /system_tb/DUT/CPU/CC/write_from1
-add wave -noupdate -expand -group {Bus controller} /system_tb/DUT/CPU/CC/busread0
-add wave -noupdate -expand -group {Bus controller} /system_tb/DUT/CPU/CC/busrd0
-add wave -noupdate -expand -group {Bus controller} /system_tb/DUT/CPU/CC/busread1
-add wave -noupdate -expand -group {Bus controller} /system_tb/DUT/CPU/CC/busrd1
-add wave -noupdate -expand -group {Bus controller} /system_tb/DUT/CPU/CC/buswrite0
-add wave -noupdate -expand -group {Bus controller} /system_tb/DUT/CPU/CC/buswr0
-add wave -noupdate -expand -group {Bus controller} /system_tb/DUT/CPU/CC/buswrite1
-add wave -noupdate -expand -group {Bus controller} /system_tb/DUT/CPU/CC/buswr1
-add wave -noupdate -expand -group RAM /system_tb/DUT/RAM/q
-add wave -noupdate -expand -group RAM /system_tb/DUT/RAM/ramif/ramREN
-add wave -noupdate -expand -group RAM /system_tb/DUT/RAM/ramif/ramWEN
-add wave -noupdate -expand -group RAM /system_tb/DUT/RAM/ramif/ramaddr
-add wave -noupdate -expand -group RAM /system_tb/DUT/RAM/ramif/ramstore
-add wave -noupdate -expand -group RAM /system_tb/DUT/RAM/ramif/ramload
-add wave -noupdate -expand -group RAM /system_tb/DUT/RAM/ramif/ramstate
-add wave -noupdate -expand -group RAM /system_tb/DUT/RAM/ramif/memREN
-add wave -noupdate -expand -group RAM /system_tb/DUT/RAM/ramif/memWEN
-add wave -noupdate -expand -group RAM /system_tb/DUT/RAM/ramif/memaddr
-add wave -noupdate -expand -group RAM /system_tb/DUT/RAM/ramif/memstore
+add wave -noupdate -group ccif /system_tb/DUT/CPU/ccif/iwait
+add wave -noupdate -group ccif -expand /system_tb/DUT/CPU/ccif/dwait
+add wave -noupdate -group ccif /system_tb/DUT/CPU/ccif/iREN
+add wave -noupdate -group ccif /system_tb/DUT/CPU/ccif/dREN
+add wave -noupdate -group ccif /system_tb/DUT/CPU/ccif/dWEN
+add wave -noupdate -group ccif /system_tb/DUT/CPU/ccif/iload
+add wave -noupdate -group ccif /system_tb/DUT/CPU/ccif/dload
+add wave -noupdate -group ccif /system_tb/DUT/CPU/ccif/dstore
+add wave -noupdate -group ccif /system_tb/DUT/CPU/ccif/iaddr
+add wave -noupdate -group ccif /system_tb/DUT/CPU/ccif/daddr
+add wave -noupdate -group ccif /system_tb/DUT/CPU/ccif/ccwait
+add wave -noupdate -group ccif /system_tb/DUT/CPU/ccif/ccinv
+add wave -noupdate -group ccif /system_tb/DUT/CPU/ccif/ccwrite
+add wave -noupdate -group ccif /system_tb/DUT/CPU/ccif/cctrans
+add wave -noupdate -group ccif /system_tb/DUT/CPU/ccif/ccsnoopaddr
+add wave -noupdate -group ccif /system_tb/DUT/CPU/ccif/ramWEN
+add wave -noupdate -group ccif /system_tb/DUT/CPU/ccif/ramREN
+add wave -noupdate -group ccif /system_tb/DUT/CPU/ccif/ramstate
+add wave -noupdate -group ccif /system_tb/DUT/CPU/ccif/ramaddr
+add wave -noupdate -group ccif /system_tb/DUT/CPU/ccif/ramstore
+add wave -noupdate -group ccif /system_tb/DUT/CPU/ccif/ramload
+add wave -noupdate -group {Bus controller} /system_tb/DUT/CPU/CC/CLK
+add wave -noupdate -group {Bus controller} /system_tb/DUT/CPU/CC/nRST
+add wave -noupdate -group {Bus controller} /system_tb/DUT/CPU/CC/s
+add wave -noupdate -group {Bus controller} /system_tb/DUT/CPU/CC/nS
+add wave -noupdate -group {Bus controller} /system_tb/DUT/CPU/CC/trans0
+add wave -noupdate -group {Bus controller} /system_tb/DUT/CPU/CC/trans_from0
+add wave -noupdate -group {Bus controller} /system_tb/DUT/CPU/CC/trans1
+add wave -noupdate -group {Bus controller} /system_tb/DUT/CPU/CC/trans_from1
+add wave -noupdate -group {Bus controller} /system_tb/DUT/CPU/CC/write0
+add wave -noupdate -group {Bus controller} /system_tb/DUT/CPU/CC/write_from0
+add wave -noupdate -group {Bus controller} /system_tb/DUT/CPU/CC/write1
+add wave -noupdate -group {Bus controller} /system_tb/DUT/CPU/CC/write_from1
+add wave -noupdate -group {Bus controller} /system_tb/DUT/CPU/CC/busread0
+add wave -noupdate -group {Bus controller} /system_tb/DUT/CPU/CC/busrd0
+add wave -noupdate -group {Bus controller} /system_tb/DUT/CPU/CC/busread1
+add wave -noupdate -group {Bus controller} /system_tb/DUT/CPU/CC/busrd1
+add wave -noupdate -group {Bus controller} /system_tb/DUT/CPU/CC/buswrite0
+add wave -noupdate -group {Bus controller} /system_tb/DUT/CPU/CC/buswr0
+add wave -noupdate -group {Bus controller} /system_tb/DUT/CPU/CC/buswrite1
+add wave -noupdate -group {Bus controller} /system_tb/DUT/CPU/CC/buswr1
+add wave -noupdate -group RAM /system_tb/DUT/RAM/q
+add wave -noupdate -group RAM /system_tb/DUT/RAM/ramif/ramREN
+add wave -noupdate -group RAM /system_tb/DUT/RAM/ramif/ramWEN
+add wave -noupdate -group RAM /system_tb/DUT/RAM/ramif/ramaddr
+add wave -noupdate -group RAM /system_tb/DUT/RAM/ramif/ramstore
+add wave -noupdate -group RAM /system_tb/DUT/RAM/ramif/ramload
+add wave -noupdate -group RAM /system_tb/DUT/RAM/ramif/ramstate
+add wave -noupdate -group RAM /system_tb/DUT/RAM/ramif/memREN
+add wave -noupdate -group RAM /system_tb/DUT/RAM/ramif/memWEN
+add wave -noupdate -group RAM /system_tb/DUT/RAM/ramif/memaddr
+add wave -noupdate -group RAM /system_tb/DUT/RAM/ramif/memstore
 add wave -noupdate -group syif /system_tb/syif/tbCTRL
 add wave -noupdate -group syif /system_tb/syif/halt
 add wave -noupdate -group syif /system_tb/syif/WEN
@@ -594,7 +597,7 @@ add wave -noupdate -group syif /system_tb/syif/addr
 add wave -noupdate -group syif /system_tb/syif/store
 add wave -noupdate -group syif /system_tb/syif/load
 TreeUpdate [SetDefaultTree]
-WaveRestoreCursors {{Cursor 1} {617623 ps} 0}
+WaveRestoreCursors {{Cursor 1} {1441466 ps} 0}
 quietly wave cursor active 1
 configure wave -namecolwidth 300
 configure wave -valuecolwidth 202
@@ -610,4 +613,4 @@ configure wave -griddelta 40
 configure wave -timeline 0
 configure wave -timelineunits ns
 update
-WaveRestoreZoom {0 ps} {673950 ps}
+WaveRestoreZoom {915695 ps} {2284305 ps}

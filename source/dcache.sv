@@ -136,7 +136,7 @@ always_comb begin
         next_state = TAG; 
         nLRU[daddr.idx] =1'b1; 
       end
-      else if (dcif.dmemWEN & (table1[daddr.idx].tag ==daddr.tag) )begin
+      else if (dcif.dmemWEN & (table1[daddr.idx].tag ==daddr.tag))begin
         if(!(table1[daddr.idx].dirty))begin
           if(daddr.blkoff==0) begin
             temptable1[daddr.idx].data[0] = dcif.dmemstore;
@@ -355,6 +355,10 @@ always_comb begin
         else
           ndaddr = daddr ;
       end
+      if(dcif.dmemWEN) begin
+        trans=0;
+        write=1;
+        end
     end
 
     AL2:begin
@@ -404,6 +408,10 @@ always_comb begin
         else
           ndaddr = daddr ;
       end
+      if(dcif.dmemWEN) begin
+        trans=0;
+        write=1;
+        end
     end
     HALT:begin
       if(i<8) begin
@@ -590,7 +598,7 @@ always_comb begin
     end
     
     SWB1: begin
-      if((table1[saddr.idx].tag ==saddr.tag) & table1[saddr.idx].dirty & (cdif.dwait==0)) begin
+      if((table1[saddr.idx].tag ==saddr.tag) & table1[saddr.idx].dirty & table1[saddr.idx].valid & (cdif.dwait==0)) begin
         cdif.dstore = table1[saddr.idx].data[0];
         trans = table1[saddr.idx].valid;
         write =  table1[saddr.idx].dirty;
@@ -598,7 +606,7 @@ always_comb begin
         next_state = SWB2;
         ndaddr = {saddr.tag,saddr.idx,1'b0,2'b00};
       end
-      else if((table2[saddr.idx].tag==saddr.tag) & table2[saddr.idx].dirty & (cdif.dwait==0)) begin
+      else if((table2[saddr.idx].tag==saddr.tag) & table2[saddr.idx].dirty & table2[saddr.idx].valid & (cdif.dwait==0)) begin
         cdif.dstore = table2[saddr.idx].data[0];
         trans = table2[saddr.idx].valid;
         write =  table2[saddr.idx].dirty;
@@ -609,11 +617,11 @@ always_comb begin
       else if(cdif.dwait)begin
         cdif.dWEN=1;
         next_state = SWB1;
-        if((table1[saddr.idx].tag ==saddr.tag) & table1[saddr.idx].dirty) begin
+        if((table1[saddr.idx].tag ==saddr.tag) & table1[saddr.idx].dirty & table1[saddr.idx].valid) begin
           cdif.dstore = table1[saddr.idx].data[0];
           trans = table1[saddr.idx].valid;
           write =  table1[saddr.idx].dirty;end
-        else if((table2[saddr.idx].tag==saddr.tag) & table2[saddr.idx].dirty) begin
+        else if((table2[saddr.idx].tag==saddr.tag) & table2[saddr.idx].dirty & table2[saddr.idx].valid ) begin
           cdif.dstore = table2[saddr.idx].data[0];
           trans = table2[saddr.idx].valid;
           write =  table2[saddr.idx].dirty;end

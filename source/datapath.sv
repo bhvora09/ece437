@@ -99,6 +99,7 @@ module datapath (
 
   //1.pc
   assign pcif.PCen =((emif.dREN_out| emif.dWEN_out) & ~dpif.dhit) ? 1'b0:(dpif.ihit  & (~fdif.stall));// & huif.PCWrite & (~dpif.halt));
+  // assign pcif.PCen =((emif.dREN_out| emif.dWEN_out) & ~dpif.dhit) ? 1'b0:(dpif.ihit  & (~fdif.stall) & (~huif.fdif_flush));// & huif.PCWrite & (~dpif.halt));
 
   //change -2 
   //assign fdif_flush = huif.fdif_flush | (fdif.stall & (~deif.stall));
@@ -109,11 +110,11 @@ module datapath (
   assign fdif.ihit = dpif.ihit;
   assign fdif.dhit = dpif.dhit;
   //change-1
-  //assign fdif.stall = huif.fdif_stall | ((emif.dREN_out| emif.dWEN_out) & ~dpif.dhit) | emif.stall | deif.stall ;
-  assign fdif.stall = huif.fdif_stall | ((emif.dREN_out| emif.dWEN_out) & ~dpif.dhit) | emif.stall | deif.stall | ~dpif.ihit;
+  assign fdif.stall = huif.fdif_stall | ((emif.dREN_out| emif.dWEN_out) & ~dpif.dhit) | emif.stall | deif.stall ;
+  //assign fdif.stall = huif.fdif_stall | ((emif.dREN_out| emif.dWEN_out) & ~dpif.dhit) | emif.stall | deif.stall | ~dpif.ihit;
   
   //1/4.dp
-  assign dpif.imemREN=1'b1 & (~dpif.halt);
+  assign dpif.imemREN= 1'b1 & (~dpif.halt);
   assign dpif.imemaddr=pcif.pc;
   assign dpif.dmemWEN=emif.dWEN_out;
   assign dpif.dmemREN=emif.dREN_out;
@@ -175,7 +176,7 @@ module datapath (
   assign emif.jr_s_in = huif.emif_flush ? 'b0: deif.jr_s_out;
   assign emif.jump_s_in= huif.emif_flush ? 'b0: deif.jump_s_out;
   assign emif.lui_in =huif.emif_flush ? 'b0:  deif.lui_out;
-  assign emif.pcplusfour_in=huif.emif_flush ? 'b0: deif.pcplusfour_out;
+  assign emif.pcplusfour_in = huif.emif_flush ? 'b0: deif.pcplusfour_out;
   assign emif.pc_in     =huif.emif_flush ? 'b0: deif.pc_out;
   assign emif.instr_in    = huif.emif_flush ? 'b0: deif.instr_out;
   assign emif.RegWr_in    = huif.emif_flush ? 'b0: deif.RegWr_out;

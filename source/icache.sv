@@ -79,7 +79,7 @@ always_comb begin
                 if((frame.tag == addr.tag) && frame.valid) begin
                     hit = 1;
                 end
-
+                ccif.iaddr = dcif.imemaddr;
                 data = frame.data;
             end
         end
