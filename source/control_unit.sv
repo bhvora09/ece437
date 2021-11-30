@@ -208,6 +208,7 @@ always_comb begin
         cuif.dWEN='b1;
         //cuif.iREN='b0;
         end
+    
     HALT: begin
         //cuif.PCen='b0;
         cuif.halt='b1;
