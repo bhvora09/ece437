@@ -251,7 +251,7 @@ module datapath (
   assign fuif.mwif_portout = mwif.alu_portOut_out;
   
   assign dpif.halt= halt | mwif.halt_out;
-
+  assign dpif.datomic = ((emif.opcode_out == opcode_t'(6'b110000)) | (emif.opcode_out== opcode_t'(6'b111000) )) ? 1'b1 :1'b0;
     
     //2.2 sign extender in decode stage
     //--------------------------------------------
