@@ -153,63 +153,7 @@ always_comb begin
       //STORES dmemWEN
       else if (dcif.dmemWEN & (table1[daddr.idx].tag ==daddr.tag))begin
         if(!(table1[daddr.idx].dirty))begin
-          if(daddr.blkoff==0) begin
-            temptable1[daddr.idx].data[0] = dcif.dmemstore;
-            temptable1[daddr.idx].valid = 1'b1;
-            temptable1[daddr.idx].dirty =1'b1;
-            trans=1;
-            write=1;
-            dcif.dhit=1'b1;
-            next_state = TAG;
-          end
-          else if(daddr.blkoff==1) begin
-            temptable1[daddr.idx].data[1] = dcif.dmemstore;
-            temptable1[daddr.idx].valid = 1'b1;
-            temptable1[daddr.idx].dirty =1'b1;
-            trans=1;
-            write=1;
-            dcif.dhit=1'b1;
-            next_state = TAG;
-          end
-        end
-        else begin
-          next_state = WB1;
-          ndaddr = {tag1,index,1'b0,2'b00};
-        end
-      end
-
-      else if(dcif.dmemWEN & (table2[daddr.idx].tag==daddr.tag)) begin
-        if (!(table2[daddr.idx].dirty)) begin
-          if (daddr.blkoff==0) begin
-            temptable2[daddr.idx].data[0] = dcif.dmemstore;
-            temptable2[daddr.idx].valid = 1'b1;
-            temptable2[daddr.idx].dirty =1'b1;
-            trans=1;
-            write=1;
-            dcif.dhit=1'b1;
-            next_state = TAG;
-          end
-          else if (daddr.blkoff==1) begin
-            temptable2[daddr.idx].data[1] = dcif.dmemstore;
-            temptable2[daddr.idx].valid = 1'b1;
-            temptable2[daddr.idx].dirty =1'b1;
-            trans=1;
-            write=1;
-            dcif.dhit=1'b1;
-            next_state = TAG;
-          end
-        end
-        else begin  
-          next_state = WB1;
-          ndaddr = {tag2,index,1'b0,2'b00};
-        end
-      end
-
-      //SC valid based on "STORES dmemWEN"
-      else if((dcif.datomic == 1) && (dcif.dmemaddr == linked_reg) && (link_valid==1)) begin
-        dcif.dmemload = 1;
-        if (dcif.dmemWEN & (table1[daddr.idx].tag ==daddr.tag))begin
-          if(!(table1[daddr.idx].dirty))begin
+          if(((dcif.datomic == 1) && (linked_reg == dcif.dmemaddr) && (link_valid==1)) | ~dcif.datomic) begin
             if(daddr.blkoff==0) begin
               temptable1[daddr.idx].data[0] = dcif.dmemstore;
               temptable1[daddr.idx].valid = 1'b1;
@@ -227,16 +171,24 @@ always_comb begin
               write=1;
               dcif.dhit=1'b1;
               next_state = TAG;
-            end
+              end
+            if(dcif.datomic) dcif.dmemload = 'b1;
           end
-          else begin
-            next_state = WB1;
-            ndaddr = {tag1,index,1'b0,2'b00};
+          //SC invalid
+          else if(((dcif.datomic == 1) && ~((linked_reg == dcif.dmemaddr) && (link_valid==1)))) begin
+            dcif.dmemload = 'b0;
+            next_state = TAG;
           end
         end
+        else begin
+          next_state = WB1;
+          ndaddr = {tag1,index,1'b0,2'b00};
+        end
+      end
 
-        else if(dcif.dmemWEN & (table2[daddr.idx].tag==daddr.tag)) begin
-          if (!(table2[daddr.idx].dirty)) begin
+      else if(dcif.dmemWEN & (table2[daddr.idx].tag==daddr.tag)) begin
+        if (!(table2[daddr.idx].dirty)) begin
+          if(((dcif.datomic == 1) && (linked_reg == dcif.dmemaddr) && (link_valid==1)) | ~dcif.datomic) begin
             if (daddr.blkoff==0) begin
               temptable2[daddr.idx].data[0] = dcif.dmemstore;
               temptable2[daddr.idx].valid = 1'b1;
@@ -255,20 +207,19 @@ always_comb begin
               dcif.dhit=1'b1;
               next_state = TAG;
             end
+            if(dcif.datomic) dcif.dmemload = 'b1;
           end
-          else begin  
-            next_state = WB1;
-            ndaddr = {tag2,index,1'b0,2'b00};
+          //SC invalid
+          else if(((dcif.datomic == 1) && ~((linked_reg == dcif.dmemaddr) && (link_valid==1)))) begin
+            dcif.dmemload = 'b0;
+            next_state = TAG;
           end
         end
+        else begin  
+          next_state = WB1;
+          ndaddr = {tag2,index,1'b0,2'b00};
+        end
       end
-      
-      //SC invalid
-      else if((dcif.datomic == 1) && (dcif.dmemaddr == linked_reg) && (link_valid!=1)) begin
-        dcif.dmemload =0;
-        next_state = TAG;
-      end
-
       else if((dcif.dmemWEN | dcif.dmemREN) & (LRU[daddr.idx]) & table1[daddr.idx].dirty) begin
         next_state= WB1;
         ndaddr = {tag1,index,1'b0,2'b00};
@@ -492,63 +443,71 @@ always_comb begin
 
     AL2:begin
       if((table1[daddr.idx].tag ==daddr.tag) & !(table1[daddr.idx].dirty) & (cdif.dwait==0))begin
-        cdif.dREN = 1'b1;
-        temptable1[daddr.idx].tag = daddr.tag;
-        temptable1[daddr.idx].data[1] = cdif.dload;
-        trans = table1[daddr.idx].valid;
-        write = table1[daddr.idx].dirty;
-        temptable1[daddr.idx].valid = 1'b1;
-        next_state = TAG;
+        if(((dcif.datomic == 1) && (dcif.dmemREN == 1)) | ~dcif.datomic) begin
+          cdif.dREN = 1'b1;
+          temptable1[daddr.idx].tag = daddr.tag;
+          temptable1[daddr.idx].data[1] = cdif.dload;
+          trans = table1[daddr.idx].valid;
+          write = table1[daddr.idx].dirty;
+          temptable1[daddr.idx].valid = 1'b1;
+          next_state = TAG;
 
         //LL implementation
-        if((dcif.datomic == 1) && (dcif.dmemREN == 1)) begin
-          n_link_reg = dcif.dmemaddr;
-          n_link_valid = 1;
+          if(dcif.datomic && dcif.dmemREN) begin
+           n_link_reg = dcif.dmemaddr;
+           n_link_valid = 1;    //check - we are never making it 0 -when to make it 0
+           end
         end
       end
       else if((table2[daddr.idx].tag==daddr.tag)  & !(table2[daddr.idx].dirty) & (cdif.dwait==0))begin
-        cdif.dREN = 1'b1;
-        temptable2[daddr.idx].tag = daddr.tag;
-        temptable2[daddr.idx].data[1] = cdif.dload;
-        trans = table2[daddr.idx].valid;
-        write = table2[daddr.idx].dirty;
-        temptable2[daddr.idx].valid = 1'b1;
-        next_state = TAG;
+        if(((dcif.datomic == 1) && (dcif.dmemREN == 1)) | ~dcif.datomic) begin
+          cdif.dREN = 1'b1;
+          temptable2[daddr.idx].tag = daddr.tag;
+          temptable2[daddr.idx].data[1] = cdif.dload;
+          trans = table2[daddr.idx].valid;
+          write = table2[daddr.idx].dirty;
+          temptable2[daddr.idx].valid = 1'b1;
+          next_state = TAG;
 
         //LL implementation
-        if((dcif.datomic == 1) && (dcif.dmemREN == 1)) begin
-          n_link_reg = dcif.dmemaddr;
-          n_link_valid = 1;
+          if((dcif.datomic == 1) && (dcif.dmemREN == 1)) begin
+            n_link_reg = dcif.dmemaddr;
+            n_link_valid = 1;
+          end
         end
       end
       else if((LRU[daddr.idx]) & !(table1[daddr.idx].dirty) & (cdif.dwait==0))begin
-        cdif.dREN = 1'b1;
-        temptable1[daddr.idx].tag = daddr.tag;
-        temptable1[daddr.idx].data[1] = cdif.dload;
-        trans = table1[daddr.idx].valid;
-        write = table1[daddr.idx].dirty;
-        temptable1[daddr.idx].valid = 1'b1;
-        next_state = TAG;
+        if(((dcif.datomic == 1) && (dcif.dmemREN == 1)) | ~dcif.datomic) begin
+          cdif.dREN = 1'b1;
+          temptable1[daddr.idx].tag = daddr.tag;
+          temptable1[daddr.idx].data[1] = cdif.dload;
+          trans = table1[daddr.idx].valid;
+          write = table1[daddr.idx].dirty;
+          temptable1[daddr.idx].valid = 1'b1;
+          next_state = TAG;
 
-        //LL implementation
-        if((dcif.datomic == 1)) begin
-          n_link_reg = dcif.dmemaddr;
-          n_link_valid =1;
+          //LL implementation
+          if((dcif.datomic == 1) && (dcif.dmemREN == 1)) begin
+            n_link_reg = dcif.dmemaddr;
+            n_link_valid =1;
+          end
         end
       end
       else if(!(LRU[daddr.idx]) & !(table2[daddr.idx].dirty) & (cdif.dwait==0))begin
-        cdif.dREN = 1'b1;
-        temptable2[daddr.idx].tag = daddr.tag;
-        temptable2[daddr.idx].data[1] = cdif.dload;
-        trans = table2[daddr.idx].valid;
-        write = table2[daddr.idx].dirty;
-        temptable2[daddr.idx].valid = 1'b1;
-        next_state = TAG;
+        if(((dcif.datomic == 1) && (dcif.dmemREN == 1)) | ~dcif.datomic) begin
+          cdif.dREN = 1'b1;
+          temptable2[daddr.idx].tag = daddr.tag;
+          temptable2[daddr.idx].data[1] = cdif.dload;
+          trans = table2[daddr.idx].valid;
+          write = table2[daddr.idx].dirty;
+          temptable2[daddr.idx].valid = 1'b1;
+          next_state = TAG;
 
         //LL implementation
-        if((dcif.datomic == 1)) begin
-          n_link_reg = dcif.dmemaddr;
-          n_link_valid =1;
+          if((dcif.datomic == 1) && (dcif.dmemREN == 1)) begin
+            n_link_reg = dcif.dmemaddr;
+            n_link_valid =1;
+          end
         end
       end
       else if (cdif.dwait) begin
