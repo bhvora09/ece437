@@ -6,13 +6,11 @@ module dcache(
     input logic CLK,nRST,
     datapath_cache_if.dcache dcif,
     caches_if.dcache cdif
-    //cache_control_if.cc ccif
 );
   // type import
 import cpu_types_pkg::*;
 
 //structs
-//dcache_frame - [valid,dirty,tag, data[1:0]]
 dcache_frame [7:0] table1,temptable1;
 dcache_frame [7:0] table2,temptable2;
 logic  [7:0] LRU;
@@ -25,6 +23,10 @@ int i, ni;
 word_t hit_count,hit_count_next;
 word_t ndaddr;
 logic trans, write;
+logic [31:0] linked_reg;
+logic [31:0] n_link_reg
+logic link_valid;
+logic n_link_valid;
 
 typedef enum logic [3:0]{
   TAG = 4'b000,
@@ -71,31 +73,27 @@ assign index = daddr.idx;
 
 assign cdif.cctrans  = trans;
 assign cdif.ccwrite = write;
-// assign write = LRU[daddr.idx] ? table1[daddr.idx].valid : table2[daddr.idx].valid ;
-// assign trans = LRU[daddr.idx] ? table1[daddr.idx].dirty : table2[daddr.idx].dirty;
 
 always_ff @(posedge CLK or negedge nRST) begin
   if(!nRST) begin
     table1 <= 0;
     table2 <= 0;
     state <= TAG;
-    // hit_count <= 0;
     i <=0;
     LRU <= 0;
     cdif.daddr <= 0;
-    // cdif.cctrans<=0;
-    // cdif.ccwrite<=0;
+    linked_reg <= 0;
+    link_valid <= 0;
   end
   else begin
     table1 <= temptable1;
     table2 <= temptable2;
     state<=next_state;
-    // hit_count <= hit_count_next;
+    linked_reg <= n_link_reg;
+    link_valid <= n_link_valid;
     i<= ni;
     LRU <= nLRU;
     cdif.daddr <= ndaddr;
-    // cdif.cctrans <= trans;
-    // cdif.ccwrite <= write;  
   end
 end
 
@@ -108,13 +106,14 @@ always_comb begin
   dcif.dmemload = 32'b0;
   dcif.flushed =1'b0;
   next_state = state;
-  // hit_count_next = hit_count;
   cdif.dstore = '0;
   ni = i;
   nLRU = LRU;
   ndaddr = cdif.daddr;
   write = 0;
   trans = 0;
+  n_link_reg = linked_reg;
+  n_link_valid = link_valid;
 
   case (state) 
     TAG: begin
@@ -124,18 +123,34 @@ always_comb begin
         next_state = HALT;
         ni=0;
       end
+
+      //LOADS dmemREN
       else if(dcif.dmemREN & (table1[daddr.idx].tag ==daddr.tag) & (table1[daddr.idx].valid)) begin
         dcif.dhit =1'b1;
         dcif.dmemload = dload1;
         next_state = TAG; 
         nLRU[daddr.idx]=1'b0;
+        
+        //LL implementation
+        if((dcif.datomic == 1)) begin
+          n_linked_reg = cdif.dmemaddr
+          n_link_valid = 1;
+        end
       end
       else if(dcif.dmemREN & (table2[daddr.idx].tag==daddr.tag) & (table2[daddr.idx].valid)) begin
         dcif.dhit =1'b1;
         dcif.dmemload = dload2; 
         next_state = TAG; 
         nLRU[daddr.idx] =1'b1; 
+
+        //LL implementation
+        if((dcif.datomic == 1)) begin
+          n_linked_reg = cdif.dmemaddr
+          n_link_valid = 1;
+        end
       end
+
+      //STORES dmemWEN
       else if (dcif.dmemWEN & (table1[daddr.idx].tag ==daddr.tag))begin
         if(!(table1[daddr.idx].dirty))begin
           if(daddr.blkoff==0) begin
@@ -162,6 +177,7 @@ always_comb begin
           ndaddr = {tag1,index,1'b0,2'b00};
         end
       end
+
       else if(dcif.dmemWEN & (table2[daddr.idx].tag==daddr.tag)) begin
         if (!(table2[daddr.idx].dirty)) begin
           if (daddr.blkoff==0) begin
@@ -188,30 +204,93 @@ always_comb begin
           ndaddr = {tag2,index,1'b0,2'b00};
         end
       end
+
+      //SC valid based on "STORES dmemWEN"
+      else if((dcif.datomic == 1) && (dcif.dmemaddr == linked_reg) && (link_valid==1)) begin
+        dcif.dmemload = 1;
+        if (dcif.dmemWEN & (table1[daddr.idx].tag ==daddr.tag))begin
+          if(!(table1[daddr.idx].dirty))begin
+            if(daddr.blkoff==0) begin
+              temptable1[daddr.idx].data[0] = dcif.dmemstore;
+              temptable1[daddr.idx].valid = 1'b1;
+              temptable1[daddr.idx].dirty =1'b1;
+              trans=1;
+              write=1;
+              dcif.dhit=1'b1;
+              next_state = TAG;
+            end
+            else if(daddr.blkoff==1) begin
+              temptable1[daddr.idx].data[1] = dcif.dmemstore;
+              temptable1[daddr.idx].valid = 1'b1;
+              temptable1[daddr.idx].dirty =1'b1;
+              trans=1;
+              write=1;
+              dcif.dhit=1'b1;
+              next_state = TAG;
+            end
+          end
+          else begin
+            next_state = WB1;
+            ndaddr = {tag1,index,1'b0,2'b00};
+          end
+        end
+
+        else if(dcif.dmemWEN & (table2[daddr.idx].tag==daddr.tag)) begin
+          if (!(table2[daddr.idx].dirty)) begin
+            if (daddr.blkoff==0) begin
+              temptable2[daddr.idx].data[0] = dcif.dmemstore;
+              temptable2[daddr.idx].valid = 1'b1;
+              temptable2[daddr.idx].dirty =1'b1;
+              trans=1;
+              write=1;
+              dcif.dhit=1'b1;
+              next_state = TAG;
+            end
+            else if (daddr.blkoff==1) begin
+              temptable2[daddr.idx].data[1] = dcif.dmemstore;
+              temptable2[daddr.idx].valid = 1'b1;
+              temptable2[daddr.idx].dirty =1'b1;
+              trans=1;
+              write=1;
+              dcif.dhit=1'b1;
+              next_state = TAG;
+            end
+          end
+          else begin  
+            next_state = WB1;
+            ndaddr = {tag2,index,1'b0,2'b00};
+          end
+        end
+      end
+      
+      //SC invalid
+      else if(if((dcif.datomic == 1) && (dcif.dmemaddr == linked_reg) && (link_valid!=1))) begin
+        dmemload =0;
+        next_state = TAG;
+      end
+
       else if((dcif.dmemWEN | dcif.dmemREN) & (LRU[daddr.idx]) & table1[daddr.idx].dirty) begin
         next_state= WB1;
         ndaddr = {tag1,index,1'b0,2'b00};
-        // hit_count_next = hit_count -1; 
       end
       else if ((dcif.dmemWEN | dcif.dmemREN) & !(LRU[daddr.idx]) & table2[daddr.idx].dirty) begin
         next_state=WB1;
         ndaddr = {tag2,index,1'b0,2'b00};
-        // hit_count_next = hit_count -1; 
       end
       else if ((dcif.dmemWEN | dcif.dmemREN) & (LRU[daddr.idx]) & !(table1[daddr.idx].dirty)) begin
         next_state=AL1;
-        // hit_count_next = hit_count -1; 
       end
       else if ((dcif.dmemWEN | dcif.dmemREN) & !(LRU[daddr.idx]) & !(table2[daddr.idx].dirty)) begin
         next_state=AL1;
-        // hit_count_next = hit_count -1; 
       end
+
       else if((saddr !='b0) & ((table1[saddr.idx].tag == saddr.tag) | (table2[saddr.idx] == saddr.tag))) begin
         next_state = SNOOP;
       end
       else begin 
         next_state =TAG;
       end
+
       if(next_state == AL1) begin
         if(daddr.blkoff == 0)
           ndaddr = daddr;
@@ -274,6 +353,7 @@ always_comb begin
         end
       end
     end
+    
     WB2:begin
       if((table1[daddr.idx].tag ==daddr.tag) & table1[daddr.idx].dirty & table1[daddr.idx].valid & (cdif.dwait==0)) begin
         cdif.dstore = dstore11;
@@ -338,6 +418,7 @@ always_comb begin
           ndaddr = daddr - 3'b100;
       end
     end
+
     AL1:begin
       if((table1[daddr.idx].tag ==daddr.tag) & !(table1[daddr.idx].dirty) & (cdif.dwait==0) )begin
         cdif.dREN = 1'b1;
@@ -418,6 +499,12 @@ always_comb begin
         write = table1[daddr.idx].dirty;
         temptable1[daddr.idx].valid = 1'b1;
         next_state = TAG;
+
+        //LL implementation
+        if((dcif.datomic == 1) && (dcif.dmemREN == 1)) begin
+          n_linked_reg = cdif.dmemaddr
+          n_link_valid = 1;
+        end
       end
       else if((table2[daddr.idx].tag==daddr.tag)  & !(table2[daddr.idx].dirty) & (cdif.dwait==0))begin
         cdif.dREN = 1'b1;
@@ -427,6 +514,12 @@ always_comb begin
         write = table2[daddr.idx].dirty;
         temptable2[daddr.idx].valid = 1'b1;
         next_state = TAG;
+
+        //LL implementation
+        if((dcif.datomic == 1) && (dcif.dmemREN == 1)) begin
+          n_linked_reg = cdif.dmemaddr
+          n_link_valid = 1;
+        end
       end
       else if((LRU[daddr.idx]) & !(table1[daddr.idx].dirty) & (cdif.dwait==0))begin
         cdif.dREN = 1'b1;
@@ -436,6 +529,12 @@ always_comb begin
         write = table1[daddr.idx].dirty;
         temptable1[daddr.idx].valid = 1'b1;
         next_state = TAG;
+
+        //LL implementation
+        if((dcif.datomic == 1)) begin
+          n_linked_reg = cdif.dmemaddr
+          n_link_valid =1;
+        end
       end
       else if(!(LRU[daddr.idx]) & !(table2[daddr.idx].dirty) & (cdif.dwait==0))begin
         cdif.dREN = 1'b1;
@@ -445,6 +544,12 @@ always_comb begin
         write = table2[daddr.idx].dirty;
         temptable2[daddr.idx].valid = 1'b1;
         next_state = TAG;
+
+        //LL implementation
+        if((dcif.datomic == 1)) begin
+          n_linked_reg = cdif.dmemaddr
+          n_link_valid =1;
+        end
       end
       else if (cdif.dwait) begin
         next_state = AL2;
@@ -477,6 +582,7 @@ always_comb begin
         write=1;
         end
     end
+
     HALT:begin
       if(i<8) begin
         if((table1[i].dirty == 1) & (cdif.dwait==0)) begin
@@ -497,10 +603,8 @@ always_comb begin
         end
       end     
       if(i==8 & (cdif.dwait==0)) begin
-        //next_state = HIT;
         next_state = HALT;
         dcif.flushed = 1'b1;
-        // ndaddr= 32'h3100;
       end
       else if(cdif.dwait) begin
         next_state = HALT; 
@@ -606,22 +710,6 @@ always_comb begin
         end
       end
     end
-    // HIT: begin
-    //   cdif.dWEN = 1'b1;
-    //   cdif.dstore = hit_count;
-    //   if(cdif.dwait==0) begin
-    //     next_state = FLUSH;end
-    //   else if(cdif.dwait)
-    //     next_state = HIT;
-    //   end
-    // FLUSH: begin
-    //   if(cdif.daddr == 32'h3100 & (cdif.dwait==0)) begin
-    //     temptable1 = 'b0;
-    //     temptable2 = 'b0;
-    //     dcif.flushed = 1'b1; end
-    //   else if(cdif.dwait)
-    //     next_state = FLUSH;
-    // end
     SNOOP: begin//add - check for ccwait
       if(ccif.ccwait) begin
         if(table1[saddr.idx].tag ==saddr.tag) begin
@@ -641,20 +729,40 @@ always_comb begin
           temptable1[saddr.idx].dirty = 0;
           trans=0;
           write=0;
+          
+          //LL/SC
+          if(saddr == linked_reg) begin
+            n_link_valid =0;
+          end
+        
         end
         else if((table2[saddr.idx].tag == saddr.tag)) begin
           temptable2[saddr.idx].valid = 0;
           temptable2[saddr.idx].dirty = 0;
           trans=0;
           write=0;
+          
+          //LL/SC
+          if(saddr == linked_reg) begin
+            n_link_valid =0;
+          end
+        
         end
         next_state = TAG;
       end
+      
 
       //if dirty go to writeback to memory
       else if(table1[saddr.idx].dirty | table2[saddr.idx].dirty) begin
         next_state = SWB1;
-        ndaddr = {saddr.tag,saddr.idx,1'b0,2'b00};end
+        ndaddr = {saddr.tag,saddr.idx,1'b0,2'b00};
+        
+        //LL/SC
+        if(saddr == linked_reg) begin
+           n_link_valid =0;
+        end
+      
+      end
       else begin
         next_state = TAG;
       end
@@ -692,6 +800,7 @@ always_comb begin
         ndaddr = {saddr.tag,saddr.idx,1'b0,2'b00};
       end
     end
+
     SWB2: begin
       if((table1[saddr.idx].tag ==saddr.tag) & table1[saddr.idx].dirty &(cdif.dwait==0)) begin
         cdif.dstore = table1[saddr.idx].data[1];
@@ -728,7 +837,7 @@ always_comb begin
       end
     end
   endcase
-  //add - ccwait logic
+
   //if snoopaddr !=0 tag matching and ccwait =1
   if(cdif.ccwait) begin
     if((saddr !='b0) & (table1[saddr.idx].tag == saddr.tag) & (next_state != SNOOP) & (next_state != SWB1) & (next_state != SWB2))begin
@@ -748,8 +857,6 @@ always_comb begin
       write = 'b0;
     end
   end
-  // if(dcif.dhit == 1'b1)
-  //   hit_count_next = hit_count+1;
-  end
+end
 
 endmodule
