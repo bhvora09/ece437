@@ -218,12 +218,14 @@ always_comb begin
         cuif.RegDst='b0;
         end
     SC: begin
-        cuif.ALUctr= ALU_ADD;
-        cuif.ALUSrc = 'b1;
-        cuif.dWEN='b1;
-        cuif.MemtoReg = 'b1;
+        cuif.RegWr='b1; //write rt on writeback
         cuif.ExtOp='b1;
-        cuif.RegWr='b1;
+        cuif.ALUSrc = 'b1;
+        cuif.ALUctr= ALU_ADD;
+        cuif.MemWr='b1;
+        cuif.dWEN='b1;
+        cuif.MemtoReg = 'b1;        
+        cuif.RegDst='b0;
         end
 
     HALT: begin
