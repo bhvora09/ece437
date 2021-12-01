@@ -24,7 +24,7 @@ word_t hit_count,hit_count_next;
 word_t ndaddr;
 logic trans, write;
 logic [31:0] linked_reg;
-logic [31:0] n_link_reg
+logic [31:0] n_link_reg;
 logic link_valid;
 logic n_link_valid;
 
@@ -133,7 +133,7 @@ always_comb begin
         
         //LL implementation
         if((dcif.datomic == 1)) begin
-          n_linked_reg = cdif.dmemaddr
+          n_link_reg = dcif.dmemaddr;
           n_link_valid = 1;
         end
       end
@@ -145,7 +145,7 @@ always_comb begin
 
         //LL implementation
         if((dcif.datomic == 1)) begin
-          n_linked_reg = cdif.dmemaddr
+          n_link_reg = dcif.dmemaddr;
           n_link_valid = 1;
         end
       end
@@ -264,8 +264,8 @@ always_comb begin
       end
       
       //SC invalid
-      else if(if((dcif.datomic == 1) && (dcif.dmemaddr == linked_reg) && (link_valid!=1))) begin
-        dmemload =0;
+      else if((dcif.datomic == 1) && (dcif.dmemaddr == linked_reg) && (link_valid!=1)) begin
+        dcif.dmemload =0;
         next_state = TAG;
       end
 
@@ -502,7 +502,7 @@ always_comb begin
 
         //LL implementation
         if((dcif.datomic == 1) && (dcif.dmemREN == 1)) begin
-          n_linked_reg = cdif.dmemaddr
+          n_link_reg = dcif.dmemaddr;
           n_link_valid = 1;
         end
       end
@@ -517,7 +517,7 @@ always_comb begin
 
         //LL implementation
         if((dcif.datomic == 1) && (dcif.dmemREN == 1)) begin
-          n_linked_reg = cdif.dmemaddr
+          n_link_reg = dcif.dmemaddr;
           n_link_valid = 1;
         end
       end
@@ -532,7 +532,7 @@ always_comb begin
 
         //LL implementation
         if((dcif.datomic == 1)) begin
-          n_linked_reg = cdif.dmemaddr
+          n_link_reg = dcif.dmemaddr;
           n_link_valid =1;
         end
       end
@@ -547,7 +547,7 @@ always_comb begin
 
         //LL implementation
         if((dcif.datomic == 1)) begin
-          n_linked_reg = cdif.dmemaddr
+          n_link_reg = dcif.dmemaddr;
           n_link_valid =1;
         end
       end
