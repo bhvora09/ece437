@@ -54,7 +54,8 @@ assign daddr.blkoff = cdif.ccwait? cdif.ccsnoopaddr: dcif.dmemaddr[2];
 assign daddr.bytoff = cdif.ccwait? cdif.ccsnoopaddr: dcif.dmemaddr[1:0];
 
 //Snoop addresss
-dcachef_t saddr;
+dcachef_t saddr,nsaddr;
+
 assign saddr.tag = cdif.ccsnoopaddr[31:6];
 assign saddr.idx = cdif.ccsnoopaddr[5:3];
 assign saddr.blkoff = cdif.ccsnoopaddr[2];
@@ -84,6 +85,7 @@ always_ff @(posedge CLK or negedge nRST) begin
     cdif.daddr <= 0;
     linked_reg <= 0;
     link_valid <= 0;
+    //saddr <= 'b0;
   end
   else begin
     table1 <= temptable1;
@@ -94,6 +96,7 @@ always_ff @(posedge CLK or negedge nRST) begin
     i<= ni;
     LRU <= nLRU;
     cdif.daddr <= ndaddr;
+    //saddr <= nsaddr;
   end
 end
 
@@ -114,6 +117,7 @@ always_comb begin
   trans = 0;
   n_link_reg = linked_reg;
   n_link_valid = link_valid;
+  //nsaddr = saddr;
 
   case (state) 
     TAG: begin
@@ -680,7 +684,7 @@ always_comb begin
       end
     end
     SNOOP: begin//add - check for ccwait
-      if(ccif.ccwait) begin
+      if(cdif.ccwait) begin
         if(table1[saddr.idx].tag ==saddr.tag) begin
           trans = table1[saddr.idx].valid;
           write = table1[saddr.idx].dirty;
@@ -692,7 +696,7 @@ always_comb begin
       end
       
       //invalidate if tag matches and ccinv =1
-      if(ccif.ccinv ==1)begin
+      if(cdif.ccinv ==1)begin
         if((table1[saddr.idx].tag == saddr.tag)) begin
           temptable1[saddr.idx].valid = 0;
           temptable1[saddr.idx].dirty = 0;

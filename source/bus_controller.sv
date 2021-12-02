@@ -293,6 +293,7 @@ module bus_controller(
         ccif.ramREN = 0;
         ccif.ramWEN = 0;
         ccif.ramstore = 'b0;
+        ccif.ramaddr = 'b0;
 
         ccif.dwait[0] = 0;
         ccif.dwait[1] = 0;
