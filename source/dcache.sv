@@ -347,7 +347,7 @@ always_comb begin
         temptable1[daddr.idx].dirty = 1'b0;
         next_state = AL1; 
       end
-      else if(!(LRU[daddr.idx]) & table2[daddr.idx].dirty & table1[daddr.idx].valid & (cdif.dwait==0)) begin
+      else if(!(LRU[daddr.idx]) & table2[daddr.idx].dirty & table2[daddr.idx].valid & (cdif.dwait==0)) begin
         cdif.dstore = dstore21;
         trans = table2[daddr.idx].valid;
         write = table2[daddr.idx].dirty;

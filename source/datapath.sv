@@ -110,8 +110,8 @@ module datapath (
   assign fdif.ihit = dpif.ihit;
   assign fdif.dhit = dpif.dhit;
   //change-1
-  assign fdif.stall = huif.fdif_stall | ((emif.dREN_out| emif.dWEN_out) & ~dpif.dhit) | emif.stall | deif.stall ;
-  //assign fdif.stall = huif.fdif_stall | ((emif.dREN_out| emif.dWEN_out) & ~dpif.dhit) | emif.stall | deif.stall | ~dpif.ihit;
+  //assign fdif.stall = huif.fdif_stall | ((emif.dREN_out| emif.dWEN_out) & ~dpif.dhit) | emif.stall | deif.stall ;
+  assign fdif.stall = huif.fdif_stall | ((emif.dREN_out| emif.dWEN_out) & ~dpif.dhit) | emif.stall | deif.stall | ~dpif.ihit;
   
   //1/4.dp
   assign dpif.imemREN= 1'b1 & (~dpif.halt);
