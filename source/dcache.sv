@@ -429,7 +429,15 @@ always_comb begin
         write = table1[daddr.idx].dirty;
         temptable1[daddr.idx].valid = 1'b1;
         next_state = TAG;
-        if(dcif.dmemWEN) temptable1[daddr.idx].dirty =1;
+        if (dcif.dmemWEN) begin
+          temptable1[daddr.idx].dirty =1;
+          dcif.dhit=1;
+          if(dcif.datomic | ((linked_reg == dcif.dmemaddr) && (link_valid==1) & ~dcif.datomic) ) begin
+            dcif.dmemload = 'b1;
+            n_link_reg = 'b0;
+            n_link_valid = 0;
+          end
+        end
         if(dcif.dmemWEN & (daddr.blkoff==1)) 
           temptable1[daddr.idx].data[1] = dcif.dmemstore;
         else  
@@ -442,7 +450,15 @@ always_comb begin
         write = table2[daddr.idx].dirty;
         temptable2[daddr.idx].valid = 1'b1;
         next_state = TAG;
-        if (dcif.dmemWEN) temptable2[daddr.idx].dirty =1;
+        if (dcif.dmemWEN) begin
+          temptable2[daddr.idx].dirty =1;
+          dcif.dhit=1;
+          if(dcif.datomic | ((linked_reg == dcif.dmemaddr) && (link_valid==1) & ~dcif.datomic) ) begin
+            dcif.dmemload = 'b1;
+            n_link_reg = 'b0;
+            n_link_valid = 0;
+          end
+        end
         if(dcif.dmemWEN & (daddr.blkoff==1)) 
           temptable2[daddr.idx].data[1] = dcif.dmemstore;
         else  
@@ -455,7 +471,15 @@ always_comb begin
         write = table1[daddr.idx].dirty;
         temptable1[daddr.idx].valid = 1'b1;
         next_state = TAG;
-        if (dcif.dmemWEN) temptable1[daddr.idx].dirty =1;
+        if (dcif.dmemWEN) begin
+          temptable1[daddr.idx].dirty =1;
+          dcif.dhit=1;
+          if(dcif.datomic | ((linked_reg == dcif.dmemaddr) && (link_valid==1) & ~dcif.datomic) ) begin
+            dcif.dmemload = 'b1;
+            n_link_reg = 'b0;
+            n_link_valid = 0;
+          end
+        end
         if(dcif.dmemWEN & (daddr.blkoff==1)) 
           temptable1[daddr.idx].data[1] = dcif.dmemstore;
         else  
@@ -468,7 +492,15 @@ always_comb begin
         write = table2[daddr.idx].dirty;
         temptable2[daddr.idx].valid = 1'b1;
         next_state = TAG;
-        if (dcif.dmemWEN) temptable2[daddr.idx].dirty =1;
+        if (dcif.dmemWEN) begin
+          temptable2[daddr.idx].dirty =1;
+          dcif.dhit=1;
+          if(dcif.datomic | ((linked_reg == dcif.dmemaddr) && (link_valid==1) & ~dcif.datomic) ) begin
+            dcif.dmemload = 'b1;
+            n_link_reg = 'b0;
+            n_link_valid = 0;
+          end
+        end
         if(dcif.dmemWEN & (daddr.blkoff==1)) 
           temptable2[daddr.idx].data[1] = dcif.dmemstore;
         else  
@@ -507,13 +539,7 @@ always_comb begin
         end
       if(dcif.dmemWEN) begin
         trans=0;
-        write=1;
-        dcif.dhit=1;
-        if(dcif.datomic | ((linked_reg == dcif.dmemaddr) && (link_valid==1) & ~dcif.datomic) ) begin
-          dcif.dmemload = 'b1;
-          n_link_reg = 'b0;
-          n_link_valid = 0;
-        end
+        write=1;   
       end
     end
 
