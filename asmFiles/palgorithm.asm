@@ -21,7 +21,7 @@
 
   mainp0:
     push $ra
-    ori $t9, $zero, 8 #number of data- (256)
+    ori $t9, $zero, 256 #number of data- (256)
     ori $t8, $zero, 1 #to subtract 256
     ori $s0, $zero, 0x7 #seed number
   getNum:
@@ -83,7 +83,7 @@
 
     mainp1:
       push $ra
-      ori $s0, $zero, 8 #number of data (256)
+      ori $s0, $zero, 256 #number of data (256)
       ori $s1, $zero, 1 #to subtract 256
       ori $s4, $zero, 0xFFFF #running min
       or $s5, $zero, $zero #running max
@@ -124,7 +124,7 @@
 # AVERAGE
 #------------------------------------------------------
   average:
-    ori $t8, $zero, 3  #shift division binary 256 - (256)
+    ori $t8, $zero, 8  #shift division binary 256 - (256)
     srlv $s3, $t8, $s3
     ori $t8, $zero, acc_avg
     sw $s3, 0($t8)
