@@ -12,7 +12,7 @@ module bus_controller(
    
 
 
-    typedef enum logic [3:0] {IDLE, CHECK1, WB1, WB2, RD1, RD2,INV, IREAD1, IREAD2, CHECK2, SNOOP, HALTWB1, HALTWB2} states;
+    typedef enum logic [3:0] {IDLE, CHECKEXTRA,CHECK1, WB1, WB2, RD1, RD2,INV, IREAD1, IREAD2, CHECK2, SNOOP, HALTWB1, HALTWB2} states;
     
     states s;
     states nS;
@@ -173,11 +173,13 @@ module bus_controller(
             end
             SNOOP: begin
                 //dren and I state
-                if((busrd0 & ~trans0 & ~write0)|(busrd1 & ~trans1 & ~write1)) nS = CHECK1;
-                if((busrd0 & ~trans0 & write0)|(busrd1 & ~trans1 & write1)) nS = CHECK1;
+                if((busrd0 & ~trans0 & ~write0)|(busrd1 & ~trans1 & ~write1)) nS = CHECKEXTRA;
+                if((busrd0 & ~trans0 & write0)|(busrd1 & ~trans1 & write1)) nS = CHECKEXTRA;
                 //dwen and I state
-                else if((buswr0 & ~trans0 & ~write0)| (buswr1 & ~trans1 & ~write1)) nS= CHECK1;     
+                else if((buswr0 & ~trans0 & ~write0)| (buswr1 & ~trans1 & ~write1)) nS= CHECKEXTRA;     
                 end
+            CHECKEXTRA: nS = CHECK1;
+                
 
             CHECK1: begin
                 //dren and c1- I state
@@ -363,6 +365,59 @@ module bus_controller(
                     end
                 ccif.iwait[0] = (ccif.iREN[0]) && (ccif.dREN[0] || ccif.dWEN[0] || ccif.dREN[1] || ccif.dWEN[1] ||(ccif.ramstate!=ACCESS));
                 ccif.iwait[1] = (ccif.iREN[1]) && (ccif.iREN[0] || ccif.dREN[1] || ccif.dWEN[1] || ccif.dREN[0]  || ccif.dWEN[0] || (ccif.ramstate!=ACCESS));
+                end
+
+            CHECKEXTRA: begin
+                ccif.iwait[0] = (ccif.iREN[0]) && (ccif.dREN[0] || ccif.dWEN[0] || ccif.dREN[1] || ccif.dWEN[1] ||(ccif.ramstate!=ACCESS));
+                ccif.iwait[1] = (ccif.iREN[1]) && (ccif.iREN[0] || ccif.dREN[1] || ccif.dWEN[1] || ccif.dREN[0]  || ccif.dWEN[0] || (ccif.ramstate!=ACCESS));
+                //dREN and c1- I state
+                if(busrd0) begin
+                    ccif.ccwait[1] = 1;
+                    ccif.ccwait[0] = 0;
+                    ccif.ccsnoopaddr[1] = ccif.daddr[0];
+                    trans_from1 = ccif.cctrans[1];
+                    write_from1 = ccif.ccwrite[1];
+                    ccif.dwait[0]= (ccif.dREN[0] || ccif.dWEN[0]);
+                    ccif.dwait[1] = (ccif.dREN[1] || ccif.dWEN[1] ) && (ccif.ramstate!=ACCESS);
+                    if(~trans0 & write0) begin
+                        if(trans1 & ~write1)
+                            ccif.ccinv[1]=1;
+                        end
+                    end
+                //dREN and c2- I state
+                else if(busrd1) begin
+                    ccif.ccwait[0] = 1;
+                    ccif.ccwait[1] = 0;
+                    ccif.ccsnoopaddr[0] = ccif.daddr[1]; 
+                    trans_from0 =  ccif.cctrans[0];
+                    write_from0 = ccif.ccwrite[0];
+                    ccif.dwait[0] = (ccif.dREN[0] || ccif.dWEN[0]) && (ccif.ramstate!=ACCESS);
+                    ccif.dwait[1] = (ccif.dREN[1] || ccif.dWEN[1]); 
+                    if(~trans1 & write1) begin
+                        if(trans0 & ~write0)
+                            ccif.ccinv[0]=1;
+                        end
+                    end
+                //dWEN and c1- I/S state
+                else if(buswr0) begin
+                    ccif.ccwait[1] = 1;
+                    ccif.ccwait[0] = 0;
+                    ccif.ccsnoopaddr[1] = ccif.daddr[0];
+                    trans_from1 = ccif.cctrans[1];
+                    write_from1 = ccif.ccwrite[1];
+                    ccif.dwait[0]= (ccif.dREN[0] || ccif.dWEN[0]);
+                    ccif.dwait[1] = (ccif.dREN[1] || ccif.dWEN[1] ) && (ccif.ramstate!=ACCESS); 
+                    end
+                //dWEN and c2- I/S state
+                else if(buswr1) begin
+                    ccif.ccwait[0] = 1;
+                    ccif.ccwait[1] = 0;
+                    ccif.ccsnoopaddr[0] = ccif.daddr[1]; 
+                    trans_from0 =  ccif.cctrans[0];
+                    write_from0 = ccif.ccwrite[0];
+                    ccif.dwait[0] = (ccif.dREN[0] || ccif.dWEN[0]) && (ccif.ramstate!=ACCESS);
+                    ccif.dwait[1] = (ccif.dREN[1] || ccif.dWEN[1]); 
+                    end
                 end
 
             CHECK1: begin
