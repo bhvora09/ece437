@@ -649,54 +649,55 @@ always_comb begin
         if(table1[saddr.idx].tag ==saddr.tag) begin
           trans = table1[saddr.idx].valid;
           write = table1[saddr.idx].dirty;
+          if(table1[saddr.idx].dirty) begin
+            next_state = SWB1;
+            ndaddr = {saddr.tag,saddr.idx,1'b0,2'b00};
+            if(saddr == linked_reg) begin
+              n_link_valid ='b0;
+              n_link_reg ='b0;
+              end
+            end
           end
         else if(table2[saddr.idx].tag ==saddr.tag) begin
           trans = table2[saddr.idx].valid;
           write = table2[saddr.idx].dirty;
+          if(table2[saddr.idx].dirty) begin
+            next_state = SWB1;
+            ndaddr = {saddr.tag,saddr.idx,1'b0,2'b00};
+            if(saddr == linked_reg) begin
+              n_link_valid ='b0;
+              n_link_reg ='b0;
+              end
+            end
           end
       end
       
       //invalidate if tag matches and ccinv =1
       if(cdif.ccinv ==1)begin
-        if((table1[saddr.idx].tag == saddr.tag)) begin
+        if((table1[saddr.idx].tag == saddr.tag) & !(table1[saddr.idx].dirty) ) begin
           temptable1[saddr.idx].valid = 0;
           temptable1[saddr.idx].dirty = 0;
           trans=0;
           write=0;
-          
           //LL/SC
           if(saddr == linked_reg) begin
             n_link_valid =0;
+            n_link_reg ='b0;
           end
-        
         end
-        else if((table2[saddr.idx].tag == saddr.tag)) begin
+        else if((table2[saddr.idx].tag == saddr.tag) & !(table2[saddr.idx].dirty)) begin
           temptable2[saddr.idx].valid = 0;
           temptable2[saddr.idx].dirty = 0;
           trans=0;
           write=0;
-          
           //LL/SC
           if(saddr == linked_reg) begin
             n_link_valid =0;
+            n_link_reg ='b0;
           end
-        
         end
         next_state = TAG;
-      end
-      
-
-      //if dirty go to writeback to memory
-      else if(table1[saddr.idx].dirty | table2[saddr.idx].dirty) begin
-        next_state = SWB1;
-        ndaddr = {saddr.tag,saddr.idx,1'b0,2'b00};
-        
-        //LL/SC
-        if(saddr == linked_reg) begin
-           n_link_valid =0;
-        end
-      
-      end
+      end  
       else begin
         next_state = TAG;
       end
@@ -744,6 +745,8 @@ always_comb begin
         next_state = TAG;
         temptable1[saddr.idx].dirty = 1'b0;
         ndaddr = {saddr.tag,saddr.idx,1'b1,2'b00};
+        if(cdif.ccinv ==1)
+          temptable1[saddr.idx].valid = 1'b0;
       end
       else if((table2[saddr.idx].tag==saddr.tag) & table2[saddr.idx].dirty & (cdif.dwait==0)) begin
         cdif.dstore = table2[saddr.idx].data[1];
@@ -753,6 +756,8 @@ always_comb begin
         next_state =  TAG; 
         temptable2[saddr.idx].dirty = 1'b0;
         ndaddr = {saddr.tag,saddr.idx,1'b1,2'b00};
+        if(cdif.ccinv ==1)
+          temptable2[saddr.idx].valid = 1'b0;
       end
       else if (cdif.dwait)begin
         cdif.dWEN=1;
