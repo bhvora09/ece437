@@ -36,7 +36,7 @@ assign dcif.imemload = data;
 //iRen and iaddr not included
 assign iwait = ccif.iwait;
 
-always_ff @(posedge CLK, negedge nRST) begin : STATES
+always_ff @(posedge CLK or negedge nRST) begin : STATES
     if (!nRST) begin
         frames <=0;
         s <= IDLE;

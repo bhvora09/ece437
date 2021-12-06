@@ -82,7 +82,6 @@ always_ff @(posedge CLK or negedge nRST) begin
     state <= TAG;
     i <=0;
     LRU <= 0;
-    cdif.daddr <= 0;
     linked_reg <= 0;
     link_valid <= 0;
     //saddr <= 'b0;

@@ -22,11 +22,15 @@ assign rfif.rdat2=regfile[rfif.rsel2];
 //comb block
 //keeping wdat ready by next clock cycle
 always_comb begin
-    regfile_next=regfile;
-    if(nRST && rfif.wsel=='b0)
-        regfile_next[0]='b0;
-    else if (nRST && rfif.wsel != 'b0)
-        regfile_next[rfif.wsel]= rfif.wdat;
+    if(!nRST) 
+        regfile_next='b0;
+    else begin
+        regfile_next=regfile;
+        if(rfif.wsel=='b0)
+            regfile_next[0]='b0;
+        else if (rfif.wsel != 'b0)
+            regfile_next[rfif.wsel]= rfif.wdat;
+    end
 end
 //write at next clock cycle
 always_ff @ (negedge CLK or negedge nRST)

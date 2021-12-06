@@ -8,7 +8,7 @@ module idecode_iexec(
 
     import cpu_types_pkg::*;
 
-    always_ff @(posedge CLK, negedge nRST) begin : PROCEED
+    always_ff @(posedge CLK or negedge nRST) begin : PROCEED
         if(!nRST) begin
             idieif.dREN_out <='b0;
             idieif.dWEN_out <= 'b0;

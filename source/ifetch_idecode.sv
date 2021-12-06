@@ -13,7 +13,7 @@ import cpu_types_pkg::*;
 
    
 
-    always_ff @(posedge CLK, negedge nRST) begin : PROCEED
+    always_ff @(posedge CLK or negedge nRST) begin : PROCEED
         if(!nRST) begin
             ifidif.instr_out <=0;
             ifidif.pc_out <=0;

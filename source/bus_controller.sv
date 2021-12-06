@@ -3,7 +3,8 @@
 `include "cpu_types_pkg.vh"
 
 module bus_controller(
-    input CLK, nRST,
+    input logic CLK,
+    input logic nRST,
     cache_control_if.cc ccif
 );
 
@@ -24,7 +25,7 @@ module bus_controller(
     logic busread1, busrd1;
     logic buswrite0, buswr0;
     logic buswrite1, buswr1;
-    always_ff @(posedge CLK, negedge nRST ) begin:FLIPFLOP
+    always_ff @(posedge CLK or negedge nRST ) begin:FLIPFLOP
         if(!nRST) begin
             s <= IDLE;
             trans0 <= 0;
