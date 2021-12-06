@@ -223,6 +223,7 @@ module datapath (
   assign mwif.ihit = dpif.ihit;
   assign mwif.dhit = dpif.dhit;
   assign mwif.flush = ((emif.dREN_out| emif.dWEN_out) & ~dpif.dhit);
+  assign mwif.stall = ((emif.dREN_out| emif.dWEN_out) & ~dpif.dhit);
 
   //hu
   assign huif.emif_bneS = emif.bne_s_out ? (emif.flagZero_out=='b0 ? 'b1:'b0 ):'b0;

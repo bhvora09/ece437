@@ -13,6 +13,9 @@ lw $7, 0($3)
 
 halt
 
+org   0x0200
+halt
+
 org 0x1F0
 cfw 0xC007
 
